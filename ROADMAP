@@ -1,0 +1,5 @@
+    //  https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa
+
+1- What is OSI ?
+2- To implement HTTP, we only care about 4th Layer of OSI : Transport Layer.
+3- Learn TCP socket programming.
