@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/02 23:19:50 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/03 21:15:36 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,6 @@ int     webserv(int argc, char **argv);
 void    errorStream(std::string description, bool EXIT_FLAG, int value);
 
 // main function (PARSING CONFIGFILE):
-void    confParsing(std::string configFILE);
+std::vector<ServConfig>    confParsing(std::string configFILE);
 
 #endif
