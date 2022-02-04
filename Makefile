@@ -13,6 +13,7 @@
 NAME=   webserv
 
 PARSING_SRCS=	./srcs/confParsing/confParsing.cpp\
+		./srcs/confParsing/isEmptyLine.cpp\
 
 UTILS_SRCS=		./srcs/utils/errorStream.cpp\
 
@@ -23,7 +24,7 @@ SRCS=   webserv.cpp\
 
 OBJS=   $(SRCS:.cpp=.o)
 
-CPPFLAGS=  -Wall -Werror -Wextra #-std=c++98
+CPPFLAGS=  #-Wall -Werror -Wextra #-std=c++98
 
 $(NAME):	$(OBJS)
 			clang++ $(CPPFLAGS) $(OBJS) -o $(NAME)

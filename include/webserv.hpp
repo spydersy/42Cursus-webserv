@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/03 21:15:36 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/05 00:16:32 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include "ServConf.Class.hpp"
 #include <iostream>
 #include <fstream>
+#include <cstring>
+#include <sstream>
 
 /*
 ** COLORS DEFINITION: **********************************************************
@@ -45,15 +47,19 @@
 /*
 ** FUNCTIONS PROTOTYPES: *******************************************************
 */
-
 int     webserv(int argc, char **argv);
-
+/*
+** SHARED FUNCTIONS:
+*/
 // first Argument : String variable That describe the error.
 // second Argument: bool variable (if EXIT_FLAG is set to true => the program exit with value) (else => Do nothing).
 // third Argument: exit value.
 void    errorStream(std::string description, bool EXIT_FLAG, int value);
-
+/*
+** PARSING FUNCTIONS:
+*/
 // main function (PARSING CONFIGFILE):
 std::vector<ServConfig>    confParsing(std::string configFILE);
+bool    isEmptyLine(std::string line);
 
 #endif
