@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/05 01:00:21 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/05 01:18:17 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,26 @@ void     semicolonConditions(std::vector<std::string> content, std::string LINE)
             return ;
         else if (content.size() > 2
             || (content.size() == 2 && content[0].compare("{")))
-            errorStream(" in LINE : " + LINE, true, 1);
+            errorStream(" in0 LINE : " + LINE, true, 1);
     }
-    // curly bracket CONDITIONS:
+    // location KEYWORD CONDITIONS:
+    if (content[0].compare(KW_LOCATION) == 0) {
+        if (content.size() == 2 || content.size() == 3) {
+            
+        }
+        else
+            errorStream(" in0 LINE : " + LINE, true, 1);
+    }
+        // curly bracket CONDITIONS:
     if ((content[0].compare("{") == 0 || content[0].compare("}") == 0)
         && content.size() == 1)
         return ;
     else if (content[0].compare("{") == 0
         || content[0].compare("}") == 0)
-        errorStream(" in LINE : " + LINE, true, 1);
+        errorStream(" in1 LINE : " + LINE, true, 1);
     // other keywords:
-    if (content[content.size() - 1].compare(";")) {
-        errorStream(" in LINE : " + LINE, true, 1);
+    if (content[content.size() - 1][content[content.size() - 1].length() - 1] != ';') {
+        errorStream(" in2 LINE : " + LINE, true, 1);
     }
 }
 
@@ -64,10 +72,10 @@ void    semicolonChecker(std::string LINE)
     semicolonConditions(content, LINE);
 }
 
-std::string    lineChecker(std::string LINE)
+void    lineChecker(std::string LINE)
 {
     if (isEmptyLine(LINE))
-        return "";
+        return ;
     semicolonChecker(LINE);
 }
 
@@ -81,6 +89,7 @@ std::vector<ServConfig>     getServersData(std::ifstream &FILE)
     
     while (getline (FILE, LINE)) {
         lineChecker(LINE);
+    if (!isEmptyLine(LINE))
         FILEINLINE += LINE;
     }
     std::cout << FILEINLINE << std::endl;
@@ -91,7 +100,9 @@ std::vector<ServConfig>   readFile(std::string configFile)
 {
     size_t          position;
     
-    std::ifstream FILE(configFile);
+    std::ifstream FILE;
+    
+    FILE.open(configFile.c_str());
     if (!FILE.is_open())
     {
         errorStream(configFile + " " + std::strerror(errno), true, 1);
@@ -99,8 +110,7 @@ std::vector<ServConfig>   readFile(std::string configFile)
     position = configFile.find_last_of(".conf");
     if (position + 1 != configFile.length())
         errorStream(FORMAT_ERR, true, 1);
-    getServersData(FILE);
-    std::cout << "*****************" << std::endl;
+    return getServersData(FILE);
 }
 
 std::vector<ServConfig>    confParsing(std::string configFILE)
