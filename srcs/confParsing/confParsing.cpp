@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/05 01:18:17 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/05 15:22:02 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ bool    isEMptyLine(std::string LINE)
 void     semicolonConditions(std::vector<std::string> content, std::string LINE)
 {
     // server KEYWORD CONDITIONS:
+    std::string error;
+    error.append(" in LINE : ").append(LINE);
     if (content[0].compare(KW_SERVER) == 0) {
         if (content.size() == 1)
             return ;
@@ -37,7 +39,7 @@ void     semicolonConditions(std::vector<std::string> content, std::string LINE)
             return ;
         else if (content.size() > 2
             || (content.size() == 2 && content[0].compare("{")))
-            errorStream(" in0 LINE : " + LINE, true, 1);
+            errorStream(error, true, 1);
     }
     // location KEYWORD CONDITIONS:
     if (content[0].compare(KW_LOCATION) == 0) {
@@ -45,7 +47,7 @@ void     semicolonConditions(std::vector<std::string> content, std::string LINE)
             
         }
         else
-            errorStream(" in0 LINE : " + LINE, true, 1);
+            errorStream(error, true, 1);
     }
         // curly bracket CONDITIONS:
     if ((content[0].compare("{") == 0 || content[0].compare("}") == 0)
@@ -53,10 +55,10 @@ void     semicolonConditions(std::vector<std::string> content, std::string LINE)
         return ;
     else if (content[0].compare("{") == 0
         || content[0].compare("}") == 0)
-        errorStream(" in1 LINE : " + LINE, true, 1);
+        errorStream(error, true, 1);
     // other keywords:
     if (content[content.size() - 1][content[content.size() - 1].length() - 1] != ';') {
-        errorStream(" in2 LINE : " + LINE, true, 1);
+        errorStream(error, true, 1);
     }
 }
 
