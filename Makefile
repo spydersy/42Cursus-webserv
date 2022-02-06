@@ -6,7 +6,7 @@
 #    By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/02 21:33:12 by abelarif          #+#    #+#              #
-#    Updated: 2022/02/06 17:07:48 by abelarif         ###   ########.fr        #
+#    Updated: 2022/02/06 22:28:24 by abelarif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,7 @@ NAME=   webserv
 PARSING_SRCS=	./srcs/confParsing/confParsing.cpp\
 				./srcs/confParsing/isEmptyLine.cpp\
 				./srcs/confParsing/positionHandler.cpp\
+				./srcs/confParsing/fileHandlerUtils.cpp\
 
 UTILS_SRCS=		./srcs/utils/errorStream.cpp\
 

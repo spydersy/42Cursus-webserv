@@ -6,23 +6,14 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 16:34:11 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 21:51:27 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/06 22:31:03 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/webserv.hpp"
 
-void skipSpaces(std::string FILE, std::string::iterator &it)
-{
-    while (it < FILE.end()) {
-        if (*it != ' ' && *it != '\t') {
-            return ;
-        }
-        it++;
-    }
-}
-
-void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI)
+void    OUT_Position(std::string &FILE, std::string::iterator &it,
+                    std::vector<ServConfig> &vect, int *whereAmI)
 {
     (void)vect;
     skipSpaces(FILE, it);
@@ -42,12 +33,14 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<S
         else {
             errorStream("File : Syntax Error", true, 1);
         }
-        std::cout << "DBG CONTENT : [" << std::endl;
-        while (it != FILE.end()) {
-            std::cout << *it;
-            it++;
+        nextChar(FILE, it);
+        if (it >= FILE.end()) {
+            *whereAmI = EOF;
+            return ;
         }
-        std::cout << "]" << std::endl;
+        while () {
+            
+        }
     }
 }
 

@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 18:01:04 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/06 22:27:13 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,15 +61,17 @@ int     webserv(int argc, char **argv);
 // second Argument: bool variable (if EXIT_FLAG is set to true => the program exit with value) (else => Do nothing).
 // third Argument: exit value.
 void    errorStream(std::string description, bool EXIT_FLAG, int value);
+
 /*
 ** PARSING FUNCTIONS:
 */
-// main function (PARSING CONFIGFILE):
 std::vector<ServConfig>     confParsing(std::string configFILE);
 void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
 // void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
 // void    LOCATION_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
 // void    CGI_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
 bool    isEmptyLine(std::string LINE);
+void    skipSpaces(std::string FILE, std::string::iterator &it);
+void    nextChar(std::string FILE, std::string::iterator &it);
 
 #endif
