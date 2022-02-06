@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 19:57:42 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/03 21:13:19 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/06 14:29:38 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ private:
     int                         _client_body_buffer_size;
     std::vector<std::string>    _index;
     int                         _location_level;
-    Location*                   _nested;
 public:
     Location() : _methods(0), _client_body_buffer_size(0), _location_level(1) {
         std::cout << "Location Constructor Called" << std::endl;

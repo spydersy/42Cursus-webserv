@@ -6,19 +6,24 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 22:41:01 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/04 22:43:09 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/06 14:32:31 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/webserv.hpp"
 
-bool    isEmptyLine(std::string line)
+bool    isEmptyLine(std::string LINE)
 {
-    int     i = -1;
-    if (line.length() == 0)
-        return 1;
-    while (line[++i])
-        if (line[i] != ' ' && line[i] != '\t')
-            return (false);
+    int i = -1;
+    
+    if (LINE.length() == 0)
+        return true;
+    while (LINE[++i])
+    {
+        if (LINE[i] == '\t')
+            LINE[i] = ' ';
+        if (LINE[i] != ' ' && LINE[i] != '\t')
+            return false;
+    }
     return true;
 }

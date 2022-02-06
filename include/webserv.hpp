@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/05 15:07:41 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/06 17:31:57 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,11 @@ void    errorStream(std::string description, bool EXIT_FLAG, int value);
 ** PARSING FUNCTIONS:
 */
 // main function (PARSING CONFIGFILE):
-std::vector<ServConfig>    confParsing(std::string configFILE);
-bool    isEmptyLine(std::string line);
+std::vector<ServConfig>     confParsing(std::string configFILE);
+void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
+// void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
+// void    LOCATION_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
+// void    CGI_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
+bool    isEmptyLine(std::string LINE);
 
 #endif

@@ -6,25 +6,26 @@
 #    By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/02 21:33:12 by abelarif          #+#    #+#              #
-#    Updated: 2022/02/05 15:07:46 by abelarif         ###   ########.fr        #
+#    Updated: 2022/02/06 17:07:48 by abelarif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME=   webserv
 
 PARSING_SRCS=	./srcs/confParsing/confParsing.cpp\
-		./srcs/confParsing/isEmptyLine.cpp\
+				./srcs/confParsing/isEmptyLine.cpp\
+				./srcs/confParsing/positionHandler.cpp\
 
 UTILS_SRCS=		./srcs/utils/errorStream.cpp\
 
-SRCS=   webserv.cpp\
-		main.cpp\
-		$(PARSING_SRCS)\
-		$(UTILS_SRCS)\
+SRCS=   		webserv.cpp\
+				main.cpp\
+				$(PARSING_SRCS)\
+				$(UTILS_SRCS)\
 
 OBJS=   $(SRCS:.cpp=.o)
 
-CPPFLAGS=  -Wall -Werror -Wextra -std=c++98 -g3 -fsanitize=address
+CPPFLAGS= -Wall -Werror -Wextra -std=c++98 -g3 -fsanitize=address
 
 $(NAME):	$(OBJS)
 			clang++ $(CPPFLAGS) $(OBJS) -o $(NAME)

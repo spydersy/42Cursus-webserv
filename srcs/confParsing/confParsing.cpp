@@ -6,96 +6,53 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/05 15:22:02 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/06 17:25:28 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/webserv.hpp"
 
-bool    isEMptyLine(std::string LINE)
+#define     OUT         0
+#define     SERVER      1
+#define     LOCATION    2
+#define     CGI         3
+
+std::vector<ServConfig>     getData(std::string FILE)
 {
-    int i = -1;
-    
-    if (LINE.length() == 0)
-        return true;
-    while (LINE[++i])
-    {
-        if (LINE[i] == '\t')
-            LINE[i] = ' ';
-        if (LINE[i] != ' ' && LINE[i] != '\t')
-            return false;
-    }
-    return true;
-}
-void     semicolonConditions(std::vector<std::string> content, std::string LINE)
-{
-    // server KEYWORD CONDITIONS:
-    std::string error;
-    error.append(" in LINE : ").append(LINE);
-    if (content[0].compare(KW_SERVER) == 0) {
-        if (content.size() == 1)
-            return ;
-        else if (content.size() == 2 && content[0].compare("{") == 0)
-            return ;
-        else if (content.size() > 2
-            || (content.size() == 2 && content[0].compare("{")))
-            errorStream(error, true, 1);
-    }
-    // location KEYWORD CONDITIONS:
-    if (content[0].compare(KW_LOCATION) == 0) {
-        if (content.size() == 2 || content.size() == 3) {
+    int                     whereAmI = OUT;
+    std::vector<ServConfig> CONF;
+    std::string::iterator   it = FILE.begin();
+
+    while (it < FILE.end()) {
+        if (whereAmI == OUT) {
+            OUT_Position(FILE, it, CONF, &whereAmI);
+        }
+        else if (whereAmI == SERVER) {
+            // SERVER_Position(FILE, it, CONF, &whereAmI);
             
         }
-        else
-            errorStream(error, true, 1);
+        else if (whereAmI == LOCATION) {
+            // LOCATION_Position(FILE, it, CONF, &whereAmI);
+            
+        }
+        else if (whereAmI == CGI) {
+            // CGI_Position(FILE, it, CONF, &whereAmI);
+            
+        }
     }
-        // curly bracket CONDITIONS:
-    if ((content[0].compare("{") == 0 || content[0].compare("}") == 0)
-        && content.size() == 1)
-        return ;
-    else if (content[0].compare("{") == 0
-        || content[0].compare("}") == 0)
-        errorStream(error, true, 1);
-    // other keywords:
-    if (content[content.size() - 1][content[content.size() - 1].length() - 1] != ';') {
-        errorStream(error, true, 1);
-    }
-}
-
-void    semicolonChecker(std::string LINE)
-{
-    std::vector<std::string>    content;
-    std::string                 buffer;
-
-    std::istringstream f(LINE);
-    while (getline(f, buffer, ' ')) {
-        content.push_back(buffer);
-    }
-    semicolonConditions(content, LINE);
-}
-
-void    lineChecker(std::string LINE)
-{
-    if (isEmptyLine(LINE))
-        return ;
-    semicolonChecker(LINE);
+    return CONF;
 }
 
 std::vector<ServConfig>     getServersData(std::ifstream &FILE)
 {
     std::string                 LINE;
     std::string                 FILEINLINE;
-    std::vector<bool>           opened;
-    std::vector<bool>           closed;
-    std::vector<ServConfig>     Servers;
     
     while (getline (FILE, LINE)) {
-        lineChecker(LINE);
-    if (!isEmptyLine(LINE))
-        FILEINLINE += LINE;
+        if (!isEmptyLine(LINE))
+            FILEINLINE += LINE + "\n";
     }
-    std::cout << FILEINLINE << std::endl;
-    return Servers;
+    return getData(FILEINLINE);
 }
 
 std::vector<ServConfig>   readFile(std::string configFile)
