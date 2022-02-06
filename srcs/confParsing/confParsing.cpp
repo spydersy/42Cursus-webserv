@@ -6,16 +6,13 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 17:25:28 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/06 18:03:32 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/webserv.hpp"
 
-#define     OUT         0
-#define     SERVER      1
-#define     LOCATION    2
-#define     CGI         3
+
 
 std::vector<ServConfig>     getData(std::string FILE)
 {
@@ -26,6 +23,7 @@ std::vector<ServConfig>     getData(std::string FILE)
     while (it < FILE.end()) {
         if (whereAmI == OUT) {
             OUT_Position(FILE, it, CONF, &whereAmI);
+            std::cout << "whereAmI_DBG: " << whereAmI << std::endl;
         }
         else if (whereAmI == SERVER) {
             // SERVER_Position(FILE, it, CONF, &whereAmI);

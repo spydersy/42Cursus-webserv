@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 17:31:57 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/06 18:01:04 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,10 @@
 # define ARGS_ERR       "\nUsage: ./webserv ./CONFIG/FILE/PATH"
 # define FORMAT_ERR     "Format insupported"
 
+#define     OUT         0
+#define     SERVER      1
+#define     LOCATION    2
+#define     CGI         3
 
 /*
 ** DATA STRUCTRS: **************************************************************

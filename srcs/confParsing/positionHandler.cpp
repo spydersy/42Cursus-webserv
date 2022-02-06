@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 16:34:11 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 17:56:41 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/06 21:51:27 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,30 +24,31 @@ void skipSpaces(std::string FILE, std::string::iterator &it)
 
 void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI)
 {
-    std::string::size_type     position;
-
     (void)vect;
     skipSpaces(FILE, it);
     if (it >= FILE.end()) {
         *whereAmI = EOF;
         return ;
     }
-    // FILE.find(KW_SERVER, 6, it - FILE.begin());
-    
-    // if ((position = FILE.find(KW_SERVER, it - FILE.begin(), 6)) != std::string::npos) {
-    //     std::cout << "true : " << position << std::endl;
-    //     exit(21);   
-    // }
-    // else {
-    //     std::cout << "false" << std::endl;
-    // }
-    if ((position = FILE.compare(it - FILE.begin(), 6, KW_SERVER)) == 0) {
-        std::cout << "true" << std::endl;
-        
-    } else {
-        std::cout << "false" << std::endl;
+    if (FILE.compare(it - FILE.begin(), 6, KW_SERVER) == 0) {
+        it+= 6;
+        skipSpaces(FILE, it);
+        if (FILE.compare(it - FILE.begin(), 1, "\n") == 0)
+            it++;
+        if (FILE.compare(it - FILE.begin(), 1, "{") == 0) {
+            *whereAmI = SERVER;
+            it++;
+        }
+        else {
+            errorStream("File : Syntax Error", true, 1);
+        }
+        std::cout << "DBG CONTENT : [" << std::endl;
+        while (it != FILE.end()) {
+            std::cout << *it;
+            it++;
+        }
+        std::cout << "]" << std::endl;
     }
-    exit(0);
 }
 
 void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI)
