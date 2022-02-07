@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 18:08:23 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:23:46 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ std::vector<Server>     getServersData(std::ifstream &FILE)
         if (!isEmptyLine(LINE))
             FILEINLINE += LINE + "\n";
     }
-    std::cout << "DBG01: **************************" << std::endl;
     return getData(FILEINLINE);
 }
 
@@ -73,6 +72,5 @@ std::vector<Server>   readFile(std::string configFile)
 
 std::vector<Server>    confParsing(std::string configFILE)
 {
-    std::cout << "DBG00: **************************" << std::endl;
     return (readFile(configFILE));
 }

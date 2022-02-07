@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 18:05:43 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/07 19:03:43 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<S
 bool           isEmptyLine(std::string LINE);
 void           skipSpaces(std::string FILE, std::string::iterator &it);
 void           nextChar(std::string FILE, std::string::iterator &it);
-int            validatedKeyword(std::string FILE, std::string::iterator &it);
+int            validatedKeyword(std::string &FILE, std::string::iterator &it);
+void           fill_server_name(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, int whereAmI);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 18:04:50 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/07 19:56:02 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,14 +80,69 @@ public:
 
 
     //  GETTERS :
-    std::vector<std::string>     get_server_names() { return this->_server_names; }
-    std::string                  get_host() { return this->_host; }
-    int                          get_port() { return this->_port; }
-    std::string                  get_root() { return this->_root; }
-    std::vector<std::string>     get_index() { return this->_index; }
-    std::vector<int>             get_methods() { return this->_methods; }
-    std::vector<Location>        get_location() { return this->_location; }
-    std::vector<CGI>             get_CGI() { return this->_CGI; }
+    std::vector<std::string>     &get_server_names() { return this->_server_names; }
+    std::string                  &get_host() { return this->_host; }
+    int                          &get_port() { return this->_port; }
+    std::string                  &get_root() { return this->_root; }
+    std::vector<std::string>     &get_index() { return this->_index; }
+    std::vector<int>             &get_methods() { return this->_methods; }
+    std::vector<Location>        &get_location() { return this->_location; }
+    std::vector<CGI>             &get_CGI() { return this->_CGI; }
+
+    void    dbgServer()
+    {
+        //  SERVER NAMES:
+        {
+            std::cout << "Server names: -------------------" << std::endl;
+                for (std::vector<std::string>::iterator it = _server_names.begin(); it != _server_names.end(); it++)
+                    std::cout << "[" << *it << "] ";
+                std::cout << std::endl;
+        }
+        //  HOST:
+        {
+            std::cout << "Host: ---------------------------" << std::endl;
+                std::cout << "[" << _host << "] " << std::endl;
+        }
+        //  PORT:
+        {
+            std::cout << "Port: ---------------------------" << std::endl;
+                std::cout << "[" << _port << "] " << std::endl;
+        }
+        //  ROOT:
+        {
+            std::cout << "Root: ---------------------------" << std::endl;
+                std::cout << "[" << _root << "] " << std::endl;
+        }
+        //  INDEX:
+        {
+            std::cout << "Indexs: -------------------------" << std::endl;
+                for (std::vector<std::string>::iterator it = _index.begin(); it != _index.end(); it++)
+                    std::cout << "[" << *it << "] ";
+                std::cout << std::endl;
+        }
+        //  METHODS:
+        {
+            std::cout << "Methods: ------------------------" << std::endl;
+                for (std::vector<int>::iterator it = _methods.begin(); it != _methods.end(); it++) {
+                    
+                    std::cout << "[";
+                    if (*it == METH_DELETE) {
+                        std::cout << "DELETE";
+                    }
+                    else if (*it == METH_GET) {
+                        std::cout << "GET";
+                    }
+                    else if (*it == METH_POST) {
+                        std::cout << "POST";
+                    }
+                    else {
+                        std::cout << "UNKNOWN";
+                    }
+                    std::cout << "] ";
+                }
+                std::cout << std::endl;
+        }
+    }
 
     //  SETTERS :
     // void    set_server_name(std::string server_name) {
@@ -140,7 +195,6 @@ public:
     // void    set_CGI() {
         
     // }
-
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 22:22:37 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 18:05:16 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:41:32 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,12 @@ void    nextChar(std::string FILE, std::string::iterator &it)
     }
 }
 
-int    validatedKeyword(std::string FILE, std::string::iterator &it)
+int    validatedKeyword(std::string &FILE, std::string::iterator &it)
 {
     // is 'server_name' Keyword:
+    std::cout << it - FILE.begin() << " | " << strlen(KW_SERVER_NAME) << " | " << KW_SERVER_NAME << std::endl;
     if (FILE.compare(it - FILE.begin(), strlen(KW_SERVER_NAME), KW_SERVER_NAME) == 0) {
+        std::cout << "END"<< std::endl;
         it += strlen(KW_SERVER_NAME);
         return KW_SERVER_NAME_VALUE;
     }
@@ -74,4 +76,15 @@ int    validatedKeyword(std::string FILE, std::string::iterator &it)
     //     return true;
     // }
     return 0;
+}
+
+void    printServer(std::vector<Server> server)
+{
+    for (std::vector<Server>::iterator   it = server.begin(); it != server.end(); it ++)
+    {
+        std::cout << "************************************" << std::endl;
+        it->dbgServer();
+    }
+
+    
 }

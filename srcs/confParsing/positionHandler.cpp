@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 16:34:11 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 18:06:03 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/07 19:03:59 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it,
             it++;
         if (FILE.compare(it - FILE.begin(), 1, "{") == 0) {
             *whereAmI = POSITION_SERVER;
+            Server  server;
+            vect.push_back(server);
             it++;
         }
         else {
@@ -41,8 +43,10 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it,
         while (it < FILE.end()) {
             switch (validatedKeyword(FILE, it)) {
                 case KW_SERVER_NAME_VALUE:
-                    std::cout << "TRUE00" << std::endl;
+                    fill_server_name(FILE, it, vect, *whereAmI);
                     break ;
+                default:
+                    errorStream("ERRRRRRROOOOORORORORO", true, 1);
             }
         }
     }

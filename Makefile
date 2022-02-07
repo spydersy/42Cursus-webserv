@@ -6,7 +6,7 @@
 #    By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/02 21:33:12 by abelarif          #+#    #+#              #
-#    Updated: 2022/02/07 18:06:38 by abelarif         ###   ########.fr        #
+#    Updated: 2022/02/07 19:05:09 by abelarif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ PARSING_SRCS=	./srcs/confParsing/confParsing.cpp\
 				./srcs/confParsing/isEmptyLine.cpp\
 				./srcs/confParsing/positionHandler.cpp\
 				./srcs/confParsing/fileHandlerUtils.cpp\
+				./srcs/confParsing/fillData.cpp\
 
 UTILS_SRCS=		./srcs/utils/errorStream.cpp\
 
