@@ -14,8 +14,10 @@ class Request {
 		std::string										version;
         std::vector<string_pair>						headers;
 		std::string										body;
-
-
+	public:
+		Request();
+		~Request();
+		void	setRequest(std::string request);
 };
 
 #endif

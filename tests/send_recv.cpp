@@ -7,10 +7,10 @@
 #include <iostream>
 #include <unistd.h>
 
-#define PORT 80
+#define PORT 8080
 
 int main() {
-    int     sockfd, new_sockfd, recv_length, sent_length;
+    int     sockfd, new_sockfd, recv_length, sent_size, size_left = 0;
     struct  sockaddr_in address;
     struct  sockaddr_storage conn_address;
     char    buffer[1024];
@@ -35,8 +35,9 @@ int main() {
         std::cerr << "Listen Failed!" << std::endl;
         exit(EXIT_FAILURE);
     }
+
     while (1) {
-        std::cout << "Waiting for connection on port " << PORT << "..." << std::endl;
+        std::cout << "Waiting for connection on port " << PORT << "..." << std::endl << std::endl;
     
         socklen_t stor_size = sizeof(struct sockaddr_storage);
         new_sockfd = accept(sockfd, (struct sockaddr *)&conn_address, &stor_size);
@@ -45,12 +46,16 @@ int main() {
             exit(EXIT_FAILURE);
         }
 
-        char *str_send = (char *)"HTTP/1.1 200 OK\nServer: Test Server\nContent-Type: text/plain\nContent-Length: 13\n\nHello From Server\n";
-        sent_length = send(new_sockfd, str_send, strlen(str_send), 0);
+        char *str_send = (char *)"HTTP/1.1 200 OK\nServer: Test Server\nContent-Type: text/plain\nContent-Length: 18\n\nHello From Server!\n";
+        sent_size = send(new_sockfd, str_send, strlen(str_send), 0);
+        // while (sent_size < strlen(str_send)) {
+        //     size_left += sent_size;
+        //     sent_size = send(new_sockfd, str_send + size_left, strlen(str_send), 0);
+        // }
         
         recv_length = recv(new_sockfd, &buffer, 1024, 0);
         while (recv_length) {
-            std::cout << "Received " << buffer << std::endl << "Bytes: " << recv_length << std::endl;
+            std::cout << "Received:" << std::endl << buffer << "Bytes: " << recv_length << std::endl;
             recv_length = recv(new_sockfd, &buffer, 1024, 0);
         }
         close(new_sockfd);
