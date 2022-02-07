@@ -48,10 +48,10 @@ int main() {
 
         char *str_send = (char *)"HTTP/1.1 200 OK\nServer: Test Server\nContent-Type: text/plain\nContent-Length: 18\n\nHello From Server!\n";
         sent_size = send(new_sockfd, str_send, strlen(str_send), 0);
-        // while (sent_size < strlen(str_send)) {
-        //     size_left += sent_size;
-        //     sent_size = send(new_sockfd, str_send + size_left, strlen(str_send), 0);
-        // }
+        while (sent_size < strlen(str_send)) {
+            size_left += sent_size;
+            sent_size = send(new_sockfd, str_send + size_left, strlen(str_send), 0);
+        }
         
         recv_length = recv(new_sockfd, &buffer, 1024, 0);
         while (recv_length) {
