@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 18:03:32 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:08:23 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,26 @@
 
 
 
-std::vector<ServConfig>     getData(std::string FILE)
+std::vector<Server>     getData(std::string FILE)
 {
-    int                     whereAmI = OUT;
-    std::vector<ServConfig> CONF;
+    int                     whereAmI = POSITION_OUT;
+    std::vector<Server> CONF;
     std::string::iterator   it = FILE.begin();
 
     while (it < FILE.end()) {
-        if (whereAmI == OUT) {
+        if (whereAmI == POSITION_OUT) {
             OUT_Position(FILE, it, CONF, &whereAmI);
             std::cout << "whereAmI_DBG: " << whereAmI << std::endl;
         }
-        else if (whereAmI == SERVER) {
+        else if (whereAmI == POSITION_SERVER) {
             // SERVER_Position(FILE, it, CONF, &whereAmI);
             
         }
-        else if (whereAmI == LOCATION) {
+        else if (whereAmI == POSITION_LOCATION) {
             // LOCATION_Position(FILE, it, CONF, &whereAmI);
             
         }
-        else if (whereAmI == CGI) {
+        else if (whereAmI == POSITION_CGI) {
             // CGI_Position(FILE, it, CONF, &whereAmI);
             
         }
@@ -41,7 +41,7 @@ std::vector<ServConfig>     getData(std::string FILE)
     return CONF;
 }
 
-std::vector<ServConfig>     getServersData(std::ifstream &FILE)
+std::vector<Server>     getServersData(std::ifstream &FILE)
 {
     std::string                 LINE;
     std::string                 FILEINLINE;
@@ -50,10 +50,11 @@ std::vector<ServConfig>     getServersData(std::ifstream &FILE)
         if (!isEmptyLine(LINE))
             FILEINLINE += LINE + "\n";
     }
+    std::cout << "DBG01: **************************" << std::endl;
     return getData(FILEINLINE);
 }
 
-std::vector<ServConfig>   readFile(std::string configFile)
+std::vector<Server>   readFile(std::string configFile)
 {
     size_t          position;
     
@@ -70,7 +71,8 @@ std::vector<ServConfig>   readFile(std::string configFile)
     return getServersData(FILE);
 }
 
-std::vector<ServConfig>    confParsing(std::string configFILE)
+std::vector<Server>    confParsing(std::string configFILE)
 {
+    std::cout << "DBG00: **************************" << std::endl;
     return (readFile(configFILE));
 }

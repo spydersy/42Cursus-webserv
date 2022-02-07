@@ -6,14 +6,14 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 16:34:11 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 22:31:03 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:06:03 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/webserv.hpp"
 
 void    OUT_Position(std::string &FILE, std::string::iterator &it,
-                    std::vector<ServConfig> &vect, int *whereAmI)
+                    std::vector<Server> &vect, int *whereAmI)
 {
     (void)vect;
     skipSpaces(FILE, it);
@@ -27,7 +27,7 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it,
         if (FILE.compare(it - FILE.begin(), 1, "\n") == 0)
             it++;
         if (FILE.compare(it - FILE.begin(), 1, "{") == 0) {
-            *whereAmI = SERVER;
+            *whereAmI = POSITION_SERVER;
             it++;
         }
         else {
@@ -38,13 +38,17 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it,
             *whereAmI = EOF;
             return ;
         }
-        while () {
-            
+        while (it < FILE.end()) {
+            switch (validatedKeyword(FILE, it)) {
+                case KW_SERVER_NAME_VALUE:
+                    std::cout << "TRUE00" << std::endl;
+                    break ;
+            }
         }
     }
 }
 
-void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI)
+void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI)
 {
     (void)whereAmI;
     (void)vect;
@@ -52,7 +56,7 @@ void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector
     skipSpaces(FILE, it);
     std::cout << *it << std::endl;}
 
-void    LOCATION_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI)
+void    LOCATION_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI)
 {
     (void)whereAmI;
     (void)vect;
@@ -60,7 +64,7 @@ void    LOCATION_Position(std::string FILE, std::string::iterator &it, std::vect
     skipSpaces(FILE, it);
     std::cout << *it << std::endl;}
 
-void    CGI_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI)
+void    CGI_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI)
 {
     (void)whereAmI;
     (void)vect;

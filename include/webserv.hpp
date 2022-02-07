@@ -6,14 +6,14 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 22:27:13 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/07 18:05:43 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 #define WEBSERV_HPP
 
-#include "ServConf.Class.hpp"
+#include "Server.Class.hpp"
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -39,10 +39,10 @@
 # define ARGS_ERR       "\nUsage: ./webserv ./CONFIG/FILE/PATH"
 # define FORMAT_ERR     "Format insupported"
 
-#define     OUT         0
-#define     SERVER      1
-#define     LOCATION    2
-#define     CGI         3
+#define     POSITION_OUT         0
+#define     POSITION_SERVER      1
+#define     POSITION_LOCATION    2
+#define     POSITION_CGI         3
 
 /*
 ** DATA STRUCTRS: **************************************************************
@@ -65,13 +65,14 @@ void    errorStream(std::string description, bool EXIT_FLAG, int value);
 /*
 ** PARSING FUNCTIONS:
 */
-std::vector<ServConfig>     confParsing(std::string configFILE);
-void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
-// void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
-// void    LOCATION_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
-// void    CGI_Position(std::string FILE, std::string::iterator &it, std::vector<ServConfig> &vect, int *whereAmI);
-bool    isEmptyLine(std::string LINE);
-void    skipSpaces(std::string FILE, std::string::iterator &it);
-void    nextChar(std::string FILE, std::string::iterator &it);
+std::vector<Server>     confParsing(std::string configFILE);
+void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI);
+// void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI);
+// void    LOCATION_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI);
+// void    CGI_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI);
+bool           isEmptyLine(std::string LINE);
+void           skipSpaces(std::string FILE, std::string::iterator &it);
+void           nextChar(std::string FILE, std::string::iterator &it);
+int            validatedKeyword(std::string FILE, std::string::iterator &it);
 
 #endif

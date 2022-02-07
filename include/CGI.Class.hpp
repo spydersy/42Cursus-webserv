@@ -1,23 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   use.c                                              :+:      :+:    :+:   */
+/*   CGI.class.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abelarif <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/06 18:03:40 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 18:04:37 by abelarif         ###   ########.fr       */
+/*   Created: 2022/02/07 16:39:45 by abelarif          #+#    #+#             */
+/*   Updated: 2022/02/07 16:40:24 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <stdio.h>
+#ifndef CGI_CLLASS_HPP
+#define CGI_CLLASS_HPP
 
-int		main()
+class CGI
 {
-	int	i = 0;
-	while (1) {
-		printf("%d\n", i++);
-	}
-	return (0);
-}
+private:
+    /* data */
+public:
+    CGI(/* args */) {
+        
+    }
+    ~CGI() {
+        
+    }
+};
+
+#endif
