@@ -12,12 +12,20 @@ class Request {
 		std::string										path;
 		std::string										query_string;
 		std::string										version;
+		std::string										host;
+		int												port;
         std::vector<string_pair>						headers;
 		std::string										body;
+
+		// private methods
+		// split request
+		void	splitRequest( std::string request );
 	public:
-		Request();
-		~Request();
-		void	setRequest(std::string request);
+		Request ();
+		Request ( const Request &rqst );
+		~Request ();
+		Request		&operator= ( const Request &rqst );
+		void		setRequest( std::string request );
 };
 
 #endif
