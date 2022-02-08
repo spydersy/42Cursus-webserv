@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 16:34:11 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/08 03:08:36 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 04:21:41 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void    SERVER_Position(std::string &FILE, std::string::iterator &it,
     }
     while (it < FILE.end()) {
         switch (validatedKeyword(FILE, it)) {
+
             case KW_SERVER_NAME_VALUE:                                                  // server_name
                 std::cout << KYEL << "[FILLED : SERVER_NAME]" << KNRM << std::endl;
                 fill_server_name(FILE, it, vect, data);
@@ -64,10 +65,13 @@ void    SERVER_Position(std::string &FILE, std::string::iterator &it,
             case KW_CLOSED_BRACKET:                                                     // }
                 std::cout << KYEL << "[FILLED : CLOSED_BRACKET]" << KNRM << std::endl;
                 setData(FILE, it, vect, data);
+                break ;
             case KW_LOCATION_ROOT_VALUE:                                                // root
                 std::cout << KYEL << "[FILLED : CLOSED_BRACKET]" << KNRM << std::endl;
                 fill_location_root(FILE, it, vect, data);
+                break;
             default:
+                printServer(vect);
                 errorStream("ERRRRRRROOOOORORORORO", true, 1);
         }
     }

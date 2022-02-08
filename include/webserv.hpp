@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/08 03:09:40 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 04:22:30 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,11 @@ int     webserv(int argc, char **argv);
 // third Argument: exit value.
 void    errorStream(std::string description, bool EXIT_FLAG, int value);
 
+
+
+
+void    printServer(std::vector<Server> &server);
+
 /*
 ** PARSING FUNCTIONS:
 */
@@ -79,5 +84,6 @@ void           fill_server_name(std::string &FILE, std::string::iterator &it, st
 void           fill_host_port(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 void           fill_location_root(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 void           setData(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:02:09 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/08 03:20:46 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 04:32:32 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void    fill_server_name(std::string &FILE, std::string::iterator &it, std::vect
 
 void    fill_location_root(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
+    std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << std::endl;
     if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 1);
     if (!(*it == ' ' || *it == '\t'))
@@ -54,20 +55,17 @@ void    fill_location_root(std::string &FILE, std::string::iterator &it, std::ve
     if (*it == '\n')
         errorStream(KW_LISTEN, true, 1);
     if (data.whereAmI == POSITION_SERVER) {
-        if (vect[vect.size() - 1].get_root().compare("") != 0)
+        if (vect.rbegin()->get_root().compare("") != 0)
             errorStream(" root: multiple definition", true, 1);
-        vect[vect.size() - 1].get_root() = getToken(FILE, it);
+        vect.rbegin()->get_root() = getToken(FILE, it);
     }
     if (data.whereAmI == POSITION_LOCATION) {
-        if (vect[vect.size() - 1].get_root().compare("") != 0)
+        if (vect.rbegin()->get_location().rbegin()->get_root().compare("") != 0)
             errorStream(" root: multiple definition", true, 1);
-        vect[vect.size() - 1].get_location(). = getToken(FILE, it);
+        vect.rbegin()->get_location().rbegin()->get_root() = getToken(FILE, it);
     }
-    if (*it == '\n') {
+    if (*it == '\n')
         it++;
-        skipSpaces(FILE, it);
-        return ;
-    }
     skipSpaces(FILE, it);
 }
 
@@ -91,8 +89,10 @@ void    fill_host_port(std::string &FILE, std::string::iterator &it, std::vector
 
 void    setData(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
+
     std::vector<bool>::reverse_iterator rit = data.Bracket.second.rbegin();
 
+    (void)vect;
     while (rit != data.Bracket.second.rend()) {
         if (*rit == false)
             *rit = true;

@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 19:57:42 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/06 14:29:38 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 04:03:14 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,25 @@ class Location
 {
 private:
     std::vector<std::string>    _locations_path;
-    unsigned int                _methods;
+    int                         _methods;
     std::string                 _root;
     int                         _client_body_buffer_size;
     std::vector<std::string>    _index;
-    int                         _location_level;
 public:
-    Location() : _methods(0), _client_body_buffer_size(0), _location_level(1) {
-        std::cout << "Location Constructor Called" << std::endl;
-        if (_methods || _client_body_buffer_size || _location_level) {}
-    }
-    ~Location() {
-        std::cout << "Location Destructor Called" << std::endl;
-    }
+    Location(): _locations_path(std::vector<std::string>()),
+                _methods(0),
+                _root(""),
+                _client_body_buffer_size(0),  
+                _index(std::vector<std::string>()) {}
+    
+    ~Location() {}
+
+    std::vector<std::string>    &get_locations_path() { return this->_locations_path; }
+    int                         &get_methods() { return this->_methods; }
+    std::string                 &get_root() { return this->_root; }
+    int                         &get_client_body_buffer_size() { return this->_client_body_buffer_size; }
+    std::vector<std::string>    &get_index() { return this->_index; }
+
 };
 
 #endif

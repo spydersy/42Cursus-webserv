@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 22:22:37 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/08 02:39:04 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 04:41:22 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,22 @@ void skipSpaces(std::string FILE, std::string::iterator &it)
         }
         it++;
     }
+}
+
+bool    isEmptyLine(std::string LINE)
+{
+    int i = -1;
+    
+    if (LINE.length() == 0)
+        return true;
+    while (LINE[++i])
+    {
+        if (LINE[i] == '\t')
+            LINE[i] = ' ';
+        if (LINE[i] != ' ' && LINE[i] != '\t')
+            return false;
+    }
+    return true;
 }
 
 void    nextChar(std::string FILE, std::string::iterator &it) 
@@ -49,10 +65,15 @@ int    validatedKeyword(std::string &FILE, std::string::iterator &it)
         it += strlen("}");
         return KW_CLOSED_BRACKET;
     }
+    // is "root" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_LOCATION_ROOT), KW_LOCATION_ROOT) == 0) {
+        it += strlen(KW_LOCATION_ROOT);
+        return KW_LOCATION_ROOT_VALUE;
+    }
     return 0;
 }
 
-void    printServer(std::vector<Server> server)
+void    printServer(std::vector<Server> &server)
 {
     for (std::vector<Server>::iterator   it = server.begin(); it != server.end(); it ++)
     {
