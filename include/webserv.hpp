@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 19:03:43 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 03:09:40 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,14 @@
 */
 # define ARGS_ERR       "\nUsage: ./webserv ./CONFIG/FILE/PATH"
 # define FORMAT_ERR     "Format insupported"
-
-#define     POSITION_OUT         0
-#define     POSITION_SERVER      1
-#define     POSITION_LOCATION    2
-#define     POSITION_CGI         3
+# define SYNTAX_ERR     "File : Syntax Error"
+/*
+** ONLY FOR FILE PARSING: ******************************************************
+*/
+# define     POSITION_OUT         0
+# define     POSITION_SERVER      1
+# define     POSITION_LOCATION    2
+# define     POSITION_CGI         3
 
 /*
 ** DATA STRUCTRS: **************************************************************
@@ -66,14 +69,15 @@ void    errorStream(std::string description, bool EXIT_FLAG, int value);
 ** PARSING FUNCTIONS:
 */
 std::vector<Server>     confParsing(std::string configFILE);
-void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI);
-// void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI);
-// void    LOCATION_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI);
-// void    CGI_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI);
+void    OUT_Position(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+void    SERVER_Position(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 bool           isEmptyLine(std::string LINE);
 void           skipSpaces(std::string FILE, std::string::iterator &it);
 void           nextChar(std::string FILE, std::string::iterator &it);
 int            validatedKeyword(std::string &FILE, std::string::iterator &it);
-void           fill_server_name(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, int whereAmI);
+void           fill_server_name(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+void           fill_host_port(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+void           fill_location_root(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+void           setData(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 
 #endif

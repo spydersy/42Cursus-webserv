@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 22:22:37 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 18:41:32 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 02:39:04 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,47 +34,21 @@ void    nextChar(std::string FILE, std::string::iterator &it)
 int    validatedKeyword(std::string &FILE, std::string::iterator &it)
 {
     // is 'server_name' Keyword:
-    std::cout << it - FILE.begin() << " | " << strlen(KW_SERVER_NAME) << " | " << KW_SERVER_NAME << std::endl;
+    std::cout << KYEL << "KYWRD: [" << *(it + 0) << *(it + 1) << *(it + 2) << *(it + 3) << *(it + 4) << *(it + 5) << *(it + 6) << "]" << KNRM << std::endl;
     if (FILE.compare(it - FILE.begin(), strlen(KW_SERVER_NAME), KW_SERVER_NAME) == 0) {
-        std::cout << "END"<< std::endl;
         it += strlen(KW_SERVER_NAME);
         return KW_SERVER_NAME_VALUE;
     }
-    // // is 'error_page' Keyword:
-    // else if (FILE.compare(it - FILE.begin(), strlen(KW_ERR_PAGE), KW_ERR_PAGE) == 0) {
-    //     it += strlen(KW_ERR_PAGE);
-    //     return true;
-    // }
-    // // is 'client_max_body_size' Keyword:
-    // else if (FILE.compare(it - FILE.begin(), strlen(KW_CLIENT_BODY_SIZE), KW_CLIENT_BODY_SIZE) == 0) {
-    //     it += strlen(KW_CLIENT_BODY_SIZE);
-    //     return true;
-    // }
-    // // is 'allow_methods' Keyword:
-    // else if (FILE.compare(it - FILE.begin(), strlen(KW_ACCEPTED_METHOD), KW_ACCEPTED_METHOD) == 0) {
-    //     it += strlen(KW_ACCEPTED_METHOD);
-    //     return true;
-    // }
-    // // is 'autoindex' Keyword:
-    // else if (FILE.compare(it - FILE.begin(), strlen(KW_AUTOINDEX), KW_AUTOINDEX) == 0) {
-    //     it += strlen(KW_AUTOINDEX);
-    //     return true;
-    // }
-    // // is 'index' Keyword:
-    // else if (FILE.compare(it - FILE.begin(), strlen(KW_DEFAULT_FILE), KW_DEFAULT_FILE) == 0) {
-    //     it += strlen(KW_DEFAULT_FILE);
-    //     return true;
-    // }
-    // // is 'location' Keyword:
-    // else if (FILE.compare(it - FILE.begin(), strlen(KW_LOCATION), KW_LOCATION) == 0) {
-    //     it += strlen(KW_LOCATION);
-    //     return true;
-    // }
-    // // is 'root' Keyword:
-    // else if (FILE.compare(it - FILE.begin(), strlen(KW_LOCATION_ROOT), KW_LOCATION_ROOT) == 0) {
-    //     it += strlen(KW_LOCATION_ROOT);
-    //     return true;
-    // }
+    // is 'listen' Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_LISTEN), KW_LISTEN) == 0) {
+        it += strlen(KW_LISTEN);
+        return KW_LISTEN_VALUE;
+    }
+    // is "}" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen("}"), "}") == 0) {
+        it += strlen("}");
+        return KW_CLOSED_BRACKET;
+    }
     return 0;
 }
 
@@ -85,6 +59,4 @@ void    printServer(std::vector<Server> server)
         std::cout << "************************************" << std::endl;
         it->dbgServer();
     }
-
-    
 }

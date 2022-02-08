@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 19:56:02 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 03:15:51 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # define KW_SERVER              "server"
 # define KW_SERVER_NAME         "server_name"           //  Server_name
 # define KW_ERR_PAGE            "error_page"            //  Default error pages
+# define KW_LISTEN              "listen"                //  Listen HOST:PORT
 # define KW_CLIENT_BODY_SIZE    "client_max_body_size"  //  Limit client body size
 # define KW_ACCEPTED_METHOD     "allow_methods"         //  Define a list of accepeted HTTP Methods
 # define KW_AUTOINDEX           "autoindex"             //  Turn on or off directory listing
@@ -38,6 +39,7 @@
 # define KW_LOCATION            "location"              //  Define a directory or a file from where the file should be search
 # define KW_LOCATION_ROOT       "root"                  //  The KW_LOCATION is rooted to KW_LOCATION_ROOT
 
+# define KW_CLOSED_BRACKET            9000
 # define KW_SERVER_VALUE              9001          
 # define KW_SERVER_NAME_VALUE         9002
 # define KW_ERR_PAGE_VALUE            9003
@@ -47,6 +49,17 @@
 # define KW_DEFAULT_FILE_VALUE        9007
 # define KW_LOCATION_VALUE            9008
 # define KW_LOCATION_ROOT_VALUE       9009
+# define KW_LISTEN_VALUE              9010
+
+class ServerData
+{
+public:
+    int                                                 whereAmI;
+    std::pair<std::vector<bool>, std::vector<bool> >    Bracket;    
+
+    ServerData(int POSITION) : whereAmI(POSITION) {}
+    ~ServerData() {}
+};
 
 class Server
 {
@@ -88,6 +101,74 @@ public:
     std::vector<int>             &get_methods() { return this->_methods; }
     std::vector<Location>        &get_location() { return this->_location; }
     std::vector<CGI>             &get_CGI() { return this->_CGI; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     void    dbgServer()
     {
@@ -143,58 +224,6 @@ public:
                 std::cout << std::endl;
         }
     }
-
-    //  SETTERS :
-    // void    set_server_name(std::string server_name) {
-    //     if (validated_server_name(server_name)) {
-    //         _server_names.push_back(server_name);
-    //     }
-    //     else {
-    //         errorStream("Invalid server_name", true, 1);
-    //     }
-    // }
-    // void    set_host(std::string host) {
-    //     if (validated_host(host)) {
-    //         _host = host;
-    //     }
-    //     else {
-    //         errorStream("Invalid host", true, 1);
-    //     }
-    // }
-    // void    set_port(int port) {
-    //     if (validated_port(port)) {
-    //         _port = port;
-    //     }
-    //     else {
-    //         errorStream("Invalid port", true, 1);
-    //     }
-    // }
-    // void    set_root(std::string root) {
-    //     if (validated_root(root)) {
-    //         _root = root;
-    //     }
-    //     else {
-    //         errorStream("Invalid root", true, 1);
-    //     }
-    // }
-    // void    set_index(std::string index) {
-    //     if (validated_index(port)) {
-    //         _port = port;
-    //     }
-    //     else {
-    //         errorStream("Invalid port", true, 1);
-    //     }
-
-    // }
-    // void    set_methods() {
-        
-    // }
-    // void    set_location() {
-        
-    // }
-    // void    set_CGI() {
-        
-    // }
 };
 
 #endif

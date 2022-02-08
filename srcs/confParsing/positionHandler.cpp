@@ -6,19 +6,19 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 16:34:11 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 19:03:59 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 03:08:36 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/webserv.hpp"
 
 void    OUT_Position(std::string &FILE, std::string::iterator &it,
-                    std::vector<Server> &vect, int *whereAmI)
+                    std::vector<Server> &vect, ServerData &data)
 {
     (void)vect;
     skipSpaces(FILE, it);
     if (it >= FILE.end()) {
-        *whereAmI = EOF;
+        data.whereAmI = EOF;
         return ;
     }
     if (FILE.compare(it - FILE.begin(), 6, KW_SERVER) == 0) {
@@ -27,52 +27,48 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it,
         if (FILE.compare(it - FILE.begin(), 1, "\n") == 0)
             it++;
         if (FILE.compare(it - FILE.begin(), 1, "{") == 0) {
-            *whereAmI = POSITION_SERVER;
-            Server  server;
-            vect.push_back(server);
-            it++;
-        }
-        else {
-            errorStream("File : Syntax Error", true, 1);
-        }
-        nextChar(FILE, it);
-        if (it >= FILE.end()) {
-            *whereAmI = EOF;
+            data.whereAmI = POSITION_SERVER;
+            data.Bracket.first.push_back(true);
+            data.Bracket.second.push_back(false);
             return ;
         }
-        while (it < FILE.end()) {
-            switch (validatedKeyword(FILE, it)) {
-                case KW_SERVER_NAME_VALUE:
-                    fill_server_name(FILE, it, vect, *whereAmI);
-                    break ;
-                default:
-                    errorStream("ERRRRRRROOOOORORORORO", true, 1);
-            }
-        }
+        else
+            errorStream(SYNTAX_ERR, true, 1);
     }
+    else
+        errorStream(SYNTAX_ERR, true, 1);
 }
 
-void    SERVER_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI)
+void    SERVER_Position(std::string &FILE, std::string::iterator &it,
+                    std::vector<Server> &vect, ServerData &data)
 {
-    (void)whereAmI;
-    (void)vect;
-    std::cout << *it << std::endl;
-    skipSpaces(FILE, it);
-    std::cout << *it << std::endl;}
+    Server  server;
 
-void    LOCATION_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI)
-{
-    (void)whereAmI;
-    (void)vect;
-    std::cout << *it << std::endl;
-    skipSpaces(FILE, it);
-    std::cout << *it << std::endl;}
-
-void    CGI_Position(std::string FILE, std::string::iterator &it, std::vector<Server> &vect, int *whereAmI)
-{
-    (void)whereAmI;
-    (void)vect;
-    std::cout << *it << std::endl;
-    skipSpaces(FILE, it);
-    std::cout << *it << std::endl;
+    vect.push_back(server);
+    it++;
+    nextChar(FILE, it);
+    if (it >= FILE.end()) {
+        data.whereAmI = EOF;
+        return ;
+    }
+    while (it < FILE.end()) {
+        switch (validatedKeyword(FILE, it)) {
+            case KW_SERVER_NAME_VALUE:                                                  // server_name
+                std::cout << KYEL << "[FILLED : SERVER_NAME]" << KNRM << std::endl;
+                fill_server_name(FILE, it, vect, data);
+                break ;
+            case KW_LISTEN_VALUE:                                                       // listen
+                std::cout << KYEL << "[FILLED : HOST_PORT]" << KNRM << std::endl;
+                fill_host_port(FILE, it, vect, data);
+                break;
+            case KW_CLOSED_BRACKET:                                                     // }
+                std::cout << KYEL << "[FILLED : CLOSED_BRACKET]" << KNRM << std::endl;
+                setData(FILE, it, vect, data);
+            case KW_LOCATION_ROOT_VALUE:                                                // root
+                std::cout << KYEL << "[FILLED : CLOSED_BRACKET]" << KNRM << std::endl;
+                fill_location_root(FILE, it, vect, data);
+            default:
+                errorStream("ERRRRRRROOOOORORORORO", true, 1);
+        }
+    }
 }

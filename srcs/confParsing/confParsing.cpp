@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/07 18:23:46 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/08 01:36:34 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,24 +16,23 @@
 
 std::vector<Server>     getData(std::string FILE)
 {
-    int                     whereAmI = POSITION_OUT;
+    ServerData          data(POSITION_OUT);
     std::vector<Server> CONF;
     std::string::iterator   it = FILE.begin();
 
     while (it < FILE.end()) {
-        if (whereAmI == POSITION_OUT) {
-            OUT_Position(FILE, it, CONF, &whereAmI);
-            std::cout << "whereAmI_DBG: " << whereAmI << std::endl;
+        if (data.whereAmI == POSITION_OUT) {
+            OUT_Position(FILE, it, CONF, data);
         }
-        else if (whereAmI == POSITION_SERVER) {
-            // SERVER_Position(FILE, it, CONF, &whereAmI);
+        else if (data.whereAmI == POSITION_SERVER) {
+            SERVER_Position(FILE, it, CONF, data);
             
         }
-        else if (whereAmI == POSITION_LOCATION) {
+        else if (data.whereAmI == POSITION_LOCATION) {
             // LOCATION_Position(FILE, it, CONF, &whereAmI);
             
         }
-        else if (whereAmI == POSITION_CGI) {
+        else if (data.whereAmI == POSITION_CGI) {
             // CGI_Position(FILE, it, CONF, &whereAmI);
             
         }
