@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 22:22:37 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/08 04:41:22 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/10 01:47:35 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,21 @@ int    validatedKeyword(std::string &FILE, std::string::iterator &it)
     else if (FILE.compare(it - FILE.begin(), strlen(KW_LOCATION_ROOT), KW_LOCATION_ROOT) == 0) {
         it += strlen(KW_LOCATION_ROOT);
         return KW_LOCATION_ROOT_VALUE;
+    }
+    // is "allow_methods" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_ACCEPTED_METHOD), KW_ACCEPTED_METHOD) == 0) {
+        it += strlen(KW_ACCEPTED_METHOD);
+        return KW_ACCEPTED_METHOD_VALUE;
+    }
+    // is "index" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_DEFAULT_FILE), KW_DEFAULT_FILE) == 0) {
+        it += strlen(KW_DEFAULT_FILE);
+        return KW_DEFAULT_FILE_VALUE;
+    }
+    // is "location" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_LOCATION), KW_LOCATION) == 0) {
+        it += strlen(KW_LOCATION);
+        return KW_LOCATION_VALUE;
     }
     return 0;
 }

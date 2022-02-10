@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/08 01:36:34 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/10 02:39:52 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,23 +20,8 @@ std::vector<Server>     getData(std::string FILE)
     std::vector<Server> CONF;
     std::string::iterator   it = FILE.begin();
 
-    while (it < FILE.end()) {
-        if (data.whereAmI == POSITION_OUT) {
-            OUT_Position(FILE, it, CONF, data);
-        }
-        else if (data.whereAmI == POSITION_SERVER) {
-            SERVER_Position(FILE, it, CONF, data);
-            
-        }
-        else if (data.whereAmI == POSITION_LOCATION) {
-            // LOCATION_Position(FILE, it, CONF, &whereAmI);
-            
-        }
-        else if (data.whereAmI == POSITION_CGI) {
-            // CGI_Position(FILE, it, CONF, &whereAmI);
-            
-        }
-    }
+    OUT_Position(FILE, it, CONF, data);
+    SERVER_Position(FILE, it, CONF, data);
     return CONF;
 }
 

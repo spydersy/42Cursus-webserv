@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/08 03:15:51 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/10 01:21:07 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ private:
     int                          _port;
     std::string                  _root;
     std::vector<std::string>     _index;
-    std::vector<int>             _methods;
+    std::vector<std::string>     _methods;
     std::vector<Location>        _location;
     std::vector<CGI>             _CGI;
     
@@ -85,7 +85,7 @@ public:
                         _port(-1),
                         _root(""),
                         _index(std::vector<std::string>()),
-                        _methods(std::vector<int>()),
+                        _methods(std::vector<std::string>()),
                         _location(std::vector<Location>()),
                         _CGI(std::vector<CGI>())
                         { std::cout << "Server Constructor Called :) " << std::endl; }
@@ -98,7 +98,7 @@ public:
     int                          &get_port() { return this->_port; }
     std::string                  &get_root() { return this->_root; }
     std::vector<std::string>     &get_index() { return this->_index; }
-    std::vector<int>             &get_methods() { return this->_methods; }
+    std::vector<std::string>     &get_methods() { return this->_methods; }
     std::vector<Location>        &get_location() { return this->_location; }
     std::vector<CGI>             &get_CGI() { return this->_CGI; }
 
@@ -204,24 +204,10 @@ public:
         //  METHODS:
         {
             std::cout << "Methods: ------------------------" << std::endl;
-                for (std::vector<int>::iterator it = _methods.begin(); it != _methods.end(); it++) {
-                    
-                    std::cout << "[";
-                    if (*it == METH_DELETE) {
-                        std::cout << "DELETE";
-                    }
-                    else if (*it == METH_GET) {
-                        std::cout << "GET";
-                    }
-                    else if (*it == METH_POST) {
-                        std::cout << "POST";
-                    }
-                    else {
-                        std::cout << "UNKNOWN";
-                    }
-                    std::cout << "] ";
+                for (std::vector<std::string>::iterator it = _methods.begin(); it != _methods.end(); it++) {
+                    std::cout << "[" << *it << "] ";
                 }
-                std::cout << std::endl;
+            std::cout << std::endl;
         }
     }
 };

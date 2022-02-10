@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/08 04:22:30 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/10 01:51:01 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,10 @@ void           nextChar(std::string FILE, std::string::iterator &it);
 int            validatedKeyword(std::string &FILE, std::string::iterator &it);
 void           fill_server_name(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 void           fill_host_port(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+void           fill_index(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 void           fill_location_root(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+void           fill_location(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+void           fill_methods(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 void           setData(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 
 
