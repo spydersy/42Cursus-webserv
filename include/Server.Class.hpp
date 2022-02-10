@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/10 01:21:07 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/10 05:26:40 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,72 +104,6 @@ public:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     void    dbgServer()
     {
         //  SERVER NAMES:
@@ -208,6 +142,24 @@ public:
                     std::cout << "[" << *it << "] ";
                 }
             std::cout << std::endl;
+        }
+        //  LOCATIONS:
+        {
+            std::cout << "Locations: ----------------------" << std::endl;
+            for (std::vector<Location>::iterator it = _location.begin(); it != _location.end(); it++) {
+                std::cout << "\tlocations: **********************" << std::endl;
+                std::cout << "\tlocation_Path: [" << it->get_locations_path() << "]" << std::endl;
+                std::cout << "\tmethods: ";
+                std::vector<std::string>::iterator methods_it = it->get_methods().begin();
+                while (methods_it != it->get_methods().end()) {
+                    std::cout << "[" << *methods_it << "] ";
+                    methods_it++;
+                }
+                std::cout << std::endl;
+                // std::cout << "\troot: [" << it->get_root() << "]" << std::endl;
+                // std::cout << "\tclient_buddy_buffer_size: [" << it->get_client_body_buffer_size() << "]" << std::endl;
+                
+            }
         }
     }
 };

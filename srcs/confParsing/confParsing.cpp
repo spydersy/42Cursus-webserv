@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/10 02:39:52 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/10 08:44:55 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ std::vector<Server>     getData(std::string FILE)
 
     OUT_Position(FILE, it, CONF, data);
     SERVER_Position(FILE, it, CONF, data);
+    
+    printServer(CONF);
     return CONF;
 }
 

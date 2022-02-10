@@ -6,7 +6,7 @@
 #    By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/02 21:33:12 by abelarif          #+#    #+#              #
-#    Updated: 2022/02/08 04:39:18 by abelarif         ###   ########.fr        #
+#    Updated: 2022/02/10 08:41:38 by abelarif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ SRCS=   		webserv.cpp\
 
 OBJS=   $(SRCS:.cpp=.o)
 
-CPPFLAGS=  -g3 -Wall -Werror -Wextra -std=c++98 # -fsanitize=address
+CPPFLAGS=  -g3 -Wall -Werror -Wextra -std=c++98 -fsanitize=address
 
 $(NAME):	$(OBJS)
 			clang++ $(CPPFLAGS) $(OBJS) -o $(NAME)
