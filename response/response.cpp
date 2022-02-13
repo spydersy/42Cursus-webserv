@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 07:13:55 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/09 10:19:05 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/13 09:05:18 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void    img_handler(Request rqst, int sock)
 
 }
 
-void    responseHandler(Request rqst, int sock)
+void    responseHandler(Request rqst, int sock, std::vector<Server> CONF)
 {
     std::cout << KGRN << "------------------ START: SESPONSE_HANDLER -------------------" << std::endl;
 

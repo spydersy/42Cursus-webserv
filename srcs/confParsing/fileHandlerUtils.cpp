@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 22:22:37 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/10 08:43:18 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/13 07:33:10 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,16 @@ int    validatedKeyword(std::string &FILE, std::string::iterator &it)
     else if (FILE.compare(it - FILE.begin(), strlen(KW_LOCATION), KW_LOCATION) == 0) {
         it += strlen(KW_LOCATION);
         return KW_LOCATION_VALUE;
+    }
+    // is "autoindex" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_AUTOINDEX), KW_AUTOINDEX) == 0) {
+        it += strlen(KW_AUTOINDEX);
+        return KW_AUTOINDEX_VALUE;
+    }
+    // is "client_max_body_size" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_CLIENT_BODY_SIZE), KW_CLIENT_BODY_SIZE) == 0) {
+        it += strlen(KW_CLIENT_BODY_SIZE);
+        return KW_CLIENT_BODY_SIZE_VALUE;
     }
     return 0;
 }

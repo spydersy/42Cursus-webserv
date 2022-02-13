@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 16:34:11 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/10 05:56:39 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/13 08:10:32 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,9 +106,14 @@ void    SERVER_Position(std::string &FILE, std::string::iterator &it,
             case KW_LOCATION_VALUE:
                 LOCATION_Position(FILE, it, vect, data);
                 break;
+            case KW_AUTOINDEX_VALUE:
+                fill_autoindex(FILE, it, vect, data);
+                break;
+            case KW_CLIENT_BODY_SIZE_VALUE:
+                fill_client_body_size(FILE, it, vect, data);
+                break;
             default:
-                printServer(vect);
-                errorStream("ERRRRRRROOOOORORORORO", true, 1);
+                errorStream("Unknown Keyword", true, 1);
         }
     }
 }

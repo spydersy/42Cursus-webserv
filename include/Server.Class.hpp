@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/10 05:26:40 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/13 07:48:55 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ private:
     std::vector<std::string>     _methods;
     std::vector<Location>        _location;
     std::vector<CGI>             _CGI;
-    
+    std::string                  _client_max_body_size;
     // bool    validated_server_name(std::string name) {
     //     if (name) {
     //         // set coonditions to validate server_name ;
@@ -97,6 +97,7 @@ public:
     std::string                  &get_host() { return this->_host; }
     int                          &get_port() { return this->_port; }
     std::string                  &get_root() { return this->_root; }
+    std::string                  &get_client_max_body_size() { return this->_client_max_body_size; }
     std::vector<std::string>     &get_index() { return this->_index; }
     std::vector<std::string>     &get_methods() { return this->_methods; }
     std::vector<Location>        &get_location() { return this->_location; }
@@ -128,6 +129,11 @@ public:
             std::cout << "Root: ---------------------------" << std::endl;
                 std::cout << "[" << _root << "] " << std::endl;
         }
+        //  CLIENT_MAX_BODY_SIZE:
+        {
+            std::cout << "Client_max_body_size: ---------------------------" << std::endl;
+                std::cout << "[" << _client_max_body_size << "] " << std::endl;
+        }
         //  INDEX:
         {
             std::cout << "Indexs: -------------------------" << std::endl;
@@ -149,6 +155,8 @@ public:
             for (std::vector<Location>::iterator it = _location.begin(); it != _location.end(); it++) {
                 std::cout << "\tlocations: **********************" << std::endl;
                 std::cout << "\tlocation_Path: [" << it->get_locations_path() << "]" << std::endl;
+                std::cout << "\tautoindex: [" << it->get_autoindex() << "]" << std::endl;
+                std::cout << "\tclient_max_body_size: [" << it->get_client_max_body_size() << "]" << std::endl;
                 std::cout << "\tmethods: ";
                 std::vector<std::string>::iterator methods_it = it->get_methods().begin();
                 while (methods_it != it->get_methods().end()) {
@@ -156,9 +164,6 @@ public:
                     methods_it++;
                 }
                 std::cout << std::endl;
-                // std::cout << "\troot: [" << it->get_root() << "]" << std::endl;
-                // std::cout << "\tclient_buddy_buffer_size: [" << it->get_client_body_buffer_size() << "]" << std::endl;
-                
             }
         }
     }

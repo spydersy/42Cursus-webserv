@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:02:09 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/10 05:53:24 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/13 07:43:11 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,54 @@ void    fill_location_root(std::string &FILE, std::string::iterator &it, std::ve
         if (vect.rbegin()->get_location().rbegin()->get_root().compare("") != 0)
             errorStream(" root: multiple definition", true, 1);
         vect.rbegin()->get_location().rbegin()->get_root() = getToken(FILE, it);
+    }
+    skipSpaces(FILE, it);
+    if (*it != '\n')
+        errorStream(SYNTAX_ERR, true, 5);
+    it++;
+    skipSpaces(FILE, it);
+}
+
+void    fill_autoindex(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
+{
+    std::cout << KYEL << "[FILLED : AUTOINDEX]" << KNRM << std::endl;
+    if (data.whereAmI != POSITION_LOCATION)
+        errorStream(SYNTAX_ERR, true, 6);
+    if (!(*it == ' ' || *it == '\t')) {
+        errorStream(KW_AUTOINDEX, true, 1);
+    }
+    skipSpaces(FILE, it);
+    if (*it == '\n')
+        errorStream(KW_AUTOINDEX, true, 1);
+    if (vect.rbegin()->get_location().rbegin()->get_autoindex().length() != 0)
+        errorStream("autoindex : multiple definition", true, 1);
+    vect.rbegin()->get_location().rbegin()->get_autoindex() = getToken(FILE, it);
+    skipSpaces(FILE, it);
+    if (*it != '\n')
+        errorStream(SYNTAX_ERR, true, 8);
+    it++;
+    skipSpaces(FILE, it);
+}
+
+void    fill_client_body_size(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
+{
+    std::cout << KYEL << "[FILLED : CLIENT_BODY_SIZE]" << KNRM << std::endl;
+    if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
+        errorStream(SYNTAX_ERR, true, 4);
+    if (!(*it == ' ' || *it == '\t'))
+        errorStream(KW_CLIENT_BODY_SIZE, true, 1);
+    skipSpaces(FILE, it);
+    if (*it == '\n')
+        errorStream(KW_CLIENT_BODY_SIZE, true, 1);
+    if (data.whereAmI == POSITION_SERVER) {
+        if (vect.rbegin()->get_client_max_body_size().compare("") != 0)
+            errorStream(" client_max_body_size: multiple definition", true, 1);
+        vect.rbegin()->get_client_max_body_size() = getToken(FILE, it);
+    }
+    if (data.whereAmI == POSITION_LOCATION) {
+        if (vect.rbegin()->get_location().rbegin()->get_client_max_body_size().compare("") != 0)
+            errorStream(" client_body_size: multiple definition", true, 1);
+        vect.rbegin()->get_location().rbegin()->get_client_max_body_size() = getToken(FILE, it);
     }
     skipSpaces(FILE, it);
     if (*it != '\n')

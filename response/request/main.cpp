@@ -1,8 +1,9 @@
 // #include "Request.hpp"
 // #include "Utils.hpp"
 #include "../response.hpp"
+#include "../../include/webserv.hpp"
 
-void requestHandler(std::string rqstLine, int sock)
+void requestHandler(std::string rqstLine, int sock, std::vector<Server> CONF)
 {
     std::cout << KBLU << "------------------ START: REQUEST_HANDLER -------------------" << std::endl;
     Request rqst;
@@ -31,5 +32,5 @@ void requestHandler(std::string rqstLine, int sock)
 		std::cout << *it << std::endl;
 	}
     std::cout << "------------------   END: REQUEST_HANDLER -------------------" << KNRM << std::endl;
-    responseHandler(rqst, sock);
+    responseHandler(rqst, sock, CONF);
 }

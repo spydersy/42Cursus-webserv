@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/10 03:22:18 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/13 07:34:13 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,10 @@ void                    fill_index(std::string &FILE, std::string::iterator &it,
 void                    fill_location_root(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 void                    fill_location(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 void                    fill_methods(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+void                    fill_autoindex(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 void                    setData(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
+void                    fill_client_body_size(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 std::string             getPath(std::string &FILE, std::string::iterator &it);
 std::vector<Server>     confParsing(std::string configFILE);
-
 
 #endif
