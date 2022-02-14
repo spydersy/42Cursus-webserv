@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/13 07:34:13 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/14 04:51:15 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,13 @@
 #include <sstream>
 #include <string>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#include "../srcs/request/Request.hpp"
+#include "../srcs/request/Utils.hpp"
+#include "./MimeTypes.Class.hpp"
 
 /*
 ** COLORS DEFINITION: **********************************************************
@@ -90,5 +97,25 @@ void                    setData(std::string &FILE, std::string::iterator &it, st
 void                    fill_client_body_size(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data);
 std::string             getPath(std::string &FILE, std::string::iterator &it);
 std::vector<Server>     confParsing(std::string configFILE);
+
+/*
+** SERVER FUNCTIONS:
+*/
+void    server(std::vector<Server> CONF);
+
+/*
+** REQUEST FUNCTIONS:
+*/
+void    requestHandler(std::vector<Server> CONF, std::string buffer, int socketFD);
+
+/*
+** RESPONSE FUNCTIONS:
+*/
+void    responseHandler(std::vector<Server> CONF, Request rqst, int socketFD);
+
+/*
+** GLOBAL VARIABLES: ***********************************************************
+*/
+
 
 #endif

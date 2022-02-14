@@ -5,24 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/09 07:15:53 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/09 07:58:11 by abelarif         ###   ########.fr       */
+/*   Created: 2022/02/13 09:14:10 by abelarif          #+#    #+#             */
+/*   Updated: 2022/02/13 22:15:20 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "response.hpp"
+#include "../../include/webserv.hpp"
+#define PORT 8081
 
-
-#define PORT 8080
-
-// Server side C program to demonstrate HTTP Server programming
-void    server(void)
+void    server(std::vector<Server> CONF)
 {
     int server_fd, new_socket; long valread;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
     
-    // Only this line has been changed. Everything is same.
     
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -51,16 +47,17 @@ void    server(void)
     }
     while(1)
     {
-        printf("\n+++++++ Waiting for new connection ++++++++\n\n");
+        std::cout << KBLU << "\n+++++++ Waiting for new connection ++++++++\n\n" << KNRM << std::endl;
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
         {
             perror("In accept");
             exit(EXIT_FAILURE);
         }
+        
         char buffer[30000] = {0};
         valread = read( new_socket , buffer, 30000);
-        requestHandler(buffer, new_socket);
-        printf("------------------ Connection : DONE -------------------");
+        requestHandler(CONF, buffer, new_socket);
+        std::cout << KBLU << "\n+++++++            DONE            ++++++++\n\n" << KNRM << std::endl;
         close(new_socket);
     }
 }

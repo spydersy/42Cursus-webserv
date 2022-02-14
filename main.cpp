@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 15:54:12 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/02 21:42:24 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/13 09:30:12 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,11 @@
 
 int     main(int argc, char *argv[])
 {
-    return(webserv(argc, argv));
+    if (argc > 2)
+        errorStream(ARGS_ERR, true, 1);
+    else if (argc == 1)
+        confParsing(DFLTCONF);
+    else
+        confParsing(argv[1]);
+    return (0);
 }
