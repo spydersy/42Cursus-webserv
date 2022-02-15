@@ -23,7 +23,7 @@ Request	&Request::operator= ( const Request &rqst ) {
 }
 
 void	Request::setRequest(std::string &request) {
-	
+	(void)request;
 }
 
 void		Request::setMethod ( std::string &firstLine ) {
@@ -58,7 +58,7 @@ void		Request::setPath ( std::string &firstLine ) {
 }
 
 void		Request::setQuery ( std::string &firstLine ) {
-
+	if (firstLine.length()){}
 }
 
 void		Request::setVersion ( std::string &firstLine ) {
@@ -92,7 +92,7 @@ void		Request::setPort ( std::string  portString ) {
 }
 
 void		Request::setHeaders ( std::vector<std::string> &headers ) {
-
+	(void)headers;
 }
 
 void		Request::setRequestfile ( std::string filename ) {
