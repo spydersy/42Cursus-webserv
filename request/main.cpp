@@ -2,28 +2,29 @@
 #include "Utils.hpp"
 
 int main() {
-    Request rqst;
-    std::vector< std::string > parts;
-    std::vector< std::string > headers;
-    std::vector< std::string > body;
-    std::string rqstLine = "GET / HTTP/1.1\nHost: localhost:8080\nConnection: keep-alive\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:94.0) Gecko/20100101 Firefox/94.0\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8\nAccept-Language: en-US,en;q=0.5\nAccept-Encoding: gzip, deflate\nUpgrade-Insecure-Requests: 1\nSec-Fetch-Dest: document\nSec-Fetch-Mode: navigate\nSec-Fetch-Site: none\nSec-Fetch-User: ?1\n\n{\n\"name\": \"LACH\",\n\"surname\": \"amine\"\n}\n";
-    parts = StringSplit(rqstLine, "\n");
-    rqst.setMethod(parts[0]);
-    rqst.setPath(parts[0]);
-    rqst.setVersion(parts[0]);
-    std::cout << "Method: " << rqst.getMethod() << ", Host: " << rqst.getHost() << ", Port: " << rqst.getPort() << ", Path: " << rqst.getPath() << ", Version: " << rqst.getVersion() << std::endl;
-    parts.erase(parts.begin());
-    std::vector<std::string>::iterator it;
-    for ( it = parts.begin(); it != parts.end(); it++) {
-        if ((*it).find(":") != std::string::npos) {
-            headers.push_back(*it);
-            continue;
-        }
-        break ;
-    }
+	Request rqst;
+	std::vector< std::string >	parts;
+	std::ofstream				bodyFile("request_1Body.txt", std::ofstream::out);
+	std::ifstream				requestFile("request_2.txt", std::ifstream::in);
+	std::string					rqstLine;
+	getline(requestFile, rqstLine);
+	std::cout << rqstLine << std::endl;
+	rqst.setMethod(rqstLine);
+	rqst.setPath(rqstLine);
+	rqst.setVersion(rqstLine);
 
-    for (std::vector< std::string >::iterator it = headers.begin(); it != headers.end(); it++) {
-		std::cout << *it << std::endl;
+	while (getline(requestFile, rqstLine)) {
+		if (rqstLine == "\r") {
+			std::cout << "end of headers" << std::endl;
+			break ;
+		}
+		else {
+			rqst.addHeader(rqstLine);
+		}
 	}
-    return (0);
+	while (getline(requestFile, rqstLine)) {
+		bodyFile << rqstLine << std::endl;
+	}
+	rqst.setBodyfile("request_1Body.txt");
+	return (0);
 }
