@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:02:09 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/13 07:43:11 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/18 17:01:45 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ std::string     getPath(std::string &FILE, std::string::iterator &it)
 
 void    fill_server_name(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    std::cout << KYEL << "[FILLED : SERVER_NAME]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : SERVER_NAME]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER)
         errorStream(SYNTAX_ERR, true, 1);
     if (!(*it == ' ' || *it == '\t'))
@@ -67,7 +67,7 @@ void    fill_server_name(std::string &FILE, std::string::iterator &it, std::vect
 
 void    fill_methods(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    std::cout << KYEL << "[FILLED : ALLOWED_METHODS]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : ALLOWED_METHODS]" << KNRM << std::endl;
 
     // std::cout << KGRN << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << KNRM << std::endl;
     // std::cout << "Size: " << (vect.rbegin()->get_location().rbegin()->get_methods()).size() << std::endl;
@@ -101,7 +101,7 @@ void    fill_methods(std::string &FILE, std::string::iterator &it, std::vector<S
 
 void    fill_index(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    std::cout << KYEL << "[FILLED : INDEX]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : INDEX]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 3);
     if (!(*it == ' ' || *it == '\t'))
@@ -125,7 +125,7 @@ void    fill_index(std::string &FILE, std::string::iterator &it, std::vector<Ser
 
 void    fill_location_root(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    std::cout << KYEL << "[FILLED : ROOT]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : ROOT]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 4);
     if (!(*it == ' ' || *it == '\t'))
@@ -152,7 +152,7 @@ void    fill_location_root(std::string &FILE, std::string::iterator &it, std::ve
 
 void    fill_autoindex(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    std::cout << KYEL << "[FILLED : AUTOINDEX]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : AUTOINDEX]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 6);
     if (!(*it == ' ' || *it == '\t')) {
@@ -173,7 +173,7 @@ void    fill_autoindex(std::string &FILE, std::string::iterator &it, std::vector
 
 void    fill_client_body_size(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    std::cout << KYEL << "[FILLED : CLIENT_BODY_SIZE]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : CLIENT_BODY_SIZE]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 4);
     if (!(*it == ' ' || *it == '\t'))
@@ -200,7 +200,7 @@ void    fill_client_body_size(std::string &FILE, std::string::iterator &it, std:
 
 void    fill_host_port(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    std::cout << KYEL << "[FILLED : HOST_PORT]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : HOST_PORT]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER)
         errorStream(SYNTAX_ERR, true, 6);
     if (!(*it == ' ' || *it == '\t')) {
@@ -225,12 +225,12 @@ void    fill_location(std::string &FILE, std::string::iterator &it, std::vector<
     (void)it;
     (void)vect;
     (void)data;
-    std::cout << KYEL << "[FILLED : LOCATION]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : LOCATION]" << KNRM << std::endl;
 }
 
 void    setData(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    std::cout << KYEL << "[FILLED : CLOSED_BRACKET]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : CLOSED_BRACKET]" << KNRM << std::endl;
     
     std::vector<bool>::reverse_iterator rit = data.Bracket.second.rbegin();
     (void)vect;

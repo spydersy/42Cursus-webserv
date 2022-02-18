@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 16:34:11 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/18 16:48:38 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/18 17:03:11 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it,
                     std::vector<Server> &vect, ServerData &data)
 {
     Server server;
-    std::cout << "OUT POS : ********************************************" << std::endl;
+    // std::cout << "OUT POS : ********************************************" << std::endl;
     if (data.whereAmI != POSITION_OUT) {
         errorStream(SYNTAX_ERR, true, 1);
     }
@@ -30,7 +30,7 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it,
         }
         firstTime = 0;
     }
-    std::cout <<  "DBG SERVER KW : [" << *(it + 0) << *(it + 1)<< *(it + 2)<< *(it + 3)<< *(it + 4)<< *(it + 5) << "]" << std::endl;
+    // std::cout <<  "DBG SERVER KW : [" << *(it + 0) << *(it + 1)<< *(it + 2)<< *(it + 3)<< *(it + 4)<< *(it + 5) << "]" << std::endl;
     if (FILE.compare(it - FILE.begin(), 6, KW_SERVER) == 0) {
         it+= 6;
         skipSpaces(FILE, it);
@@ -56,7 +56,7 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it,
 void    LOCATION_Position(std::string &FILE, std::string::iterator &it,
                     std::vector<Server> &vect, ServerData &data)
 {
-    std::cout << KYEL << "[FILLED : LOCATION]" << KNRM << std::endl;
+    // std::cout << KYEL << "[FILLED : LOCATION]" << KNRM << std::endl;
     Location    location;
     if (data.whereAmI != POSITION_SERVER)
         errorStream(SYNTAX_ERR, true, 12);
@@ -82,7 +82,7 @@ void    LOCATION_Position(std::string &FILE, std::string::iterator &it,
         nextChar(FILE, it);
     }
     vect.rbegin()->get_location().push_back(location);
-    std::cout << "DONE"<< std::endl;
+    // std::cout << "DONE"<< std::endl;
 }
 
 void    SERVER_Position(std::string &FILE, std::string::iterator &it,

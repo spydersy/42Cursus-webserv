@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/13 07:48:55 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/18 17:03:57 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,10 +87,8 @@ public:
                         _index(std::vector<std::string>()),
                         _methods(std::vector<std::string>()),
                         _location(std::vector<Location>()),
-                        _CGI(std::vector<CGI>())
-                        { std::cout << "Server Constructor Called :) " << std::endl; }
-    ~Server(){ std::cout << "Server Destructor Called :') " << std::endl;}
-
+                        _CGI(std::vector<CGI>()){}
+    ~Server(){}
 
     //  GETTERS :
     std::vector<std::string>     &get_server_names() { return this->_server_names; }
