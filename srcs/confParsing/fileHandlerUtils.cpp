@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 22:22:37 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/13 07:33:10 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/16 02:35:26 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,17 @@ void    nextChar(std::string FILE, std::string::iterator &it)
 
 int    validatedKeyword(std::string &FILE, std::string::iterator &it)
 {
+    std::cout << "Keyword Checker : [" << *(it + 0) << *(it + 1) << *(it + 2) << *(it + 3)  << "]" << std::endl;
+
     // is 'server_name' Keyword:
     if (FILE.compare(it - FILE.begin(), strlen(KW_SERVER_NAME), KW_SERVER_NAME) == 0) {
         it += strlen(KW_SERVER_NAME);
         return KW_SERVER_NAME_VALUE;
+    }
+    // is 'server' Keyword:
+    if (FILE.compare(it - FILE.begin(), strlen(KW_SERVER), KW_SERVER) == 0) {
+        // it += strlen(KW_SERVER);
+        return KW_SERVER_VALUE;
     }
     // is 'listen' Keyword:
     else if (FILE.compare(it - FILE.begin(), strlen(KW_LISTEN), KW_LISTEN) == 0) {

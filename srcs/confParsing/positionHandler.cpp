@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 16:34:11 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/13 08:10:32 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/18 16:48:38 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,22 @@
 void    OUT_Position(std::string &FILE, std::string::iterator &it,
                     std::vector<Server> &vect, ServerData &data)
 {
-    (void)vect;
-    skipSpaces(FILE, it);
-    if (it >= FILE.end()) {
-        data.whereAmI = EOF;
-        return ;
+    Server server;
+    std::cout << "OUT POS : ********************************************" << std::endl;
+    if (data.whereAmI != POSITION_OUT) {
+        errorStream(SYNTAX_ERR, true, 1);
     }
+    static int firstTime = 1;
+    if (firstTime == 1) {
+        (void)vect;
+        skipSpaces(FILE, it);
+        if (it >= FILE.end()) {
+            data.whereAmI = EOF;
+            return ;
+        }
+        firstTime = 0;
+    }
+    std::cout <<  "DBG SERVER KW : [" << *(it + 0) << *(it + 1)<< *(it + 2)<< *(it + 3)<< *(it + 4)<< *(it + 5) << "]" << std::endl;
     if (FILE.compare(it - FILE.begin(), 6, KW_SERVER) == 0) {
         it+= 6;
         skipSpaces(FILE, it);
@@ -30,6 +40,10 @@ void    OUT_Position(std::string &FILE, std::string::iterator &it,
             data.whereAmI = POSITION_SERVER;
             data.Bracket.first.push_back(true);
             data.Bracket.second.push_back(false);
+            it++;
+            nextChar(FILE, it);
+            skipSpaces(FILE, it);
+            vect.push_back(server);
             return ;
         }
         else
@@ -74,10 +88,7 @@ void    LOCATION_Position(std::string &FILE, std::string::iterator &it,
 void    SERVER_Position(std::string &FILE, std::string::iterator &it,
                     std::vector<Server> &vect, ServerData &data)
 {
-    Server  server;
 
-    vect.push_back(server);
-    it++;
     nextChar(FILE, it);
     if (it >= FILE.end()) {
         data.whereAmI = EOF;
@@ -85,6 +96,9 @@ void    SERVER_Position(std::string &FILE, std::string::iterator &it,
     }
     while (it < FILE.end()) {
         switch (validatedKeyword(FILE, it)) {
+            case KW_SERVER_VALUE:                                                  // server_name
+                OUT_Position(FILE, it, vect, data);
+                break ;
             case KW_SERVER_NAME_VALUE:                                                  // server_name
                 fill_server_name(FILE, it, vect, data);
                 break ;
