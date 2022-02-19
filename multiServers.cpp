@@ -1,7 +1,3 @@
-#include "Request.hpp"
-#include "Utils.hpp"
-#include "../servers/Socket.hpp"
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -13,16 +9,37 @@
 #include <fstream>
 #include <cstdio>
 #include <fcntl.h>
-#define RECV_SIZE 4096
+#include "request/Request.hpp"
+#include "servers/Socket.hpp"
 
-struct RequestParse {
-	std::string	requestLine;
-	std::string	headers;
-};
+#define MAX_SERVERS 10
+#define PORT 8000
 
-void	read_request(int newSockfd) {
+std::string getfilename(std::string str) {
+	static int a = 1;
+	time_t ttime = std::time(0);
+	std::string filename(std::to_string(ttime));
+	filename.insert(filename.length(), std::to_string(a));
+	a++;
+	return (filename);
+}
 
-
+Request	read_request(int &newSockfd) {
+	Request				rqst;
+	int					recvLength = 1024;								// length received in request
+	char				buffer[1024];									// request reading buffer
+	std::string			filename = "/var/tmp/request_" + getfilename("");
+	std::ofstream		rqstFile(filename, std::ofstream::out);
+	std::cout << "Receiving:" << std::endl;
+	while ((recvLength = recv(newSockfd, &buffer, 1024, 0)) == 1024) {
+		buffer[recvLength] = '\0';
+		rqstFile << buffer;
+	}
+	buffer[recvLength] = '\0';
+	rqstFile << buffer;
+	std::cout << filename << "\n";
+	remove(filename.c_str());
+	return rqst;
 }
 
 void	send_simple_response(int &newSockfd)
@@ -31,15 +48,46 @@ void	send_simple_response(int &newSockfd)
 	send(newSockfd, str_send.c_str(), strlen(str_send.c_str()), 0);
 }
 
+std::vector<Socket>		create_multiple_servers()
+{
+	std::vector<Socket>		servers;
+	for (int i = 0; i < MAX_SERVERS; i++)
+	{
+		Socket	serv;
+		
+		// creation of socket
+		if (serv.createSocket() < 0) {
+			std::cerr << "Socket Creation Failed!" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		// initialize address
+		serv.setSocketAddress(PORT + (i * 100));
+
+		if (serv.bindSocket() == -1) {
+			std::cerr << "Bind Failed!" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		// listen on socket
+		if (serv.listenSocket() == -1) {
+			std::cerr << "Listen Failed!" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		servers.push_back(serv);
+	}
+	return servers;
+}
+
 void	handle_request(int newSockfd)
 {
-	read_request(newSockfd);									// read request
+	Request rqst = read_request(newSockfd);						// read request
 	send_simple_response(newSockfd);							// to prevent multi request from mozilla
 	std::cout << "End Reading!" << std::endl;
 	close(newSockfd);
 }
 
-int main() {
+int main () {
 	std::vector<Socket>	servers = create_multiple_servers();
 	int					sockfd;											// server socket FD
 	int					newSockfd;										// new connection FD										// server configuration

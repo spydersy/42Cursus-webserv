@@ -30,16 +30,17 @@ Request	read_request(int &newSockfd) {
 	Request				rqst;
 	int					recvLength = 1024;								// length received in request
 	char				buffer[1024];									// request reading buffer
-	rqst.setRequestfile("/var/tmp/" + getfilename(""));
+	rqst.setRequestfile("/var/tmp/request_" + getfilename(""));
+	std::ofstream		rqstFile(rqst.getRequestfile());
 	// std::ofstream		requestFile(requestFilename, std::ofstream::out);
 	std::cout << "Receiving:" << std::endl;
 	while ((recvLength = recv(newSockfd, &buffer, 1024, 0)) == 1024) {
 		buffer[recvLength] = '\0';
-		rqst.writeToRFile(buffer);
+		rqstFile << buffer;
 	}
 	buffer[recvLength] = '\0';
-	rqst.writeToRFile(buffer);
-	// requestFile << std::endl;
+	rqstFile << buffer;
+	std::cout << rqst.getRequestfile() << "\n";
 	return rqst;
 }
 

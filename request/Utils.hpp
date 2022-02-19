@@ -4,12 +4,11 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "../servers/Socket.hpp"
+#define MAX_SERVERS 1
+#define PORT 8000
 
-// #define HEADERS "Accept,Accept-Charset,Accept-Encoding,Accept-Language,\
-// Authorization,Expect,From,Host,If-Match,If-Modified-Since,\
-// If-None-Match,If-Range,If-Unmodified-Since,Max-Forwards,\
-// Proxy-Authorization,Range,Referer,TE,User-Agent,Connection"
-
-std::vector<std::string>    StringSplit( std::string str, std::string delimiter );
-// bool                        checkHeaders( std::string header );
+std::vector< std::string >		StringSplit( std::string str, std::string delimiter );
+std::vector< Socket >			create_multiple_servers();
+std::string						getfilename( std::string str );
 #endif
