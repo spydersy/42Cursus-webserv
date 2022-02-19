@@ -104,7 +104,8 @@ int     main(int argc, char *argv[])
 		}
 		else {
 			newSockfd = accept(fd, (struct sockaddr *)&connAddress, &stor_size);
-			if (newSockfd < 0) {
+			fcntl(newSockfd, F_SETFL, O_NONBLOCK);
+            if (newSockfd < 0) {
 				std::cerr << "Accepting Connection Failed!" << std::endl;
 				exit(EXIT_FAILURE);
 			}
