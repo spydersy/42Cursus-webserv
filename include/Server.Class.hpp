@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/18 17:03:57 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/19 19:02:04 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,118 +56,139 @@
 class ServerData
 {
 public:
-	int                                                 whereAmI;
-	std::pair<std::vector<bool>, std::vector<bool> >    Bracket;    
+    int                                                 whereAmI;
+    std::pair<std::vector<bool>, std::vector<bool> >    Bracket;    
 
-	ServerData(int POSITION) : whereAmI(POSITION) {}
-	~ServerData() {}
+    ServerData(int POSITION) : whereAmI(POSITION) {}
+    ~ServerData() {}
 };
 
 class Server
 {
 private:
-	std::vector<std::string>     _server_names;
-	std::string                  _host;
-	int                          _port;
-	std::string                  _root;
-	std::vector<std::string>     _index;
-	std::vector<std::string>     _methods;
-	std::vector<Location>        _location;
-	std::vector<CGI>             _CGI;
-	std::string                  _client_max_body_size;
+    std::vector<std::string>     _server_names;
+    std::string                  _host;
+    size_t                       _port;
+    std::string                  _root;
+    std::vector<std::string>     _index;
+    std::vector<std::string>     _methods;
+    std::vector<Location>        _location;
+    std::vector<CGI>             _CGI;
+    std::string                  _client_max_body_size;
 	SocketInfos						socketInfos;
-	// bool    validated_server_name(std::string name) {
-	//     if (name) {
-	//         // set coonditions to validate server_name ;
-	//     }
-	//     return true;
-	// }
+    // bool    validated_server_name(std::string name) {
+    //     if (name) {
+    //         // set coonditions to validate server_name ;
+    //     }
+    //     return true;
+    // }
 public:
-	Server( void ) :    _server_names(std::vector<std::string>()),
-						_host(""),
-						_port(-1),
-						_root(""),
-						_index(std::vector<std::string>()),
-						_methods(std::vector<std::string>()),
-						_location(std::vector<Location>()),
-						_CGI(std::vector<CGI>()){}
-	~Server(){}
+    Server( void ) :    _server_names(std::vector<std::string>()),
+                        _host(""),
+                        _port(std::string::npos),
+                        _root(""),
+                        _index(std::vector<std::string>()),
+                        _methods(std::vector<std::string>()),
+                        _location(std::vector<Location>()),
+                        _CGI(std::vector<CGI>()){}
+    ~Server(){}
 
-	//  GETTERS :
-	std::vector<std::string>     &get_server_names() { return this->_server_names; }
-	std::string                  &get_host() { return this->_host; }
-	int                          &get_port() { return this->_port; }
-	std::string                  &get_root() { return this->_root; }
-	std::string                  &get_client_max_body_size() { return this->_client_max_body_size; }
-	std::vector<std::string>     &get_index() { return this->_index; }
-	std::vector<std::string>     &get_methods() { return this->_methods; }
-	std::vector<Location>        &get_location() { return this->_location; }
-	std::vector<CGI>             &get_CGI() { return this->_CGI; }
-	SocketInfos					&get_socketInfos() { return this->socketInfos; }
+    //  GETTERS :
+    std::vector<std::string>     &get_server_names() { return this->_server_names; }
+    std::string                  &get_host() { return this->_host; }
+    size_t                       &get_port() { return this->_port; }
+    std::string                  &get_root() { return this->_root; }
+    std::string                  &get_client_max_body_size() { return this->_client_max_body_size; }
+    std::vector<std::string>     &get_index() { return this->_index; }
+    std::vector<std::string>     &get_methods() { return this->_methods; }
+    std::vector<Location>        &get_location() { return this->_location; }
+    std::vector<CGI>             &get_CGI() { return this->_CGI; }
+	SocketInfos					 &get_socketInfos() { return this->socketInfos; }
 
+    //  METHODS:
+    bool    setHostPort() {
+        
+        
+        for (std::string ::iterator it = this->_host.begin(); it != this->_host.end(); it++) {
+            if (*it == ':') {
+                int     portIndex = it - this->_host.begin() + 1;
+                while (++it != this->_host.end()) {
+                    if (!( '0' <= *it && *it <= '9')) {
+                        return (false);
+                    }
+                }
+                if (it == _host.end())
+                    return false;
+                this->_port = std::stoi(this->_host.substr(portIndex));
+                this->_host = this->_host.substr(0, portIndex - 1);
+                return true;
+            }
+        }
+        return false;
+    }
 
-	void    dbgServer()
-	{
-		//  SERVER NAMES:
-		{
-			std::cout << "Server names: -------------------" << std::endl;
-				for (std::vector<std::string>::iterator it = _server_names.begin(); it != _server_names.end(); it++)
-					std::cout << "[" << *it << "] ";
-				std::cout << std::endl;
-		}
-		//  HOST:
-		{
-			std::cout << "Host: ---------------------------" << std::endl;
-				std::cout << "[" << _host << "] " << std::endl;
-		}
-		//  PORT:
-		{
-			std::cout << "Port: ---------------------------" << std::endl;
-				std::cout << "[" << _port << "] " << std::endl;
-		}
-		//  ROOT:
-		{
-			std::cout << "Root: ---------------------------" << std::endl;
-				std::cout << "[" << _root << "] " << std::endl;
-		}
-		//  CLIENT_MAX_BODY_SIZE:
-		{
-			std::cout << "Client_max_body_size: ---------------------------" << std::endl;
-				std::cout << "[" << _client_max_body_size << "] " << std::endl;
-		}
-		//  INDEX:
-		{
-			std::cout << "Indexs: -------------------------" << std::endl;
-				for (std::vector<std::string>::iterator it = _index.begin(); it != _index.end(); it++)
-					std::cout << "[" << *it << "] ";
-				std::cout << std::endl;
-		}
-		//  METHODS:
-		{
-			std::cout << "Methods: ------------------------" << std::endl;
-				for (std::vector<std::string>::iterator it = _methods.begin(); it != _methods.end(); it++) {
-					std::cout << "[" << *it << "] ";
-				}
-			std::cout << std::endl;
-		}
-		//  LOCATIONS:
-		{
-			std::cout << "Locations: ----------------------" << std::endl;
-			for (std::vector<Location>::iterator it = _location.begin(); it != _location.end(); it++) {
-				std::cout << "\tlocations: **********************" << std::endl;
-				std::cout << "\tlocation_Path: [" << it->get_locations_path() << "]" << std::endl;
-				std::cout << "\tautoindex: [" << it->get_autoindex() << "]" << std::endl;
-				std::cout << "\tclient_max_body_size: [" << it->get_client_max_body_size() << "]" << std::endl;
-				std::cout << "\tmethods: ";
-				std::vector<std::string>::iterator methods_it = it->get_methods().begin();
-				while (methods_it != it->get_methods().end()) {
-					std::cout << "[" << *methods_it << "] ";
-					methods_it++;
-				}
-				std::cout << std::endl;
-			}
-		}
-	}
+    void    dbgServer()
+    {
+        //  SERVER NAMES:
+        {
+            std::cout << "Server names: -------------------" << std::endl;
+                for (std::vector<std::string>::iterator it = _server_names.begin(); it != _server_names.end(); it++)
+                    std::cout << "[" << *it << "] ";
+                std::cout << std::endl;
+        }
+        //  HOST:
+        {
+            std::cout << "Host: ---------------------------" << std::endl;
+                std::cout << "[" << _host << "] " << std::endl;
+        }
+        //  PORT:
+        {
+            std::cout << "Port: ---------------------------" << std::endl;
+                std::cout << "[" << _port << "] " << std::endl;
+        }
+        //  ROOT:
+        {
+            std::cout << "Root: ---------------------------" << std::endl;
+                std::cout << "[" << _root << "] " << std::endl;
+        }
+        //  CLIENT_MAX_BODY_SIZE:
+        {
+            std::cout << "Client_max_body_size: ---------------------------" << std::endl;
+                std::cout << "[" << _client_max_body_size << "] " << std::endl;
+        }
+        //  INDEX:
+        {
+            std::cout << "Indexs: -------------------------" << std::endl;
+                for (std::vector<std::string>::iterator it = _index.begin(); it != _index.end(); it++)
+                    std::cout << "[" << *it << "] ";
+                std::cout << std::endl;
+        }
+        //  METHODS:
+        {
+            std::cout << "Methods: ------------------------" << std::endl;
+                for (std::vector<std::string>::iterator it = _methods.begin(); it != _methods.end(); it++) {
+                    std::cout << "[" << *it << "] ";
+                }
+            std::cout << std::endl;
+        }
+        //  LOCATIONS:
+        {
+            std::cout << "Locations: ----------------------" << std::endl;
+            for (std::vector<Location>::iterator it = _location.begin(); it != _location.end(); it++) {
+                std::cout << "\tlocations: **********************" << std::endl;
+                std::cout << "\tlocation_Path: [" << it->get_locations_path() << "]" << std::endl;
+                std::cout << "\tautoindex: [" << it->get_autoindex() << "]" << std::endl;
+                std::cout << "\tclient_max_body_size: [" << it->get_client_max_body_size() << "]" << std::endl;
+                std::cout << "\tmethods: ";
+                std::vector<std::string>::iterator methods_it = it->get_methods().begin();
+                while (methods_it != it->get_methods().end()) {
+                    std::cout << "[" << *methods_it << "] ";
+                    methods_it++;
+                }
+                std::cout << std::endl;
+            }
+        }
+    }
 };
 
 #endif

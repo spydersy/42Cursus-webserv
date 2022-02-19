@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/18 17:04:10 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/19 18:17:27 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ std::vector<Server>     getData(std::string FILE)
     OUT_Position(FILE, it, CONF, data);
     SERVER_Position(FILE, it, CONF, data);
     
-    // printServer(CONF);       // to print all servers
-    // server(CONF);            // to create and lunch sockets
+    // printServer(CONF);
+    // errorStream("END", true, 12);
+    // server(CONF);
     return CONF;
 }
 
