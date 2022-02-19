@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:02:09 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/18 17:01:45 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/19 18:56:56 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,6 +217,9 @@ void    fill_host_port(std::string &FILE, std::string::iterator &it, std::vector
         errorStream(SYNTAX_ERR, true, 8);
     it++;
     skipSpaces(FILE, it);
+    if (vect.rbegin()->setHostPort() == false) {
+        errorStream("Warning : Host Port ", false, 0);
+    }
 }
 
 void    fill_location(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)

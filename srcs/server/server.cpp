@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 09:14:10 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/13 22:15:20 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/19 18:08:54 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,9 @@ void    server(std::vector<Server> CONF)
         
         char buffer[30000] = {0};
         valread = read( new_socket , buffer, 30000);
+        if (valread < 0) {
+            std::cerr << "Error read" << std::endl;
+        }
         requestHandler(CONF, buffer, new_socket);
         std::cout << KBLU << "\n+++++++            DONE            ++++++++\n\n" << KNRM << std::endl;
         close(new_socket);

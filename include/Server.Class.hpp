@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/18 17:03:57 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/19 19:02:04 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ class Server
 private:
     std::vector<std::string>     _server_names;
     std::string                  _host;
-    int                          _port;
+    size_t                       _port;
     std::string                  _root;
     std::vector<std::string>     _index;
     std::vector<std::string>     _methods;
@@ -82,7 +82,7 @@ private:
 public:
     Server( void ) :    _server_names(std::vector<std::string>()),
                         _host(""),
-                        _port(-1),
+                        _port(std::string::npos),
                         _root(""),
                         _index(std::vector<std::string>()),
                         _methods(std::vector<std::string>()),
@@ -93,7 +93,7 @@ public:
     //  GETTERS :
     std::vector<std::string>     &get_server_names() { return this->_server_names; }
     std::string                  &get_host() { return this->_host; }
-    int                          &get_port() { return this->_port; }
+    size_t                       &get_port() { return this->_port; }
     std::string                  &get_root() { return this->_root; }
     std::string                  &get_client_max_body_size() { return this->_client_max_body_size; }
     std::vector<std::string>     &get_index() { return this->_index; }
@@ -101,7 +101,27 @@ public:
     std::vector<Location>        &get_location() { return this->_location; }
     std::vector<CGI>             &get_CGI() { return this->_CGI; }
 
-
+    //  METHODS:
+    bool    setHostPort() {
+        
+        
+        for (std::string ::iterator it = this->_host.begin(); it != this->_host.end(); it++) {
+            if (*it == ':') {
+                int     portIndex = it - this->_host.begin() + 1;
+                while (++it != this->_host.end()) {
+                    if (!( '0' <= *it && *it <= '9')) {
+                        return (false);
+                    }
+                }
+                if (it == _host.end())
+                    return false;
+                this->_port = std::stoi(this->_host.substr(portIndex));
+                this->_host = this->_host.substr(0, portIndex - 1);
+                return true;
+            }
+        }
+        return false;
+    }
 
     void    dbgServer()
     {

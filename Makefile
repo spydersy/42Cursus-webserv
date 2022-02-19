@@ -36,7 +36,7 @@ SRCS=   		main.cpp\
 
 OBJS=   $(SRCS:.cpp=.o)
 
-CPPFLAGS=   -std=c++98 -g3 -Wall -Werror -Wextra 
+CPPFLAGS= -fsanitize=address -g3 -Wall -Werror -Wextra 
 
 $(NAME):	$(OBJS)
 			clang++ $(CPPFLAGS) $(OBJS) -o $(NAME)
