@@ -12,7 +12,8 @@
 
 NAME=   webserv
 
-SERVER_SRCS=	./srcs/server/server.cpp\
+SERVER_SRCS=	./servers/servers.cpp\
+				./servers/SocketInfos.cpp
 
 REQUEST_SRCS=	./srcs/request/Request.cpp\
 				./srcs/request/requestHandler.cpp\

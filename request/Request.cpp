@@ -115,27 +115,27 @@ void		Request::setBodyfile ( std::string filename ) {
 
 
 
-std::string		Request::getMethod () {
+std::string		&Request::getMethod () {
 	return this->method;
 }
 
-std::string		Request::getPath () {
+std::string		&Request::getPath () {
 	return this->path;
 }
 
-std::string		Request::getVersion () {
+std::string		&Request::getVersion () {
 	return this->version;
 }
 
-std::string		Request::getHost () {
+std::string		&Request::getHost () {
 	return this->host;
 }
 
-int				Request::getPort () {
+int				&Request::getPort () {
 	return this->port;
 }
 
-std::string		Request::getBodyfile () {
+std::string		&Request::getBodyfile () {
 	return this->bodyfilename;
 }
 

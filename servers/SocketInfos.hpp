@@ -10,13 +10,13 @@
 #include <iostream>
 #include <fcntl.h>
 
-class Socket {
+class SocketInfos {
 	private:
 		int     			socketFd;
 		struct sockaddr_in	socketAddress;
 	public:
-		Socket();
-		~Socket();
+		SocketInfos();
+		~SocketInfos();
 
 		int		createSocket ();
 		void	setSocketAddress ( int port );

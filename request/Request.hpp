@@ -39,14 +39,14 @@ class Request {
 		void											setBodyfile ( std::string filename );
 		
 		// Getters
-		std::string										getMethod ();
-		std::string										getPath ();
-		std::string										getQuery ();
-		std::string										getVersion ();
-		std::string										getHost ();
-		int												getPort ();
-		std::vector<string_pair>						getHeaders ();
-		std::string										getBodyfile ();
+		std::string										&getMethod ();
+		std::string										&getPath ();
+		std::string										&getQuery ();
+		std::string										&getVersion ();
+		std::string										&getHost ();
+		int												&getPort ();
+		std::vector<string_pair>						&getHeaders ();
+		std::string										&getBodyfile ();
 };
 
 #endif

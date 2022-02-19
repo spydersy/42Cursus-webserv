@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <fcntl.h>
 #include "request/Request.hpp"
-#include "servers/Socket.hpp"
+#include "servers/SocketInfos.hpp"
 
 #define MAX_SERVERS 10
 #define PORT 8000
@@ -48,16 +48,16 @@ void	send_simple_response(int &newSockfd)
 	send(newSockfd, str_send.c_str(), strlen(str_send.c_str()), 0);
 }
 
-std::vector<Socket>		create_multiple_servers()
+std::vector<SocketInfos>		create_multiple_servers()
 {
-	std::vector<Socket>		servers;
+	std::vector<SocketInfos>		servers;
 	for (int i = 0; i < MAX_SERVERS; i++)
 	{
-		Socket	serv;
+		SocketInfos	serv;
 		
 		// creation of socket
 		if (serv.createSocket() < 0) {
-			std::cerr << "Socket Creation Failed!" << std::endl;
+			perror("Socket");
 			exit(EXIT_FAILURE);
 		}
 
@@ -65,13 +65,13 @@ std::vector<Socket>		create_multiple_servers()
 		serv.setSocketAddress(PORT + (i * 100));
 
 		if (serv.bindSocket() == -1) {
-			std::cerr << "Bind Failed!" << std::endl;
+			perror("Bind");
 			exit(EXIT_FAILURE);
 		}
 
 		// listen on socket
 		if (serv.listenSocket() == -1) {
-			std::cerr << "Listen Failed!" << std::endl;
+			perror("Listen");
 			exit(EXIT_FAILURE);
 		}
 		servers.push_back(serv);
@@ -88,7 +88,7 @@ void	handle_request(int newSockfd)
 }
 
 int main () {
-	std::vector<Socket>	servers = create_multiple_servers();
+	std::vector<SocketInfos>	servers = create_multiple_servers();
 	int					sockfd;											// server socket FD
 	int					newSockfd;										// new connection FD										// server configuration
 	struct sockaddr_in	connAddress;
@@ -98,7 +98,7 @@ int main () {
 	int maxfd = -1, fd = -1;
 	unsigned int i, status;
 	FD_ZERO(&rfds);
-	for (std::vector<Socket>::iterator it = servers.begin(); it != servers.end(); it++) {
+	for (std::vector<SocketInfos>::iterator it = servers.begin(); it != servers.end(); it++) {
 		FD_SET((*it).getSocketFd(), &rfds);
 		if ((*it).getSocketFd() > maxfd)
 			maxfd = (*it).getSocketFd();

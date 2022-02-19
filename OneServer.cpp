@@ -22,7 +22,7 @@ std::string getfilename(std::string str) {
 void	initialize_address(struct sockaddr_in &address, char *port) {
 	memset((char *)&address, 0, sizeof(address));
 	address.sin_family = AF_UNSPEC;
-	address.sin_addr.s_addr = htonl(INADDR_ANY);
+	address.sin_addr.s_addr = inet_addr("127.0.0.1");
 	address.sin_port = htons(std::stoi(port));
 }
 
@@ -30,8 +30,8 @@ Request	read_request(int &newSockfd) {
 	Request				rqst;
 	int					recvLength = 1024;								// length received in request
 	char				buffer[1024];									// request reading buffer
-	rqst.setRequestfile("/var/tmp/request_" + getfilename(""));
-	std::ofstream		rqstFile(rqst.getRequestfile());
+	std::string			filename = "/var/tmp/request_" + getfilename("");
+	std::ofstream		rqstFile(filename);
 	// std::ofstream		requestFile(requestFilename, std::ofstream::out);
 	std::cout << "Receiving:" << std::endl;
 	while ((recvLength = recv(newSockfd, &buffer, 1024, 0)) == 1024) {
@@ -40,7 +40,7 @@ Request	read_request(int &newSockfd) {
 	}
 	buffer[recvLength] = '\0';
 	rqstFile << buffer;
-	std::cout << rqst.getRequestfile() << "\n";
+	remove(filename.c_str());
 	return rqst;
 }
 

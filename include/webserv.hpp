@@ -98,6 +98,10 @@ void                    fill_client_body_size(std::string &FILE, std::string::it
 std::string             getPath(std::string &FILE, std::string::iterator &it);
 std::vector<Server>     confParsing(std::string configFILE);
 
+// creation of servers
+
+int						create_servers( std::vector< Server > &servers );
+
 /*
 ** SERVER FUNCTIONS:
 */

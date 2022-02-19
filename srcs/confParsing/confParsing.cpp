@@ -24,8 +24,8 @@ std::vector<Server>     getData(std::string FILE)
     OUT_Position(FILE, it, CONF, data);
     SERVER_Position(FILE, it, CONF, data);
     
-    printServer(CONF);
-    server(CONF);
+    // printServer(CONF);       // to print all servers
+    // server(CONF);            // to create and lunch sockets
     return CONF;
 }
 
