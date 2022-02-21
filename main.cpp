@@ -62,55 +62,55 @@ int     main(int argc, char *argv[])
         servers = confParsing(DFLTCONF);
     else
         servers = confParsing(argv[1]);
-    // printServer(servers);       // to print all servers
-    if (create_servers(servers) == -1)            // to create and lunch sockets
-    {
-        std::cout << "Creation of servers Failed!" << std::endl;
-        return (EXIT_FAILURE);
-    }
+    printServer(servers);       // to print all servers
+    // if (create_servers(servers) == -1)            // to create and lunch sockets
+    // {
+    //     std::cout << "Creation of servers Failed!" << std::endl;
+    //     return (EXIT_FAILURE);
+    // }
 
     // crazy s*****t
-	int					newSockfd;										// new connection FD										// server configuration
-	struct sockaddr_in	connAddress;
-	socklen_t stor_size = sizeof(struct sockaddr_in);
+	// int					newSockfd;										// new connection FD										// server configuration
+	// struct sockaddr_in	connAddress;
+	// socklen_t stor_size = sizeof(struct sockaddr_in);
 
-    fd_set	rfds, rset;
-	int maxfd = -1, fd = -1;
-	unsigned int i, status;
-	FD_ZERO(&rfds);
+    // fd_set	rfds, rset;
+	// int maxfd = -1, fd = -1;
+	// unsigned int i, status;
+	// FD_ZERO(&rfds);
 
-    for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
-		FD_SET((*it).get_socketInfos().getSocketFd(), &rfds);
-		if ((*it).get_socketInfos().getSocketFd() > maxfd)
-			maxfd = (*it).get_socketInfos().getSocketFd();
-	}
+    // for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
+	// 	FD_SET((*it).get_socketInfos().getSocketFd(), &rfds);
+	// 	if ((*it).get_socketInfos().getSocketFd() > maxfd)
+	// 		maxfd = (*it).get_socketInfos().getSocketFd();
+	// }
 
-    while (true) {
-		rset = rfds;
-		status = select(maxfd + 1, &rset, NULL, NULL, NULL);
-		if (status < 0) {
-			std::cerr << "Select Failed!" << std::endl;
-			exit(EXIT_FAILURE);
-		}
-		for (i = 0; i < servers.size(); i++) {
-			if (FD_ISSET(servers[i].get_socketInfos().getSocketFd(), &rset)) {
-				fd = servers[i].get_socketInfos().getSocketFd();
-				break ;
-			}
-		}
-		if (fd == -1) {
-			std::cerr << "No Connection Failed!" << std::endl;
-			exit(EXIT_FAILURE);
-		}
-		else {
-			newSockfd = accept(fd, (struct sockaddr *)&connAddress, &stor_size);
-			fcntl(newSockfd, F_SETFL, O_NONBLOCK);
-            if (newSockfd < 0) {
-				std::cerr << "Accepting Connection Failed!" << std::endl;
-				exit(EXIT_FAILURE);
-			}
-			handle_request(newSockfd);
-		}
-	}
+    // while (true) {
+	// 	rset = rfds;
+	// 	status = select(maxfd + 1, &rset, NULL, NULL, NULL);
+	// 	if (status < 0) {
+	// 		std::cerr << "Select Failed!" << std::endl;
+	// 		exit(EXIT_FAILURE);
+	// 	}
+	// 	for (i = 0; i < servers.size(); i++) {
+	// 		if (FD_ISSET(servers[i].get_socketInfos().getSocketFd(), &rset)) {
+	// 			fd = servers[i].get_socketInfos().getSocketFd();
+	// 			break ;
+	// 		}
+	// 	}
+	// 	if (fd == -1) {
+	// 		std::cerr << "No Connection Failed!" << std::endl;
+	// 		exit(EXIT_FAILURE);
+	// 	}
+	// 	else {
+	// 		newSockfd = accept(fd, (struct sockaddr *)&connAddress, &stor_size);
+	// 		fcntl(newSockfd, F_SETFL, O_NONBLOCK);
+    //         if (newSockfd < 0) {
+	// 			std::cerr << "Accepting Connection Failed!" << std::endl;
+	// 			exit(EXIT_FAILURE);
+	// 		}
+	// 		handle_request(newSockfd);
+	// 	}
+	// }
     return (0);
 }
