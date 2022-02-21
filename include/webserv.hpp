@@ -101,6 +101,9 @@ std::vector<Server>     confParsing(std::string configFILE);
 // creation of servers
 
 int						create_servers( std::vector< Server > &servers );
+void                    addFds( std::vector<Server> &servers, fd_set &rfds, int &maxfd );
+void                    handle_all_servers( std::vector<Server> &servers, fd_set &rfds, int &maxfd );
+
 
 /*
 ** SERVER FUNCTIONS:
