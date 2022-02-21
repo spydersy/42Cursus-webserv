@@ -107,22 +107,10 @@ public:
 
     //  METHODS:
     bool    setHostPort() {
-        
-        
-        for (std::string ::iterator it = this->_host.begin(); it != this->_host.end(); it++) {
-            if (*it == ':') {
-                int     portIndex = it - this->_host.begin() + 1;
-                while (++it != this->_host.end()) {
-                    if (!( '0' <= *it && *it <= '9')) {
-                        return (false);
-                    }
-                }
-                if (it == _host.end())
-                    return false;
-                this->_port = std::stoi(this->_host.substr(portIndex));
-                this->_host = this->_host.substr(0, portIndex - 1);
-                return true;
-            }
+        if (this->_host.find(":") != std::string::npos) {
+            this->_port = std::stoi(this->_host.substr(this->_host.find(":") + 1));
+            this->_host = this->_host.substr(0, this->_host.find(":"));
+            return true;
         }
         return false;
     }

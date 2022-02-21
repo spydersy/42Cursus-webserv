@@ -13,7 +13,7 @@ int     create_servers( std::vector< Server > &servers ) {
         // set Socket Address
         (*it).get_socketInfos().setSocketAddress((*it).get_port());
 
-        if (find(bound.begin(), bound.end(), (*it).get_port()) != bound.end()) {
+        if (find(bound.begin(), bound.end(), (*it).get_port()) == bound.end()) {
             // Bind Socket if not already bound
             if((*it).get_socketInfos().bindSocket() == -1) {
                 perror("Bind");
