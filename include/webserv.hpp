@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/14 04:51:15 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/23 15:27:18 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #include "../srcs/request/Request.hpp"
 #include "../srcs/request/Utils.hpp"
 #include "./MimeTypes.Class.hpp"
+#include "./Response.Class.hpp"
 
 /*
 ** COLORS DEFINITION: **********************************************************

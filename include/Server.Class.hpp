@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/19 19:02:04 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/23 17:47:27 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,20 +105,20 @@ public:
     bool    setHostPort() {
         
         
-        for (std::string ::iterator it = this->_host.begin(); it != this->_host.end(); it++) {
+        for (std::string::iterator it = this->_host.begin(); it != this->_host.end(); it++) {
             if (*it == ':') {
                 int     portIndex = it - this->_host.begin() + 1;
-                while (++it != this->_host.end()) {
-                    if (!( '0' <= *it && *it <= '9')) {
+                while (++it != this->_host.end())
+                    if (!( '0' <= *it && *it <= '9'))
                         return (false);
-                    }
-                }
-                if (it == _host.end())
+                if (this->_host.begin() + portIndex == this->_host.end())
                     return false;
                 this->_port = std::stoi(this->_host.substr(portIndex));
                 this->_host = this->_host.substr(0, portIndex - 1);
                 return true;
             }
+            if (it == _host.end())
+                return false;
         }
         return false;
     }

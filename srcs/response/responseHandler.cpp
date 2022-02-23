@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 09:35:59 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/14 05:08:13 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/23 21:49:05 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,9 @@
 #include "../request/Request.hpp"
 #include "../request/Utils.hpp"
 
-std::string root;
+#include <fcntl.h>
 
-void    setHttpVersion(std::string &response)
-{
-    response.append("HTTP/1.1 ");
-}
+std::string root;
 
 void    setHttpStatus(std::string &response, std::vector<Server> CONF, Request rqst)
 {
@@ -54,20 +51,16 @@ void    setHttpStatus(std::string &response, std::vector<Server> CONF, Request r
 
 void    responseHandler(std::vector<Server> CONF, Request rqst, int socketFD)
 {
+    if (socketFD) {}
     std::cout << KGRN << "----------------------- RES_HANDLER -----------------------" << KNRM << std::endl;
 
-    // root = "/Users/abelarif/Desktop/42Cursus-webserv/root/errorsPages";
-    MimeTypes   mm(rqst, CONF);
+    Response    response(rqst, CONF);
     
-    if (mm.badExtension())
-        std::cout << "BAD EX DBG" << std::endl;
+    response.setHttpVersion();
+    response.setHttpStatus();
     
-    std::pair<std::string, std::string> mmtype = mm.get_mimetype();
-    
-    std::cout << "DBG FIRST : " << mmtype.first << " | DBG SECOND : " << mmtype.second << std::endl;
-    std::string response;// = "HTTP/1.1 200 OK\nContent-Type: "; // text/plain\nContent-Length: 12\n\nHello world!";
-    setHttpVersion(response);
-    setHttpStatus(response, CONF, rqst);
-    write(socketFD, response.c_str(), response.length());
     std::cout << KGRN << "----------------------- RES_HANDLER : END -----------------------" << KNRM << std::endl;
 }
+
+    static char ngx_http_error_404_page[] =
+    "<html> \r\n<head><title>404 Not Found</title></head> \r\n<body> \r\n<center><h1>404 Not Found</h1></center> \r\n";
