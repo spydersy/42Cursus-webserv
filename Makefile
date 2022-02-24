@@ -13,11 +13,12 @@
 NAME=   webserv
 
 SERVER_SRCS=	./servers/servers.cpp\
-				./servers/SocketInfos.cpp
+				./servers/SocketInfos.cpp\
 
 REQUEST_SRCS=	./srcs/request/Request.cpp\
 				./srcs/request/requestHandler.cpp\
 				./srcs/request/Utils.cpp\
+				./srcs/request/RequestLexer.cpp\
 
 RESPONSE_SRCS=	./srcs/response/responseHandler.cpp\
 
@@ -37,12 +38,16 @@ SRCS=   		main.cpp\
 
 OBJS=   $(SRCS:.cpp=.o)
 
-CPPFLAGS=   -std=c++98 -g3 -Wall -Werror -Wextra 
+CPPFLAGS =   -std=c++98 -Wall -Werror -Wextra
+DEBUG =		 -std=c++98 -g3 -Wall -Werror -Wextra 
 
 $(NAME):	$(OBJS)
-			clang++ $(CPPFLAGS) $(OBJS) -o $(NAME)
+		clang++ $(CPPFLAGS) $(OBJS) -o $(NAME)
 
 all: $(NAME)
+
+debug:
+	clang++ $(DEBUG) $(OBJS) -o $(NAME)
 
 clean:
 	rm -rf $(OBJS)

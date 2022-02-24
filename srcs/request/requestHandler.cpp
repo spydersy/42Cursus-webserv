@@ -25,7 +25,7 @@ void    requestHandler(std::vector<Server> CONF, std::string buffer, int socketF
     std::vector< std::string > body;
     parts = StringSplit(buffer, "\n");
     rqst.setMethod(parts[0]);
-    rqst.setPath(parts[0]);
+    // rqst.setPath(parts[0]);
     rqst.setVersion(parts[0]);
     std::cout << "Method: " << rqst.getMethod() << ", Host: " << rqst.getHost() << ", Port: " << rqst.getPort() << ", Path: " << rqst.getPath() << ", Version: " << rqst.getVersion() << std::endl;
     parts.erase(parts.begin());

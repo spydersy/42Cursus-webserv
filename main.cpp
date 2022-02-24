@@ -37,7 +37,7 @@ int     main(int argc, char *argv[])
 	int maxfd = -1;
 
     // add all sockets to rfds to feed to select
-    addFds(servers, rfds, maxfd);
+    add_servers(servers, rfds, maxfd);
 
     /* select allows a program to monitor multiple file descriptors,
        waiting until one or more of the file descriptors become "ready"

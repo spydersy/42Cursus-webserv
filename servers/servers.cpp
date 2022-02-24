@@ -1,5 +1,4 @@
-#include "../include/webserv.hpp"
-#include "SocketInfos.hpp"
+#include "servers.hpp"
 
 int		create_servers( std::vector< Server > &servers ) {
 	std::vector<int>    bound;
@@ -31,7 +30,7 @@ int		create_servers( std::vector< Server > &servers ) {
 	return (0);
 }
 
-void	addFds( std::vector<Server> &servers, fd_set &rfds, int &maxfd ) {
+void	add_servers( std::vector<Server> &servers, fd_set &rfds, int &maxfd ) {
 	// to remove all file descriptors from the the set rfds
 	FD_ZERO(&rfds);
 
@@ -45,7 +44,32 @@ void	addFds( std::vector<Server> &servers, fd_set &rfds, int &maxfd ) {
 	}
 }
 
-int		ready_fd( std::vector<Server> &servers, fd_set &rset ) {
+void	add_clients( std::vector<int> &clients, fd_set &rset, int &maxfd )
+{
+	for (std::vector<int>::iterator it = clients.begin(); it != clients.end(); it++) {
+		FD_SET((*it), &rset);
+		if ((*it) > maxfd)
+			maxfd = (*it);
+	}
+}
+
+void	accept_connection( std::vector<int> &clients, int &fd )
+{
+	// New Connection configuration
+	struct sockaddr_in	connAddress;
+	socklen_t stor_size = sizeof(struct sockaddr_in);
+
+	int newSockfd = accept(fd, (struct sockaddr *)&connAddress, &stor_size);
+	// protection for accept
+	if (newSockfd < 0) {
+		std::cerr << "Accepting Connection Failed!" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	// fcntl(newSockfd, F_SETFL, O_NONBLOCK);		// check if this is the right place
+	clients.push_back(newSockfd);
+}
+
+int		servers_fd( std::vector<Server> &servers, fd_set &rset ) {
 
 	int fd = -1;
 	// loop over all fds after select said the a fd is ready for read
@@ -59,54 +83,52 @@ int		ready_fd( std::vector<Server> &servers, fd_set &rset ) {
 	return (fd);
 }
 
-std::string getfilename() {
-	static int a = 1;
-	time_t ttime = std::time(0);
-	std::string filename(std::to_string(ttime));
-	filename.insert(filename.length(), std::to_string(a));
-	a++;
-	return (filename);
-}
+void	read_request(int &newSockfd) {
+	RequestLexer	parser;
+	int				recvLength;
 
-// read the request need improvements
-Request	read_request(int &newSockfd) {
-	Request				rqst;
-	int					recvLength = 1024;								// length received in request
-	char				buffer[1024];									// request reading buffer
-	std::string			filename = "/var/tmp/request_" + getfilename();
-	std::ofstream		rqstFile(filename, std::ofstream::out);
-	std::cout << "Receiving:" << std::endl;
-	while ((recvLength = recv(newSockfd, &buffer, 1024, 0)) == 1024) {
-		buffer[recvLength] = '\0';
-		rqstFile << buffer;
+	while ((recvLength = recv(newSockfd, &parser.buffer, RECV_SIZE, MSG_DONTWAIT)) > 0) {
+		parser.buffer[recvLength] = '\0';
+		parser.add_buffer(recvLength);
+		if (parser.getLineSet() == false)
+			parser.check_requestLine();
+		if (parser.getHeadersSet() == false)
+			parser.check_headers();
+		if (parser.getHeadersSet() == true && parser.getLineSet() == true)
+			break ;
 	}
-	buffer[recvLength] = '\0';
-	rqstFile << buffer;
-	std::cout << filename << "\n";
-	// remove(filename.c_str());
-	return rqst;
+	if (parser.getHeaders().find("Content-Length:") != std::string::npos)
+	{
+		parser.read_content_length(newSockfd);
+	}
+	else if (parser.getHeaders().find("Transfer-Encoding:") != std::string::npos){
+		parser.read_chunked(newSockfd);
+	}
+	else {
+		std::cout << "Nothing" << std::endl;
+	}
+	if (parser.getRequestLine() != "" && parser.getHeaders() != "") {
+		std::cout << "Request Line: " << parser.getRequestLine() << std::endl;
+		std::cout << "Headers:\n" << parser.getHeaders() << std::endl;
+	}
+	// sleep(20);
 }
 
-// to send simple ressponse
 void	send_simple_response(int &newSockfd)
 {
 	std::string str_send = "HTTP/1.1 200 OK\nServer: Test Server\nContent-Type: text/plain\nContent-Length: 7\n\nHello!\n";
 	send(newSockfd, str_send.c_str(), strlen(str_send.c_str()), 0);
 }
 
-// handle request and send a simple response
 void	handle_request(int newSockfd)
 {
-	Request rqst = read_request(newSockfd);						// read request
+	read_request(newSockfd);									// read request
 	send_simple_response(newSockfd);							// to prevent multi request from mozilla
-	std::cout << "End Reading!" << std::endl;
 }
 
 void	handle_all_servers( std::vector<Server> &servers, fd_set &rfds, int &maxfd ) {
-	int					newSockfd;										// new connection FD										// server configuration
-	struct sockaddr_in	connAddress;
-	socklen_t stor_size = sizeof(struct sockaddr_in);
-	
+	std::vector<int>	clients;
+
 	// create another set bcs select is destroys the set feeded
 	fd_set	rset;
 	int		fd;
@@ -116,6 +138,8 @@ void	handle_all_servers( std::vector<Server> &servers, fd_set &rfds, int &maxfd 
 		// initialize fd set
 		rset = rfds;
 
+		// add client socket file descriptors to rset
+		add_clients(clients, rset, maxfd);
 		// feed fds to select only for read option
 		status = select(maxfd + 1, &rset, NULL, NULL, NULL);
 		// protection for select
@@ -124,20 +148,20 @@ void	handle_all_servers( std::vector<Server> &servers, fd_set &rfds, int &maxfd 
 			exit(EXIT_FAILURE);
 		}
 		
-		if ((fd = ready_fd(servers, rset)) != -1)
+		if ((fd = servers_fd(servers, rset)) != -1)
 		{
 			// accept connection and create socket for the connection
-			newSockfd = accept(fd, (struct sockaddr *)&connAddress, &stor_size);
-			// protection for accept
-			if (newSockfd < 0) {
-				std::cerr << "Accepting Connection Failed!" << std::endl;
-				exit(EXIT_FAILURE);
+			accept_connection(clients, fd);
+		}
+		for(std::vector<int>::iterator it = clients.begin(); it != clients.end(); it++) {
+			if (FD_ISSET((*it), &rset)) {
+				handle_request((*it));
+				std::vector<int>::iterator tmpIt = it - 1;
+				close((*it));
+				clients.erase(it);
+				it = tmpIt;
+				// break ;
 			}
-			fcntl(newSockfd, F_SETFL, O_NONBLOCK);
-			handle_request(newSockfd);
-
-			// close connection socket after sending a response 
-			close(newSockfd);
 		}
 	}
 }

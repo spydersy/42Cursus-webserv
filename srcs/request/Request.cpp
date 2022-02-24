@@ -16,19 +16,24 @@ Request	&Request::operator= ( const Request &rqst ) {
 	this->host = rqst.host;
 	this->port = rqst.port;
 	this->headers = rqst.headers;
-	// this->body = rqst.body;
+	this->bodyfilename = rqst.bodyfilename;
 	this->error = rqst.error;
 
 	return *this;
 }
 
-void	Request::setRequest(std::string &request) {
-	(void)request;
+void	Request::setHeaders( std::vector< std::string > &headers ) {
+	for (std::vector<std::string>::iterator it = headers.begin(); it != headers.end(); it++) {
+		std::string key = (*it).substr(0, (*it).find(':'));
+		std::string value = (*it).substr((*it).find(':') + 1);
+		this->trimString(value, ' ');
+		this->headers.push_back(std::make_pair(key, value));
+	}
 }
 
 void		Request::setMethod ( std::string &firstLine ) {
 	if (firstLine.find(' ') != std::string::npos) {
-		this->method = firstLine.substr(0, firstLine.find(' '));
+		this->method = this->method = firstLine.substr(0, firstLine.find(' '));;
 		// test for supported methods
 		firstLine.erase(0, firstLine.find(' ') + 1);
 	}
@@ -37,7 +42,7 @@ void		Request::setMethod ( std::string &firstLine ) {
 	}
 }
 
-void		Request::setPath ( std::string &firstLine ) {
+void		Request::setPathFirstLine ( std::string &firstLine ) {
 	if (firstLine.find("http://") != std::string::npos && firstLine.find("http://") == 0) {
 		firstLine.erase(0, 7);
 		std::string	tmpHost = firstLine.substr(0, firstLine.find("/"));
@@ -57,9 +62,13 @@ void		Request::setPath ( std::string &firstLine ) {
 	}
 }
 
-void		Request::setQuery ( std::string &firstLine ) {
-	if (firstLine.length()){}
+void		Request::setPath () {
+	
 }
+
+// void		Request::setQuery ( std::string &firstLine ) {
+
+// }
 
 void		Request::setVersion ( std::string &firstLine ) {
 	if (firstLine.length() > 0) {
@@ -91,43 +100,53 @@ void		Request::setPort ( std::string  portString ) {
 	}
 }
 
-void		Request::setHeaders ( std::vector<std::string> &headers ) {
-	(void)headers;
+void		Request::addHeader ( std::string header ) {
+	std::string key = header.substr(0, header.find(":"));
+	std::string value = header.substr(header.find(":") + 1);
+	this->trimString(value, ' ');
+	this->headers.push_back(std::make_pair(key, value));
 }
 
-void		Request::setRequestfile ( std::string filename ) {
-	this->requestfile.first = filename;
-	this->requestfile.second.open(this->requestfile.first);
+void		Request::setBodyfile ( std::string filename ) {
+	this->bodyfilename = filename;
 }
 
-void		Request::writeToRFile( std::string part ) {
-	this->requestfile.second << part;
-}
 
-std::string		Request::getMethod () {
+
+std::string		&Request::getMethod () {
 	return this->method;
 }
 
-std::string		Request::getPath () {
+std::string		&Request::getPath () {
 	return this->path;
 }
 
-std::string		Request::getVersion () {
+std::string		&Request::getVersion () {
 	return this->version;
 }
 
-std::string		Request::getHost () {
+std::string		&Request::getHost () {
 	return this->host;
 }
 
-int				Request::getPort () {
+int				&Request::getPort () {
 	return this->port;
 }
 
-// std::pair< std::string, std::ofstream & >		Request::getRequestfile () {
-// 	return this->requestfile;
-// }
+std::string		&Request::getBodyfile () {
+	return this->bodyfilename;
+}
 
-// std::vector<std::pair<std::string, std::string> >	Request::splitRequest( std::string request ) {
-	
-// }
+std::string		Request::trimString( std::string str, char c )
+{
+	for (std::string::iterator it = str.begin(); *it == c; it++) {
+        str.erase(it);
+        it = str.begin();
+    }
+    if (*(str.begin()) == c)
+        str.erase(str.begin());
+    for (std::string::iterator it = str.end() - 1; *it == c; it--) {
+        str.erase(it);
+    }
+	return (str);
+}
