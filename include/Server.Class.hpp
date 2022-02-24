@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/23 17:47:27 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/24 16:11:31 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ public:
                 if (this->_host.begin() + portIndex == this->_host.end())
                     return false;
                 this->_port = std::stoi(this->_host.substr(portIndex));
-                this->_host = this->_host.substr(0, portIndex - 1);
+                // this->_host = this->_host.substr(0, portIndex - 1);
                 return true;
             }
             if (it == _host.end())
@@ -175,12 +175,22 @@ public:
                 std::cout << "\tlocation_Path: [" << it->get_locations_path() << "]" << std::endl;
                 std::cout << "\tautoindex: [" << it->get_autoindex() << "]" << std::endl;
                 std::cout << "\tclient_max_body_size: [" << it->get_client_max_body_size() << "]" << std::endl;
+                
                 std::cout << "\tmethods: ";
                 std::vector<std::string>::iterator methods_it = it->get_methods().begin();
                 while (methods_it != it->get_methods().end()) {
                     std::cout << "[" << *methods_it << "] ";
                     methods_it++;
                 }
+                std::cout << std::endl;
+   
+                std::cout << "\tindexs: ";
+                std::vector<std::string>::iterator index_it = it->get_index().begin();
+                while (index_it != it->get_index().end()) {
+                    std::cout << "[" << *index_it << "] ";
+                    index_it++;
+                }
+
                 std::cout << std::endl;
             }
         }

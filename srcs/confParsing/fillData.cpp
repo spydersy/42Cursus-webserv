@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:02:09 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/19 18:56:56 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/24 14:47:31 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,10 @@ void    fill_index(std::string &FILE, std::string::iterator &it, std::vector<Ser
     else if (data.whereAmI == POSITION_LOCATION && vect.rbegin()->get_location().rbegin()->get_index().size() != 0)
         errorStream("index : multiple definition", true, 1);
     while (it < FILE.end() && *it != '\n') {
-        vect.rbegin()->get_index().push_back(getToken(FILE, it));
+        if (data.whereAmI == POSITION_SERVER)
+            vect.rbegin()->get_index().push_back(getToken(FILE, it));
+        else
+            vect.rbegin()->get_location().rbegin()->get_index().push_back(getToken(FILE, it));
         if (*it != '\n')
             skipSpaces(FILE, it);
     }

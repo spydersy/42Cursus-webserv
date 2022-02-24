@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 09:35:59 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/23 21:49:05 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/24 16:12:49 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,5 +62,4 @@ void    responseHandler(std::vector<Server> CONF, Request rqst, int socketFD)
     std::cout << KGRN << "----------------------- RES_HANDLER : END -----------------------" << KNRM << std::endl;
 }
 
-    static char ngx_http_error_404_page[] =
-    "<html> \r\n<head><title>404 Not Found</title></head> \r\n<body> \r\n<center><h1>404 Not Found</h1></center> \r\n";
+    // static char ngx_http_error_404_page[] = "<html> \r\n<head><title>404 Not Found</title></head> \r\n<body> \r\n<center><h1>404 Not Found</h1></center> \r\n";
