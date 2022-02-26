@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 15:17:13 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/24 17:04:32 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/26 18:03:08 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ private:
     std::vector<Server> _server;
     MimeTypes           _MT;
     std::string         _responseBuffer;
-    int                 _serverIndex;
-    int                 _isLocation;
-
+    size_t              _serverIndex;
+    size_t              _isLocation;
+    std::string         _root;
 public:
     /*
     ** Constructors && Destructors :
@@ -33,8 +33,9 @@ public:
                                                         _server(SERV),
                                                         _MT(_request, _server),
                                                         _responseBuffer(""),
-                                                        _serverIndex(-1),
-                                                        _isLocation(0) {
+                                                        _serverIndex(std::string::npos),
+                                                        _isLocation(std::string::npos),
+                                                        _root("") {
         std::cout << "Response Constructor Called :)" << std::endl;
     }
     ~Response(){
@@ -55,9 +56,6 @@ public:
     }
     
     int     getServerIndex() {
-        /*
-        ** For the moment only 1 server is available :)
-        */
         this->_serverIndex = 0;
         return 0;
         /*
@@ -74,19 +72,26 @@ public:
     void    setHttpStatus( void ) {
         std::cout << "getServerIndex : " << getServerIndex() << std::endl;
 
-        for (std::vector<Location>::iterator it = _server[_serverIndex].get_location().begin();
-            it != _server[_serverIndex].get_location().end(); it++) {
-            if (it->get_locations_path().compare(0, it->get_locations_path().length(), _request.getPath()) == 0) {
+        for (std::vector<Location>::iterator it = _server[_serverIndex].get_location().begin(); 
+        it != _server[_serverIndex].get_location().end(); it++) {
+            if (it->get_locations_path().compare(0, it->get_locations_path().length(), _request.getPath().substr(0, it->get_locations_path().length())) == 0) {
                 if (_request.getPath().length() > it->get_locations_path().length()) {
-                    
+                    if (_request.getPath()[it->get_locations_path().length()] == '/') {
+                        _isLocation = it - _server[_serverIndex].get_location().begin();
+                        break ;
+                    }
+                    else
+                        _isLocation = std::string::npos;
                 }
-                std::cout << "IS A LOCATION" << std::endl;
-                _isLocation = 1;
-                break ;
+                else {
+                    _isLocation = it - _server[_serverIndex].get_location().begin();
+                    break ;
+                }
             }
         }
-        std::cout << "IS NOT A LOCATION" << std::endl;
-        
+        _root = ((_isLocation == std::string::npos) ? _server[_serverIndex].get_root() : _server[_serverIndex].get_location()[_isLocation].get_root());
+        std::cout << "LOCATION_DBG : " << _isLocation << std::endl;
+        std::cout << "ROOT_DBG : [" << _root << "]" << std::endl;
         // std::string filePath = _server.begin()->get_root();
         // filePath.append(_request.getPath());
         // std::ifstream   FILE;
