@@ -66,9 +66,12 @@ void		Request::setPath () {
 	
 }
 
-// void		Request::setQuery ( std::string &firstLine ) {
-
-// }
+void		Request::setQuery ( std::string &firstLine ) {
+	if (firstLine.find("?") != std::string::npos) {
+		this->query_string = firstLine.substr(firstLine.find("?"));
+		firstLine.erase(firstLine.find("?"));
+	}
+}
 
 void		Request::setVersion ( std::string &firstLine ) {
 	if (firstLine.length() > 0) {
