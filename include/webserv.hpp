@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/23 15:27:18 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/02/28 15:14:41 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,11 @@
 #include "../srcs/request/Utils.hpp"
 #include "./MimeTypes.Class.hpp"
 #include "./Response.Class.hpp"
+
+/*
+** ALIAS: **********************************************************************
+*/
+#define NPOS std::string::npos
 
 /*
 ** COLORS DEFINITION: **********************************************************
@@ -68,9 +73,6 @@ int     webserv(int argc, char **argv);
 /*
 ** SHARED FUNCTIONS:
 */
-// first Argument : String variable That describe the error.
-// second Argument: bool variable (if EXIT_FLAG is set to true => the program exit with value) (else => Do nothing).
-// third Argument: exit value.
 void    errorStream(std::string description, bool EXIT_FLAG, int value);
 
 

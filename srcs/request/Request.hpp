@@ -43,7 +43,7 @@ class Request {
 		
 		// Getters
 		std::string										getMethod ();
-		std::string										getPath ();
+		std::string										&getPath ();
 		std::string										getQuery ();
 		std::string										getVersion ();
 		std::string										getHost ();

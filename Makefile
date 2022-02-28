@@ -6,7 +6,7 @@
 #    By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/02 21:33:12 by abelarif          #+#    #+#              #
-#    Updated: 2022/02/18 16:42:30 by abelarif         ###   ########.fr        #
+#    Updated: 2022/02/28 15:31:50 by abelarif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,8 @@ REQUEST_SRCS=	./srcs/request/Request.cpp\
 				./srcs/request/requestHandler.cpp\
 				./srcs/request/Utils.cpp\
 
-RESPONSE_SRCS=	./srcs/response/responseHandler.cpp\
+RESPONSE_SRCS=	./srcs/response/Response.Class.cpp\
+				./srcs/response/responseHandler.cpp\
 
 PARSING_SRCS=	./srcs/confParsing/fileHandlerUtils.cpp\
 				./srcs/confParsing/confParsing.cpp\

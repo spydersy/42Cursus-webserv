@@ -108,7 +108,7 @@ std::string		Request::getMethod () {
 	return this->method;
 }
 
-std::string		Request::getPath () {
+std::string		&Request::getPath () {
 	return this->path;
 }
 
