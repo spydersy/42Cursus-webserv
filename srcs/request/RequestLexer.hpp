@@ -4,32 +4,29 @@
 #define RECV_SIZE 4096
 
 class RequestLexer {
-	std::string		_filename;
-	std::string		_requestLine;
-	bool			_lineSet;
-	std::string		_headers;
-	bool			_headersSet;
-	std::ofstream	_rqstFile;
-	size_t			_totalread;
+	std::string				_requestLine;
+	bool					_lineSet;
+	std::string				_headers;
+	bool					_headersSet;
 
 	public:
-		char			buffer[RECV_SIZE + 1];
 		RequestLexer();
 		~RequestLexer();
 
 		// Getters
-		std::string		&getFilename();
 		std::string		&getRequestLine();
 		bool			&getLineSet();
 		std::string		&getHeaders();
 		bool			&getHeadersSet();
-		size_t			&getTotalread();
 
-		void			add_buffer( int &recvLength );
-		void			check_requestLine();
-		void			check_headers();
-		void			read_content_length( int &newSockfd );
-		void			read_chunked( int &newSockfd );
+		// change bool variables state
+		void			setLineSet();
+		void			setHeadersSet();
 };
+
+// std::ostream & operator<<( std::ostream & o, RequestLexer & rqstLexer ) {
+// 	o << "Request Line: " << rqstLexer.getRequestLine() << " Headers:\n" << rqstLexer.getHeaders();
+// 	return o;
+// }
 
 #endif

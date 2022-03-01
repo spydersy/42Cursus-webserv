@@ -50,3 +50,17 @@ std::string randomfilename( std::string str ) {
 	a++;
 	return (filename);
 }
+
+std::string		trimString( std::string str, char c )
+{
+	for (std::string::iterator it = str.begin(); *it == c; it++) {
+        str.erase(it);
+        it = str.begin();
+    }
+    if (*(str.begin()) == c)
+        str.erase(str.begin());
+    for (std::string::iterator it = str.end() - 1; *it == c; it--) {
+        str.erase(it);
+    }
+	return (str);
+}

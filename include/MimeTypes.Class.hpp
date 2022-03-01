@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include "./webserv.hpp"
+#include "../srcs/request/Request.hpp"
 
 class MimeTypes
 {

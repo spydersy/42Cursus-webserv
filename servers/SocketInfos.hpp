@@ -12,7 +12,7 @@
 
 class SocketInfos {
 	private:
-		int     			socketFd;
+		int					socketFd;
 		struct sockaddr_in	socketAddress;
 	public:
 		SocketInfos();

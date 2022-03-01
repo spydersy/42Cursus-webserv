@@ -14,12 +14,14 @@
 #include <unistd.h>
 #include <cstdio>
 #include <fcntl.h>
-#include "../../include/webserv.hpp"
+#include "../../servers/SocketInfos.hpp"
 #define MAX_SERVERS 1
 #define PORT 8000
 
 std::vector< std::string >		StringSplit( std::string str, std::string delimiter );
 std::vector< SocketInfos >		create_multiple_servers();
 std::string						randomfilename( std::string str );
+std::string						trimString( std::string str, char c );
+
 
 #endif

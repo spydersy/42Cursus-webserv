@@ -44,31 +44,6 @@ void	add_servers( std::vector<Server> &servers, fd_set &rfds, int &maxfd ) {
 	}
 }
 
-void	add_clients( std::vector<int> &clients, fd_set &rset, int &maxfd )
-{
-	for (std::vector<int>::iterator it = clients.begin(); it != clients.end(); it++) {
-		FD_SET((*it), &rset);
-		if ((*it) > maxfd)
-			maxfd = (*it);
-	}
-}
-
-void	accept_connection( std::vector<int> &clients, int &fd )
-{
-	// New Connection configuration
-	struct sockaddr_in	connAddress;
-	socklen_t stor_size = sizeof(struct sockaddr_in);
-
-	int newSockfd = accept(fd, (struct sockaddr *)&connAddress, &stor_size);
-	// protection for accept
-	if (newSockfd < 0) {
-		std::cerr << "Accepting Connection Failed!" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	// fcntl(newSockfd, F_SETFL, O_NONBLOCK);		// check if this is the right place
-	clients.push_back(newSockfd);
-}
-
 int		servers_fd( std::vector<Server> &servers, fd_set &rset ) {
 
 	int fd = -1;
@@ -83,35 +58,29 @@ int		servers_fd( std::vector<Server> &servers, fd_set &rset ) {
 	return (fd);
 }
 
-void	read_request(int &newSockfd) {
-	RequestLexer	parser;
-	int				recvLength;
+void	accept_connection( std::vector< std::pair< Client, Request > > &clients, int &fd )
+{
+	// New Connection configuration
+	socklen_t stor_size = sizeof(struct sockaddr_in);
+	Client clt;
+	Request	rqst;
 
-	while ((recvLength = recv(newSockfd, &parser.buffer, RECV_SIZE, MSG_DONTWAIT)) > 0) {
-		parser.buffer[recvLength] = '\0';
-		parser.add_buffer(recvLength);
-		if (parser.getLineSet() == false)
-			parser.check_requestLine();
-		if (parser.getHeadersSet() == false)
-			parser.check_headers();
-		if (parser.getHeadersSet() == true && parser.getLineSet() == true)
-			break ;
+	clt.getClientFd() = accept(fd, (struct sockaddr *)&(clt.getClientAddress()), &stor_size);
+	// protection for accept
+	if (clt.getClientFd() < 0) {
+		std::cerr << "Accepting Connection Failed!" << std::endl;
 	}
-	if (parser.getHeaders().find("Content-Length:") != std::string::npos)
-	{
-		parser.read_content_length(newSockfd);
+	fcntl(clt.getClientFd(), F_SETFL, O_NONBLOCK);		// check if this is the right place
+	clients.push_back(std::make_pair< Client, Request >(clt, rqst));
+}
+
+void	add_clients( std::vector< std::pair< Client, Request > > &clients, fd_set &rset, int &maxfd )
+{
+	for (std::vector< std::pair< Client, Request > >::iterator it = clients.begin(); it != clients.end(); it++) {
+		FD_SET(it->first.getClientFd(), &rset);
+		if (it->first.getClientFd() > maxfd)
+			maxfd = it->first.getClientFd();
 	}
-	else if (parser.getHeaders().find("Transfer-Encoding:") != std::string::npos){
-		parser.read_chunked(newSockfd);
-	}
-	else {
-		std::cout << "Nothing" << std::endl;
-	}
-	if (parser.getRequestLine() != "" && parser.getHeaders() != "") {
-		std::cout << "Request Line: " << parser.getRequestLine() << std::endl;
-		std::cout << "Headers:\n" << parser.getHeaders() << std::endl;
-	}
-	// sleep(20);
 }
 
 void	send_simple_response(int &newSockfd)
@@ -120,47 +89,60 @@ void	send_simple_response(int &newSockfd)
 	send(newSockfd, str_send.c_str(), strlen(str_send.c_str()), 0);
 }
 
-void	handle_request(int newSockfd)
-{
-	read_request(newSockfd);									// read request
-	send_simple_response(newSockfd);							// to prevent multi request from mozilla
-}
-
-void	handle_all_servers( std::vector<Server> &servers, fd_set &rfds, int &maxfd ) {
-	std::vector<int>	clients;
+void	handle_all_servers( std::vector<Server> &servers, fd_set &read_fds, int &maxfd ) {
+	char										buffer[RECV_SIZE + 1];	// buffer for read
+	int											recvLength = 0;
+	std::vector< std::pair< Client, Request > >	read_clients;
+	std::vector< std::pair< Client, Request > >	write_clients;
 
 	// create another set bcs select is destroys the set feeded
-	fd_set	rset;
+	fd_set	backup_rset;
 	int		fd;
 	unsigned int status;
 
 	while (true) {
 		// initialize fd set
-		rset = rfds;
+		backup_rset = read_fds;
 
 		// add client socket file descriptors to rset
-		add_clients(clients, rset, maxfd);
+		add_clients(read_clients, backup_rset, maxfd);
 		// feed fds to select only for read option
-		status = select(maxfd + 1, &rset, NULL, NULL, NULL);
+		status = select(maxfd + 1, &backup_rset, NULL, NULL, NULL);
 		// protection for select
 		if (status < 0) {
 			std::cerr << "Select Failed!" << std::endl;
-			exit(EXIT_FAILURE);
 		}
-		
-		if ((fd = servers_fd(servers, rset)) != -1)
+
+		if ((fd = servers_fd(servers, backup_rset)) != -1)
 		{
 			// accept connection and create socket for the connection
-			accept_connection(clients, fd);
+			accept_connection(read_clients, fd);
 		}
-		for(std::vector<int>::iterator it = clients.begin(); it != clients.end(); it++) {
-			if (FD_ISSET((*it), &rset)) {
-				handle_request((*it));
-				std::vector<int>::iterator tmpIt = it - 1;
-				close((*it));
-				clients.erase(it);
-				it = tmpIt;
-				// break ;
+		for(std::vector< std::pair< Client, Request > >::iterator it = read_clients.begin(); it != read_clients.end(); it++) {
+			if (FD_ISSET(it->first.getClientFd(), &backup_rset)) {
+				// read_request and add it to the propre on
+				memset(buffer, '\0', RECV_SIZE);
+				if ((recvLength = recv(it->first.getClientFd(), buffer, RECV_SIZE, 0)) != -1) {
+					buffer[recvLength] = '\0';
+					// if the request is finished add fd to writing list
+					if (it->second.add_buffer(recvLength, buffer) == true) {
+						it->second.Lexer_to_parser();
+						std::cerr << it->second;
+						write_clients.push_back(std::make_pair(it->first, it->second));
+						std::vector< std::pair< Client, Request > >::iterator tmpIt = it - 1;
+						read_clients.erase(it);
+						it = tmpIt;
+					}
+				}
+			}
+		}
+		for(std::vector< std::pair< Client, Request > >::iterator it = write_clients.begin(); it != write_clients.end(); it++) {
+			if (FD_ISSET(it->first.getClientFd(), &backup_rset)) {
+				// write part from response
+				send_simple_response(it->first.getClientFd());
+				close(it->first.getClientFd());
+				// if the response is finished remove the fd if connection not to keep alive
+				
 			}
 		}
 	}
