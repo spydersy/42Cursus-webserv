@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 15:17:13 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/28 15:23:09 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/01 02:27:29 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 #define RSPONSE_CLASS_HPP
 
 #include "./webserv.hpp"
-
-#define NPOS std::string::npos
 
 class Response
 {
@@ -28,6 +26,7 @@ private:
     size_t              _isLocation;
     std::string         _root;
     std::string         _path;
+    std::string         _method;
 public:
     /*
     ** Constructors && Destructors :
@@ -44,9 +43,11 @@ public:
     /*
     ** METHODS : 
     */
-    void                setHttpVersion( void );
-    int                 getServerIndex();
-    void                setHttpStatus( void );
+    void                                    setHttpVersion( void );
+    int                                     getServerIndex( void );
+    void                                    setHttpStatus( void );
+    size_t                                  isLocation( void );
+    template<typename T>bool                checkMethods( T &conf );
 };
 
 #endif

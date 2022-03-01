@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 09:35:59 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/24 16:12:49 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/01 01:42:55 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void    setHttpStatus(std::string &response, std::vector<Server> CONF, Request r
     FILE.open(filePath);
     if (FILE.is_open()) {
         response.append("200 OK\nContent-Type: ");
-        if (filePath.find(".html") != std::string::npos) {
+        if (filePath.find(".html") != NPOS) {
             response.append("text/html\nContent-Length: ");
         }
         else {
@@ -53,7 +53,6 @@ void    responseHandler(std::vector<Server> CONF, Request rqst, int socketFD)
 {
     if (socketFD) {}
     std::cout << KGRN << "----------------------- RES_HANDLER -----------------------" << KNRM << std::endl;
-
     Response    response(rqst, CONF);
     
     response.setHttpVersion();

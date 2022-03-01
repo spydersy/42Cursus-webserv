@@ -6,13 +6,14 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 19:57:42 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/13 07:45:08 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/01 02:12:54 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_CLASS_HPP
 #define LOCATION_CLASS_HPP
 
+#include "Server.Class.hpp"
 #include <iostream>
 #include <vector>
 
@@ -30,22 +31,17 @@ private:
     std::vector<std::string>    _index;
     std::string                 _autoindex;
 public:
-    Location(): _locations_path(""),
-                _methods(std::vector<std::string>()),
-                _root(""),
-                _client_max_body_size(""),  
-                _index(std::vector<std::string>()),
-                _autoindex("") {}
-    
-    ~Location() {}
+    // CONTRUCTORS & DESTRUCTORS : 
+    Location();
+    ~Location();
 
-    std::string                 &get_locations_path() { return this->_locations_path; }
-    std::vector<std::string>    &get_methods() { return this->_methods; }
-    std::string                 &get_root() { return this->_root; }
-    std::string                 &get_autoindex() { return this->_autoindex; }
-    std::string                 &get_client_max_body_size() { return this->_client_max_body_size; }
-    std::vector<std::string>    &get_index() { return this->_index; }
-
+    // GETTERS : 
+    std::string                 &get_locations_path();
+    std::vector<std::string>    &get_methods();
+    std::string                 &get_root();
+    std::string                 &get_autoindex();
+    std::string                 &get_client_max_body_size();
+    std::vector<std::string>    &get_index();
 };
 
 #endif

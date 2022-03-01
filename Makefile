@@ -6,7 +6,7 @@
 #    By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/02 21:33:12 by abelarif          #+#    #+#              #
-#    Updated: 2022/02/28 15:31:50 by abelarif         ###   ########.fr        #
+#    Updated: 2022/03/01 02:30:13 by abelarif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,8 +25,11 @@ PARSING_SRCS=	./srcs/confParsing/fileHandlerUtils.cpp\
 				./srcs/confParsing/confParsing.cpp\
 				./srcs/confParsing/positionHandler.cpp\
 				./srcs/confParsing/fillData.cpp\
+				./srcs/confParsing/Server.Class.cpp\
+				./srcs/confParsing/Location.Class.cpp\
 
 UTILS_SRCS=		./srcs/utils/errorStream.cpp\
+				./srcs/utils/MimeTypes.Class.cpp\
 
 SRCS=   		main.cpp\
 				$(PARSING_SRCS)\
@@ -37,7 +40,7 @@ SRCS=   		main.cpp\
 
 OBJS=   $(SRCS:.cpp=.o)
 
-CPPFLAGS= -fsanitize=address -g3 -Wall -Werror -Wextra 
+CPPFLAGS=  -Wall -Werror -Wextra -g3 -fsanitize=address
 
 $(NAME):	$(OBJS)
 			clang++ $(CPPFLAGS) $(OBJS) -o $(NAME)

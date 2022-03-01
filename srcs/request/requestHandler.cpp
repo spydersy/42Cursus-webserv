@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 09:24:54 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/13 09:35:20 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/01 01:41:20 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void    requestHandler(std::vector<Server> CONF, std::string buffer, int socketF
     parts.erase(parts.begin());
     std::vector<std::string>::iterator it;
     for ( it = parts.begin(); it != parts.end(); it++) {
-        if ((*it).find(":") != std::string::npos) {
+        if ((*it).find(":") != NPOS) {
             headers.push_back(*it);
             continue;
         }
