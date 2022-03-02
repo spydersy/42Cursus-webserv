@@ -92,22 +92,60 @@ void	add_write_clients( std::vector< std::pair< Client, Request > > &clients, fd
 	}
 }
 
+void	handle_clients_requests( std::vector< std::pair< Client, Request > > &read_clients,
+		std::vector< std::pair< Client, Request > > &write_clients, fd_set &backup_rset) {
+	char										buffer[RECV_SIZE + 1];	// buffer for read
+	int											recvLength = 0;
+	for(std::vector< std::pair< Client, Request > >::iterator it = read_clients.begin(); it != read_clients.end(); it++) {
+		if (FD_ISSET(it->first.getClientFd(), &backup_rset)) {
+			// read_request and add it to the propre on
+			memset(buffer, '\0', RECV_SIZE);
+			if ((recvLength = recv(it->first.getClientFd(), buffer, RECV_SIZE, 0)) != -1) {
+				buffer[recvLength] = '\0';
+				// if the request is finished add fd to writing list
+				if (it->second.add_buffer(recvLength, buffer) == true) {
+					it->second.Lexer_to_parser();
+					// std::cout << it->second;			// printing the request
+					write_clients.push_back(std::make_pair(it->first, it->second));
+					std::vector< std::pair< Client, Request > >::iterator tmpIt = it - 1;
+					read_clients.erase(it);
+					it = tmpIt;
+				}
+			}
+		}
+	}
+}
+
+// just for try
 void	send_simple_response(int &newSockfd)
 {
 	std::string str_send = "HTTP/1.1 200 OK\nServer: Test Server\nContent-Type: text/plain\nContent-Length: 7\n\nHello!\n";
 	send(newSockfd, str_send.c_str(), strlen(str_send.c_str()), 0);
 }
 
+void	handle_clients_responses(std::vector< std::pair< Client, Request > > &write_clients, fd_set &backup_rset)
+{
+	for(std::vector< std::pair< Client, Request > >::iterator it = write_clients.begin(); it != write_clients.end(); it++) {
+		if (FD_ISSET(it->first.getClientFd(), &backup_rset)) {
+			// write part from response
+			send_simple_response(it->first.getClientFd());
+			close(it->first.getClientFd());
+			// if the response is finished remove the fd if connection not to keep alive
+			std::vector< std::pair< Client, Request > >::iterator tmpIt = it - 1;
+			write_clients.erase(it);
+			it = tmpIt;
+		}
+	}
+}
+
 void	handle_all_servers( std::vector<Server> &servers, fd_set &read_fds, fd_set &write_fds, int &maxfd ) {
-	char										buffer[RECV_SIZE + 1];	// buffer for read
-	int											recvLength = 0;
 	std::vector< std::pair< Client, Request > >	read_clients;
 	std::vector< std::pair< Client, Request > >	write_clients;
 
 	// create another set bcs select is destroys the set feeded
 	fd_set	backup_rset, backup_wset;
 	unsigned int status;
-
+	std::cout << "Servers Up..." << std::endl;
 	while (true) {
 		// initialize fd set
 		backup_rset = read_fds;
@@ -129,34 +167,7 @@ void	handle_all_servers( std::vector<Server> &servers, fd_set &read_fds, fd_set 
 				accept_connection(read_clients, it->get_socketInfos().getSocketFd());
 			}
 		}
-		for(std::vector< std::pair< Client, Request > >::iterator it = read_clients.begin(); it != read_clients.end(); it++) {
-			if (FD_ISSET(it->first.getClientFd(), &backup_rset)) {
-				// read_request and add it to the propre on
-				memset(buffer, '\0', RECV_SIZE);
-				if ((recvLength = recv(it->first.getClientFd(), buffer, RECV_SIZE, 0)) != -1) {
-					buffer[recvLength] = '\0';
-					// if the request is finished add fd to writing list
-					if (it->second.add_buffer(recvLength, buffer) == true) {
-						it->second.Lexer_to_parser();
-						std::cout << it->second;
-						write_clients.push_back(std::make_pair(it->first, it->second));
-						std::vector< std::pair< Client, Request > >::iterator tmpIt = it - 1;
-						read_clients.erase(it);
-						it = tmpIt;
-					}
-				}
-			}
-		}
-		for(std::vector< std::pair< Client, Request > >::iterator it = write_clients.begin(); it != write_clients.end(); it++) {
-			if (FD_ISSET(it->first.getClientFd(), &backup_rset)) {
-				// write part from response
-				send_simple_response(it->first.getClientFd());
-				close(it->first.getClientFd());
-				// if the response is finished remove the fd if connection not to keep alive
-				std::vector< std::pair< Client, Request > >::iterator tmpIt = it - 1;
-				write_clients.erase(it);
-				it = tmpIt;
-			}
-		}
+		handle_clients_requests(read_clients, write_clients, backup_rset);
+		handle_clients_responses(write_clients, backup_rset);
 	}
 }
