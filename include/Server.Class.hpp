@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/01 01:32:31 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/01 02:45:20 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ private:
     std::vector<Location>        _location;
     std::vector<CGI>             _CGI;
     std::string                  _client_max_body_size;
+    const std::string            _whoAmI;
 
 public:
     Server( void );
@@ -87,6 +88,7 @@ public:
     std::vector<std::string>     &get_methods();
     std::vector<Location>        &get_location();
     std::vector<CGI>             &get_CGI();
+    std::string                  getId() const ;
 
     //  METHODS:
     bool    setHostPort();

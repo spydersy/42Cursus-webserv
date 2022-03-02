@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 23:04:22 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/01 01:40:36 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/01 02:45:40 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ Server::Server( void ) :    _server_names(std::vector<std::string>()),
                             _index(std::vector<std::string>()),
                             _methods(std::vector<std::string>()),
                             _location(std::vector<Location>()),
-                            _CGI(std::vector<CGI>()){}
+                            _CGI(std::vector<CGI>()),
+                            _whoAmI("Server") {}
 Server::~Server(){}
 
 /*

@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/01 02:36:35 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/02 01:21:17 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@ Response::Response( Request REQ, std::vector<Server> SERV ) :   _request(REQ),
                                                                 _serverIndex(NPOS),
                                                                 _isLocation(NPOS),
                                                                 _root(""),
-                                                                _method("") {
+                                                                _method(""),
+                                                                _status(NPOS),
+                                                                _pathIsDir(false) {
     std::cout << "Response Constructor Called :)" << std::endl;
 }
 
@@ -59,6 +61,7 @@ int     Response::getServerIndex() {
     return -1;
     */
 }
+
 size_t     Response::isLocation() {
     for (std::vector<Location>::iterator it = _server[_serverIndex].get_location().begin(); 
     it != _server[_serverIndex].get_location().end(); it++) {
@@ -80,42 +83,77 @@ size_t     Response::isLocation() {
     return _isLocation;
 }
 
-template<typename T>
-bool    Response::checkMethods( T &conf ) {
-    std::vector<std::string>    methods = conf.get_methods();
-
+bool    Response::checkMethods( void ) {
+    std::vector<std::string> methods;
+    if (_isLocation != NPOS)
+        methods = _server[_serverIndex].get_location()[_isLocation].get_methods();
+    else
+        methods = _server[_serverIndex].get_methods();
     for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++) {
-        std::cout << "DBG METHOD : RQST[" << _request.getMethod() << "] | conf[" << *it << "]" << std::endl;
         if ((*it).compare(_request.getMethod()) == 0) {
             _method = *it;
-    std::cout << "TRUE ::::::::::::::::::::::::::::::::::::::::::" << std::endl;
             return true;
         }
     }
-    std::cout << "FALSE ::::::::::::::::::::::::::::::::::::::::::" << std::endl;
     return false ; 
 }
 
 void    Response::setHttpStatus( void ) {
-    std::cout << "11" << std::endl;
+    // IS IT A BAD REQUEST ? (400)
+    if (badRequest() == true) {
+        // Do something ...
+    }
+    // ELSE ...
     getServerIndex();
-    std::cout << "22" << std::endl;
     isLocation();
-    std::cout << "33" << std::endl;
     _root = ((_isLocation == NPOS) ? _server[_serverIndex].get_root() : _server[_serverIndex].get_location()[_isLocation].get_root());
-    std::cout << "44" << std::endl;
+    // CHECK ROOT <=> if(location.root == 0) { _root = server.root; }
     if (_isLocation != NPOS)
         _request.getPath().erase(0, _server[_serverIndex].get_location()[_isLocation].get_locations_path().length());
-    std::cout << "55" << std::endl;
-    if (_isLocation != NPOS) {
-        std::cout << "AA" << std::endl;
-        checkMethods(_server[_serverIndex].get_location()[_isLocation]);
+    // FORBIDDEFN RESSOURCES ? (403)
+    if (forbiddenRessources() == true) {
+        
     }
-    else {
-        std::cout << "BB" << std::endl;
-        checkMethods(_server[_serverIndex]);
+
+    // if (_method.length() == 0) {
+    //     _responseBuffer.append();
+    // }
+}
+
+bool    Response::badRequest( void ) {
+    _status = BAD_RQST;
+    return false;
+}
+
+bool    Response::forbiddenRessources( void ) {
+    struct stat s;
+
+    std::cout << "_rootDBG : [" << _root << "] | RQST : [" << _request.getPath() << "]" << std::endl;
+    std::cout << "Path : [" << std::string(_root + _request.getPath()).c_str() << "]" << std::endl;
+    if( stat(std::string(_root + _request.getPath()).c_str() ,&s) == 0 )
+    {
+        if( s.st_mode & S_IFDIR )
+        {
+            std::cout << "DBG :::::::::::::::: is a directory" << std::endl;
+            _pathIsDir = true;
+            if () {
+                
+            }
+            //it's a directory
+        }
+        else if( s.st_mode & S_IFREG )
+        {
+            std::cout << "DBG :::::::::::::::: is a file" << std::endl;
+            //it's a file
+        }
     }
-    std::cout << "66" << std::endl;
+    else
+    {
+        //error
+        std::cout << "DBG :::::::::::::::: Error" << std::endl;
+    }
+    // _status = FORBIDDEN_RQST;
+    return false;
 }
 
 /*

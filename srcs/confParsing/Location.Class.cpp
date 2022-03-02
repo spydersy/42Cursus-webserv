@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 23:14:29 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/28 23:16:32 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/01 02:47:34 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,13 @@
 /*
 ** CONSTRUCTORS & DESTRUCTORS : 
 */
-Location::Location() :  _locations_path(""),
+Location::Location() :  _whoAmI("Location"),
+                        
+                        _locations_path(""),
                         _methods(std::vector<std::string>()),
                         _root(""),
                         _client_max_body_size(""),  
+                        
                         _index(std::vector<std::string>()),
                         _autoindex("") {}
 Location::~Location() {}
@@ -32,3 +35,4 @@ std::string                 &Location::get_root() { return this->_root; }
 std::string                 &Location::get_autoindex() { return this->_autoindex; }
 std::string                 &Location::get_client_max_body_size() { return this->_client_max_body_size; }
 std::vector<std::string>    &Location::get_index() { return this->_index; }
+std::string                 Location::getId() const { return this->_whoAmI; }

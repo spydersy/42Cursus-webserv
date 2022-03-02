@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/28 15:14:41 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/02 01:09:47 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,18 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/stat.h>
 
 #include "../srcs/request/Request.hpp"
 #include "../srcs/request/Utils.hpp"
 #include "./MimeTypes.Class.hpp"
 #include "./Response.Class.hpp"
 
+
 /*
 ** ALIAS: **********************************************************************
 */
-#define NPOS std::string::npos
+#define NPOS            std::string::npos
 
 /*
 ** COLORS DEFINITION: **********************************************************
