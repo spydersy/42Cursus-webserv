@@ -143,25 +143,14 @@ void		Request::setVersion ( std::string &part ) {
 	}
 }
 
-void		Request::setHostHeaders() {
+void		Request::setHost() {
 	for (std::vector< std::pair<std::string, std::string> >::iterator it = this->_headers.begin();
 	it != this->_headers.end(); it++) {
 		if (it->first == "Host") {
-			setHost(it->second);
+			this->_host = it->second.substr(0, it->second.find(":"));
+			setPort(it->second.substr(it->second.find(":") + 1));
 			break;
 		}
-	}
-}
-
-void		Request::setHost ( std::string hostString ) {
-	if (hostString.find(':') != std::string::npos) {
-		std::string tmpPort = hostString.substr(hostString.find(':') + 1);
-		this->setPort(tmpPort);
-		this->_host = hostString.substr(0, hostString.find(':'));
-	}
-	else {
-		this->_host = hostString;
-		this->setPort("");
 	}
 }
 
@@ -175,16 +164,16 @@ void		Request::setPort ( std::string  portString ) {
 }
 
 void		Request::setHeaders() {
-	std::vector< std::string > headers = StringSplit( this->_rqstLexer.getHeaders(), "\r\n");
+	std::vector< std::string > headers = StringSplit(this->_rqstLexer.getHeaders(), "\r\n");
 	for (std::vector< std::string >::iterator it = headers.begin(); it != headers.end(); it++) {
-		add_headers((*it));
+		addHeader((*it));
 	}
 }
 
 void		Request::addHeader ( std::string header ) {
 	std::string key = header.substr(0, header.find(":"));
 	std::string value = header.substr(header.find(":") + 1);
-	trimString(value, ' ');
+	value = trimString(value, ' ');
 	this->_headers.push_back(std::make_pair(key, value));
 }
 
@@ -207,6 +196,7 @@ void			Request::Lexer_to_parser () {
 		setVersion(parts[2]);
 	}
 	setHeaders();
+	setHost();
 }
 
 // Getters
@@ -252,10 +242,14 @@ size_t			&Request::getTotalread() {
 
 std::ostream & operator<<( std::ostream & o, Request & rqst ) {
 	o << "Request:" << "\n";
+	o << "Host: " << rqst.getHost() << ", Port: " << rqst.getPort() << "\n";
 	o << "Method: " << rqst.getMethod() << ", Path: " << rqst.getPath() << ", Version: " << rqst.getVersion() << "\n";
+	if (!rqst.getQueryString().empty()) {
+		o << "QuesryString: " << rqst.getQueryString() << "\n";
+	}
 	std::vector< std::pair<std::string, std::string> > headers = rqst.getHeaders();
 	for (std::vector< std::pair<std::string, std::string> >::iterator it = headers.begin(); it != headers.end(); it++) {
-		o << "Key: " << it->first << ", Value: " << it->second << "\n";
+		o << it->first << ", " << it->second << "\n";
 	}
 	return o;
 }

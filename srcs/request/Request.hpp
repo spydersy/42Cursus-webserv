@@ -50,7 +50,7 @@ class Request {
 		void											setQueryString ( std::string &part );
 		void											setVersion ( std::string &part );
 		void											setHostHeaders();
-		void											setHost ( std::string hostString );
+		void											setHost ();
 		void											setPort ( std::string  portString );
 		void											setHeaders ();
 		void											addHeader ( std::string header );

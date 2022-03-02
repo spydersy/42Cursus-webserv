@@ -138,7 +138,7 @@ void	handle_all_servers( std::vector<Server> &servers, fd_set &read_fds, fd_set 
 					// if the request is finished add fd to writing list
 					if (it->second.add_buffer(recvLength, buffer) == true) {
 						it->second.Lexer_to_parser();
-						// std::cerr << it->second;
+						std::cout << it->second;
 						write_clients.push_back(std::make_pair(it->first, it->second));
 						std::vector< std::pair< Client, Request > >::iterator tmpIt = it - 1;
 						read_clients.erase(it);
@@ -154,7 +154,6 @@ void	handle_all_servers( std::vector<Server> &servers, fd_set &read_fds, fd_set 
 				close(it->first.getClientFd());
 				// if the response is finished remove the fd if connection not to keep alive
 				std::vector< std::pair< Client, Request > >::iterator tmpIt = it - 1;
-				std::cout << "Response Send\n";
 				write_clients.erase(it);
 				it = tmpIt;
 			}

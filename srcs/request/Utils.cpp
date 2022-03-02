@@ -1,16 +1,5 @@
 #include "Utils.hpp"
 
-std::vector< std::string >    StringSplit( std::string str, std::string delimiter ) {
-	std::vector<std::string> parts;
-	while (str.length() && str.find(delimiter) != std::string::npos) {
-		std::string tmp = str.substr(0, str.find(delimiter));
-			parts.push_back(tmp);
-		str.erase(0, str.find(delimiter) + 1);
-	}
-	parts.push_back(str);
-	return parts;
-}
-
 std::vector< SocketInfos >		create_multiple_servers()
 {
 	std::vector<SocketInfos>		servers;
@@ -63,4 +52,15 @@ std::string		trimString( std::string str, char c )
         str.erase(it);
     }
 	return (str);
+}
+
+std::vector< std::string >    StringSplit( std::string str, std::string delimiter ) {
+	std::vector<std::string> parts;
+	while (str.length() && str.find(delimiter) != std::string::npos) {
+		std::string tmp = str.substr(0, str.find(delimiter));
+			parts.push_back(tmp);
+		str.erase(0, str.find(delimiter) + delimiter.length());
+	}
+	parts.push_back(str);
+	return parts;
 }
