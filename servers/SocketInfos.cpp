@@ -40,10 +40,10 @@ int		SocketInfos::listenSocket () const {
 	return (0);
 }
 
-int					SocketInfos::getSocketFd () const {
+int					&SocketInfos::getSocketFd () {
 	return (this->socketFd);
 }
 
-struct sockaddr_in	SocketInfos::getSocketAddress () const {
+struct sockaddr_in	&SocketInfos::getSocketAddress () {
 	return (this->socketAddress);
 }

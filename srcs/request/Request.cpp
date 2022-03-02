@@ -4,6 +4,7 @@ Request::Request (): _error(false) {
 	this->_bodyfilename = "/var/tmp/request_" + randomfilename("") + "_body";
 	this->_request_type = UNKNOWN;
 	this->_contentLength = 0;
+	this->_fileOpened = false;
 }
 
 Request::Request (const Request &rqst ) {

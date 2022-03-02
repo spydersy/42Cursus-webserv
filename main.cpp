@@ -32,7 +32,10 @@ int     main(int argc, char *argv[])
     // crazy s*****t
 
     // rfds store file descriptors of sockets to feed to select
-    fd_set	rfds;
+    fd_set	rfds, wfds;
+    
+    // empty the writing set
+    FD_ZERO(&wfds);
     // maxfd store last socket fd
 	int maxfd = -1;
 
@@ -45,6 +48,6 @@ int     main(int argc, char *argv[])
     */
    
     // feed all sockets fds to select and wait for an I/O operation on one of the sockets 
-    handle_all_servers(servers, rfds, maxfd);
+    handle_all_servers(servers, rfds, wfds, maxfd);
     return (0);
 }

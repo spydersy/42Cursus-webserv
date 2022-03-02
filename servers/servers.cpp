@@ -4,25 +4,25 @@ int		create_servers( std::vector< Server > &servers ) {
 	std::vector<int>    bound;
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
 		// Create Socket
-		if ((*it).get_socketInfos().createSocket() == -1) {
+		if (it->get_socketInfos().createSocket() == -1) {
 			perror("Socket");
 			return (-1);
 		}
-
+		fcntl(it->get_socketInfos().createSocket(), F_SETFL, O_NONBLOCK);
 		// set Socket Address
-		(*it).get_socketInfos().setSocketAddress((*it).get_port());
+		it->get_socketInfos().setSocketAddress(it->get_port());
 
 		// test if the socket is already bound to prevent bind failure
-		if (find(bound.begin(), bound.end(), (*it).get_port()) == bound.end()) {
+		if (find(bound.begin(), bound.end(), it->get_port()) == bound.end()) {
 			// Bind Socket if not already bound
-			if((*it).get_socketInfos().bindSocket() == -1) {
+			if(it->get_socketInfos().bindSocket() == -1) {
 				perror("Bind");
 				return (-1);
 			}
 		}
 
 		// Listen on socket
-		if ((*it).get_socketInfos().listenSocket() == -1) {
+		if (it->get_socketInfos().listenSocket() == -1) {
 			perror("Listen");
 			return (-1);
 		}
@@ -36,11 +36,11 @@ void	add_servers( std::vector<Server> &servers, fd_set &rfds, int &maxfd ) {
 
 	// iterate all servers and add file descriptor to rfds set with FD_SET
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
-		FD_SET((*it).get_socketInfos().getSocketFd(), &rfds);
+		FD_SET(it->get_socketInfos().getSocketFd(), &rfds);
 
 		// test for max fd
-		if ((*it).get_socketInfos().getSocketFd() > maxfd)
-			maxfd = (*it).get_socketInfos().getSocketFd();
+		if (it->get_socketInfos().getSocketFd() > maxfd)
+			maxfd = it->get_socketInfos().getSocketFd();
 	}
 }
 
@@ -74,10 +74,19 @@ void	accept_connection( std::vector< std::pair< Client, Request > > &clients, in
 	clients.push_back(std::make_pair< Client, Request >(clt, rqst));
 }
 
-void	add_clients( std::vector< std::pair< Client, Request > > &clients, fd_set &rset, int &maxfd )
+void	add_read_clients( std::vector< std::pair< Client, Request > > &clients, fd_set &rset, int &maxfd )
 {
 	for (std::vector< std::pair< Client, Request > >::iterator it = clients.begin(); it != clients.end(); it++) {
 		FD_SET(it->first.getClientFd(), &rset);
+		if (it->first.getClientFd() > maxfd)
+			maxfd = it->first.getClientFd();
+	}
+}
+
+void	add_write_clients( std::vector< std::pair< Client, Request > > &clients, fd_set &wset, int &maxfd )
+{
+	for (std::vector< std::pair< Client, Request > >::iterator it = clients.begin(); it != clients.end(); it++) {
+		FD_SET(it->first.getClientFd(), &wset);
 		if (it->first.getClientFd() > maxfd)
 			maxfd = it->first.getClientFd();
 	}
@@ -89,34 +98,36 @@ void	send_simple_response(int &newSockfd)
 	send(newSockfd, str_send.c_str(), strlen(str_send.c_str()), 0);
 }
 
-void	handle_all_servers( std::vector<Server> &servers, fd_set &read_fds, int &maxfd ) {
+void	handle_all_servers( std::vector<Server> &servers, fd_set &read_fds, fd_set &write_fds, int &maxfd ) {
 	char										buffer[RECV_SIZE + 1];	// buffer for read
 	int											recvLength = 0;
 	std::vector< std::pair< Client, Request > >	read_clients;
 	std::vector< std::pair< Client, Request > >	write_clients;
 
 	// create another set bcs select is destroys the set feeded
-	fd_set	backup_rset;
-	int		fd;
+	fd_set	backup_rset, backup_wset;
 	unsigned int status;
 
 	while (true) {
 		// initialize fd set
 		backup_rset = read_fds;
+		backup_wset = write_fds;
 
-		// add client socket file descriptors to rset
-		add_clients(read_clients, backup_rset, maxfd);
+		// add reading client socket file descriptors to rset
+		add_read_clients(read_clients, backup_rset, maxfd);
+		// add reading client socket file descriptors to rset
+		add_write_clients(write_clients, backup_wset, maxfd);
 		// feed fds to select only for read option
-		status = select(maxfd + 1, &backup_rset, NULL, NULL, NULL);
+		status = select(maxfd + 1, &backup_rset, &backup_wset, NULL, NULL);
 		// protection for select
 		if (status < 0) {
 			std::cerr << "Select Failed!" << std::endl;
 		}
 
-		if ((fd = servers_fd(servers, backup_rset)) != -1)
-		{
-			// accept connection and create socket for the connection
-			accept_connection(read_clients, fd);
+		for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
+			if (FD_ISSET(it->get_socketInfos().getSocketFd(), &backup_rset) ) {
+				accept_connection(read_clients, it->get_socketInfos().getSocketFd());
+			}
 		}
 		for(std::vector< std::pair< Client, Request > >::iterator it = read_clients.begin(); it != read_clients.end(); it++) {
 			if (FD_ISSET(it->first.getClientFd(), &backup_rset)) {
@@ -127,7 +138,7 @@ void	handle_all_servers( std::vector<Server> &servers, fd_set &read_fds, int &ma
 					// if the request is finished add fd to writing list
 					if (it->second.add_buffer(recvLength, buffer) == true) {
 						it->second.Lexer_to_parser();
-						std::cerr << it->second;
+						// std::cerr << it->second;
 						write_clients.push_back(std::make_pair(it->first, it->second));
 						std::vector< std::pair< Client, Request > >::iterator tmpIt = it - 1;
 						read_clients.erase(it);
@@ -142,7 +153,10 @@ void	handle_all_servers( std::vector<Server> &servers, fd_set &read_fds, int &ma
 				send_simple_response(it->first.getClientFd());
 				close(it->first.getClientFd());
 				// if the response is finished remove the fd if connection not to keep alive
-				
+				std::vector< std::pair< Client, Request > >::iterator tmpIt = it - 1;
+				std::cout << "Response Send\n";
+				write_clients.erase(it);
+				it = tmpIt;
 			}
 		}
 	}

@@ -24,8 +24,8 @@ class SocketInfos {
 		int		listenSocket () const;
 
 		// Getters
-		int					getSocketFd () const;
-		struct sockaddr_in	getSocketAddress () const;
+		int					&getSocketFd ();
+		struct sockaddr_in	&getSocketAddress ();
 };
 
 #endif
