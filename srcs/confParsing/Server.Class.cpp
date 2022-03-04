@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 23:04:22 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/01 02:45:40 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/03 17:04:43 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ Server::Server( void ) :    _server_names(std::vector<std::string>()),
                             _methods(std::vector<std::string>()),
                             _location(std::vector<Location>()),
                             _CGI(std::vector<CGI>()),
+                            _autoindex(""),
                             _whoAmI("Server") {}
 Server::~Server(){}
 
@@ -34,6 +35,7 @@ std::string                  &Server::get_host() { return this->_host; }
 size_t                       &Server::get_port() { return this->_port; }
 std::string                  &Server::get_root() { return this->_root; }
 std::string                  &Server::get_client_max_body_size() { return this->_client_max_body_size; }
+std::string                  &Server::get_autoindex() { return this->_autoindex; }
 std::vector<std::string>     &Server::get_index() { return this->_index; }
 std::vector<std::string>     &Server::get_methods() { return this->_methods; }
 std::vector<Location>        &Server::get_location() { return this->_location; }

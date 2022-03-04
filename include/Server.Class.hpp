@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 21:22:45 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/01 02:45:20 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/03 17:03:17 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ private:
     std::vector<Location>        _location;
     std::vector<CGI>             _CGI;
     std::string                  _client_max_body_size;
+    std::string                  _autoindex;
     const std::string            _whoAmI;
 
 public:
@@ -88,6 +89,7 @@ public:
     std::vector<std::string>     &get_methods();
     std::vector<Location>        &get_location();
     std::vector<CGI>             &get_CGI();
+    std::string                  &get_autoindex();
     std::string                  getId() const ;
 
     //  METHODS:

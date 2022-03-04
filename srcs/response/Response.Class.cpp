@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/02 01:21:17 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/03 17:05:32 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,26 +127,36 @@ bool    Response::badRequest( void ) {
 
 bool    Response::forbiddenRessources( void ) {
     struct stat s;
-
+    std::string autoindex = ((_isLocation == NPOS) ? _server[_serverIndex].get_autoindex() : _server[_serverIndex].get_location()[_isLocation].get_autoindex());
+    
     std::cout << "_rootDBG : [" << _root << "] | RQST : [" << _request.getPath() << "]" << std::endl;
     std::cout << "Path : [" << std::string(_root + _request.getPath()).c_str() << "]" << std::endl;
     if( stat(std::string(_root + _request.getPath()).c_str() ,&s) == 0 )
     {
+        // IS A DIRECTORY ===> Check autoindex : 
         if( s.st_mode & S_IFDIR )
         {
             std::cout << "DBG :::::::::::::::: is a directory" << std::endl;
             _pathIsDir = true;
-            if () {
+            if (autoindex == "off") {}
+            // if () {
                 
-            }
-            //it's a directory
+            // }
+            // //it's a directory
         }
+        /*
+            IS A FILE : 
+                if File exist ===> Check permission = 1|0 ===> permission = 0 ===> bad_request;
+                else 404 Not Found
+        */
+        // IS A FILE ===> Check Permissions : 
         else if( s.st_mode & S_IFREG )
         {
+            
             std::cout << "DBG :::::::::::::::: is a file" << std::endl;
-            //it's a file
         }
     }
+    // Path error : Probably 404 error (Not Found)
     else
     {
         //error

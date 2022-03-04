@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<style>
+th {
+    text-align: left;
+}
+</style>
+<body>
+
+<h2>A basic HTML table</h2>
+
+<table style="width:100%">
+  <tr>
+    <th>Company</th>
+    <th>Contact</th>
+    <th>Country</th>
+  </tr>
+  <tr>
+    <td><a href="https://google.com">test</a></td>
+    <td>Maria Anders</td>
+    <td>Germany</td>
+  </tr>
+  <tr>
+    <td>Centro comercial Moctezuma</td>
+    <td>Francisco Chang</td>
+    <td>Mexico</td>
+  </tr>
+</table>
+
+<p>To undestand the example better, we have added borders to the table.</p>
+
+</body>
+</html>
+
+
+
+autoIndexPage.append("<html>\r\n");
+autoIndexPage.append(" <style>\r\n");
+autoIndexPage.append(" th {\r\n");
+autoIndexPage.append("     text-align: left;\r\n");
+autoIndexPage.append(" }\r\n");
+autoIndexPage.append(" </style>\r\n");
+autoIndexPage.append("<head><title>Index of " + path + "</title></head>\r\n");
+autoIndexPage.append("<body>\r\n");
+autoIndexPage.append("<h1>Index of " + path + "</h1><hr><pre>\r\n");
+
+
+
+autoIndexPage.append("<table style="width:100%">\r\n");
+autoIndexPage.append("<tr>\r\n");
+autoIndexPage.append("<th>Name</th>\r\n");
+autoIndexPage.append("<th>Size</th>\r\n");
+autoIndexPage.append("<th>Date</th>\r\n");
+autoIndexPage.append("</tr>\r\n");
+
+
+autoIndexPage.append("</pre><hr></body>\r\n");
+autoIndexPage.append("</html>\r\n");
+
+
+
