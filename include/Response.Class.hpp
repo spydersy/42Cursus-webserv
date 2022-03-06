@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 15:17:13 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/02 01:14:44 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/06 16:35:27 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,6 @@
 #define RSPONSE_CLASS_HPP
 
 #include "./webserv.hpp"
-
-#define BAD_RQST 400
-#define FORBIDDEN_RQST 403
-
-// typedef struct s_defaultPages
-// {
-//     std::pair<int , std::string>    page[] ;
-
-    
-// } t_defaultPages;
-
-/*
-    Response Codes Order : 
-        01 - 400 bad request
-        03 - 403 forbidden
-        04 - 200 OK
-        05 - ... ...
-*/
 
 class Response
 {
@@ -45,8 +27,11 @@ private:
     std::string         _root;
     std::string         _path;
     std::string         _method;
-    size_t              _status;
+    std::string         _status;
     bool                _pathIsDir;
+    size_t              getAccessType(std::string PATH);
+    void                fillDefaultPage( void );
+    bool                serviceUnavailable();
 public:
     /*
     ** Constructors && Destructors :

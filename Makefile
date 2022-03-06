@@ -6,7 +6,7 @@
 #    By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/02 21:33:12 by abelarif          #+#    #+#              #
-#    Updated: 2022/03/01 20:19:33 by abelarif         ###   ########.fr        #
+#    Updated: 2022/03/06 14:37:32 by abelarif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ PARSING_SRCS=	./srcs/confParsing/fileHandlerUtils.cpp\
 
 UTILS_SRCS=		./srcs/utils/errorStream.cpp\
 				./srcs/utils/MimeTypes.Class.cpp\
+				./srcs/utils/autoindex.Class.cpp\
 
 SRCS=   		main.cpp\
 				$(PARSING_SRCS)\

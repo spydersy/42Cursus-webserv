@@ -6,14 +6,14 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/03 17:05:32 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/06 17:07:34 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/webserv.hpp"
 
 /*
-** Constructors && Destructors : ***********************************************
+** CONSTRUCTORS && DESTRUCTORS : ***********************************************
 */
 Response::Response( Request REQ, std::vector<Server> SERV ) :   _request(REQ),
                                                                 _server(SERV),
@@ -23,7 +23,7 @@ Response::Response( Request REQ, std::vector<Server> SERV ) :   _request(REQ),
                                                                 _isLocation(NPOS),
                                                                 _root(""),
                                                                 _method(""),
-                                                                _status(NPOS),
+                                                                _status(""),
                                                                 _pathIsDir(false) {
     std::cout << "Response Constructor Called :)" << std::endl;
 }
@@ -33,18 +33,105 @@ Response::~Response(){
 }
 
 /*
-** Getters && Setters :  
+** GETTERS && SETTERS : ********************************************************
 */
 Request             &Response::get_request( void ) { return this->_request; }
 std::vector<Server> &Response::get_server( void ) { return this->_server; }
 MimeTypes           &Response::get_MT( void ) { return this->_MT; }
 std::string         &Response::get_responseBuffer( void ) { return this->_responseBuffer; }
 
-/*
-** METHODS : 
-*/
 void    Response::setHttpVersion( void ) {
     _responseBuffer.append("HTTP/1.1 ");
+}
+
+/*
+** STATUS HANDLERS : ***********************************************************
+*/
+void    Response::setHttpStatus( void ) {
+    // if (serviceUnavailable() == true) {
+    //     std::cout << "DBG VERSION : [" << _request.getVersion() << "]" << std::endl;
+    //     _status = SERVICE_UNAVAILABLE;
+    //     fillDefaultPage();
+    //     return;        
+    // }
+    if (badRequest() == true) {
+        _status = FORBIDDEN_RQST;
+        fillDefaultPage();
+        return;
+    }
+    getServerIndex();
+    isLocation();
+    _root = ((_isLocation == NPOS) ? _server[_serverIndex].get_root() : _server[_serverIndex].get_location()[_isLocation].get_root());
+    // CHECK ROOT <=> if(location.root == 0) { _root = server.root; }
+    if (_isLocation != NPOS)
+        _request.getPath().erase(0, _server[_serverIndex].get_location()[_isLocation].get_locations_path().length());
+    if (forbiddenRessources() == true) {
+        _status = FORBIDDEN_RQST;
+        fillDefaultPage();
+        return;
+    }
+}
+
+bool    Response::serviceUnavailable() {
+    if (_request.getVersion().compare("HTTP/1.1"))
+        return true;
+    return false;
+}
+
+bool    Response::badRequest( void ) {
+    _status = BAD_RQST;
+    return false;
+}
+
+bool    Response::forbiddenRessources( void ) {
+    size_t  accessType;
+    std::string autoindex = ((_isLocation == NPOS) ? _server[_serverIndex].get_autoindex() : _server[_serverIndex].get_location()[_isLocation].get_autoindex());
+    std::vector<std::string> indexs = ((_isLocation == NPOS) ? _server[_serverIndex].get_index() : _server[_serverIndex].get_location()[_isLocation].get_index());
+
+    std::cout << "_rootDBG 403 : [" << _root << "] | RQST : [" << _request.getPath() << "] | method : [" << _request.getMethod() << "]" << std::endl;
+    std::cout << "Path 403 : [" << std::string(_root + _request.getPath()).c_str() << "]" << std::endl;
+    accessType = getAccessType(_root + _request.getPath());
+    if( accessType == S_IFDIR )
+    {
+        std::cout << "DBG :::::::::::::::: is a directory" << std::endl;
+        _pathIsDir = true;
+        if (_request.getMethod().compare(GET) == 0) {
+            if (access(_root.c_str(), R_OK) != F_OK)
+                return true;
+            else {
+                if (indexs.size() == 0)
+                    if (autoindex.compare(OFF) == 0)
+                        return true;
+            }
+        }
+        return false;
+    } 
+    else if( accessType == S_IFREG ){
+        std::cout << "DBG :::::::::::::::: is a file" << std::endl;
+        if (access(std::string(_root + _request.getPath()).c_str(), R_OK) != F_OK)
+            return true;
+        return false;
+    }
+    return false;
+}
+
+/*
+** UTILS : *********************************************************************
+*/
+
+void    Response::fillDefaultPage( void ) {
+    std::string     buffer;
+    
+    _responseBuffer.append(_status);
+    _responseBuffer.append("\nContent-Type: text/html\nContent-Length: ");
+    if (!_status.compare(FORBIDDEN_RQST))
+        buffer = FORBIDDEN_RQST_403;
+    else if (!_status.compare(BAD_RQST))
+        buffer = BAD_RQST_400;
+    else if (!_status.compare(SERVICE_UNAVAILABLE))
+        buffer = SERVICE_UNAVAILABLE_503;
+    _responseBuffer.append(std::to_string(buffer.length()));
+    _responseBuffer.append("\n\n").append(buffer);
 }
 
 int     Response::getServerIndex() {
@@ -60,6 +147,21 @@ int     Response::getServerIndex() {
     }
     return -1;
     */
+}
+
+bool    Response::checkMethods( void ) {
+    std::vector<std::string> methods;
+    if (_isLocation != NPOS)
+        methods = _server[_serverIndex].get_location()[_isLocation].get_methods();
+    else
+        methods = _server[_serverIndex].get_methods();
+    for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++) {
+        if ((*it).compare(_request.getMethod()) == 0) {
+            _method = *it;
+            return true;
+        }
+    }
+    return false ; 
 }
 
 size_t     Response::isLocation() {
@@ -83,89 +185,18 @@ size_t     Response::isLocation() {
     return _isLocation;
 }
 
-bool    Response::checkMethods( void ) {
-    std::vector<std::string> methods;
-    if (_isLocation != NPOS)
-        methods = _server[_serverIndex].get_location()[_isLocation].get_methods();
-    else
-        methods = _server[_serverIndex].get_methods();
-    for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++) {
-        if ((*it).compare(_request.getMethod()) == 0) {
-            _method = *it;
-            return true;
-        }
-    }
-    return false ; 
-}
-
-void    Response::setHttpStatus( void ) {
-    // IS IT A BAD REQUEST ? (400)
-    if (badRequest() == true) {
-        // Do something ...
-    }
-    // ELSE ...
-    getServerIndex();
-    isLocation();
-    _root = ((_isLocation == NPOS) ? _server[_serverIndex].get_root() : _server[_serverIndex].get_location()[_isLocation].get_root());
-    // CHECK ROOT <=> if(location.root == 0) { _root = server.root; }
-    if (_isLocation != NPOS)
-        _request.getPath().erase(0, _server[_serverIndex].get_location()[_isLocation].get_locations_path().length());
-    // FORBIDDEFN RESSOURCES ? (403)
-    if (forbiddenRessources() == true) {
-        
-    }
-
-    // if (_method.length() == 0) {
-    //     _responseBuffer.append();
-    // }
-}
-
-bool    Response::badRequest( void ) {
-    _status = BAD_RQST;
-    return false;
-}
-
-bool    Response::forbiddenRessources( void ) {
+size_t    Response::getAccessType(std::string PATH) {
     struct stat s;
-    std::string autoindex = ((_isLocation == NPOS) ? _server[_serverIndex].get_autoindex() : _server[_serverIndex].get_location()[_isLocation].get_autoindex());
-    
-    std::cout << "_rootDBG : [" << _root << "] | RQST : [" << _request.getPath() << "]" << std::endl;
-    std::cout << "Path : [" << std::string(_root + _request.getPath()).c_str() << "]" << std::endl;
-    if( stat(std::string(_root + _request.getPath()).c_str() ,&s) == 0 )
+    std::cout << "getAccessType DBG ::::::::::: [" << PATH << "]" << std::endl;
+    if( stat(PATH.c_str() ,&s) == 0 )
     {
-        // IS A DIRECTORY ===> Check autoindex : 
         if( s.st_mode & S_IFDIR )
-        {
-            std::cout << "DBG :::::::::::::::: is a directory" << std::endl;
-            _pathIsDir = true;
-            if (autoindex == "off") {}
-            // if () {
-                
-            // }
-            // //it's a directory
-        }
-        /*
-            IS A FILE : 
-                if File exist ===> Check permission = 1|0 ===> permission = 0 ===> bad_request;
-                else 404 Not Found
-        */
-        // IS A FILE ===> Check Permissions : 
+            return S_IFDIR;
         else if( s.st_mode & S_IFREG )
-        {
-            
-            std::cout << "DBG :::::::::::::::: is a file" << std::endl;
-        }
+            return S_IFREG;
     }
-    // Path error : Probably 404 error (Not Found)
-    else
-    {
-        //error
-        std::cout << "DBG :::::::::::::::: Error" << std::endl;
-    }
-    // _status = FORBIDDEN_RQST;
-    return false;
+    return NPOS;
 }
-
 /*
     std::cout << " | LEN : " << _server[_serverIndex].get_location()[_isLocation].get_locations_path().length() << std::endl;
     std::string filePath = _server.begin()->get_root();
