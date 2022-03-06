@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/06 17:07:34 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/06 17:35:38 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,13 @@ void    Response::setHttpVersion( void ) {
 */
 void    Response::setHttpStatus( void ) {
     // if (serviceUnavailable() == true) {
-    //     std::cout << "DBG VERSION : [" << _request.getVersion() << "]" << std::endl;
     //     _status = SERVICE_UNAVAILABLE;
     //     fillDefaultPage();
     //     return;        
     // }
     if (badRequest() == true) {
         _status = FORBIDDEN_RQST;
-        fillDefaultPage();
+        fillErrorPage();
         return;
     }
     getServerIndex();
@@ -67,8 +66,12 @@ void    Response::setHttpStatus( void ) {
         _request.getPath().erase(0, _server[_serverIndex].get_location()[_isLocation].get_locations_path().length());
     if (forbiddenRessources() == true) {
         _status = FORBIDDEN_RQST;
-        fillDefaultPage();
+        fillErrorPage();
         return;
+    }
+    if ((_status = checkMethods()).length()) {
+        fillErrorPage();
+        return; 
     }
 }
 
@@ -119,7 +122,7 @@ bool    Response::forbiddenRessources( void ) {
 ** UTILS : *********************************************************************
 */
 
-void    Response::fillDefaultPage( void ) {
+void    Response::fillErrorPage( void ) {
     std::string     buffer;
     
     _responseBuffer.append(_status);
@@ -149,7 +152,12 @@ int     Response::getServerIndex() {
     */
 }
 
-bool    Response::checkMethods( void ) {
+std::string    Response::checkMethods( void ) {
+    std::string rqstMethod = _request.getMethod();
+    if (rqstMethod.compare(GET) && rqstMethod.compare(POST) && rqstMethod.compare(DELETE)) {
+        std::cout << "NOT IMPLEMENTED DBG" << std::endl;
+        return NOT_IMPLEMENTED;
+    }
     std::vector<std::string> methods;
     if (_isLocation != NPOS)
         methods = _server[_serverIndex].get_location()[_isLocation].get_methods();
@@ -158,10 +166,11 @@ bool    Response::checkMethods( void ) {
     for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++) {
         if ((*it).compare(_request.getMethod()) == 0) {
             _method = *it;
-            return true;
+            std::cout << "IMPLEMENTED DBG" << std::endl;
+            return "";
         }
     }
-    return false ; 
+    return METHOD_NOT_ALLOWED ; 
 }
 
 size_t     Response::isLocation() {

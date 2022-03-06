@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 15:17:13 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/06 16:35:27 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/06 17:31:58 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ private:
     std::string         _status;
     bool                _pathIsDir;
     size_t              getAccessType(std::string PATH);
-    void                fillDefaultPage( void );
+    void                fillErrorPage( void );
     bool                serviceUnavailable();
 public:
     /*
@@ -52,7 +52,7 @@ public:
     int                                     getServerIndex( void );
     void                                    setHttpStatus( void );
     size_t                                  isLocation( void );
-    bool                                    checkMethods( void );
+    std::string                             checkMethods( void );
     /*
     ** METHODS :
     */
