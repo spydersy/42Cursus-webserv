@@ -47,8 +47,8 @@ $(NAME):	$(OBJS)
 
 all: $(NAME)
 
-debug:
-	clang++ $(DEBUG) $(OBJS) -o $(NAME)
+debug: $(OBJS)
+	clang++ -g $(DEBUG) $(OBJS) -o $(NAME)
 
 clean:
 	rm -rf $(OBJS)

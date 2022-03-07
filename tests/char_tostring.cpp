@@ -1,6 +1,9 @@
 #include <iostream>
 #include <iomanip>
 
+void    printString( std::string buffer ) {
+    std::cout << std::setw(25) << "buffer Function: " << buffer << "|" << std::endl;
+}
 
 int main()
 {
@@ -33,5 +36,6 @@ int main()
     std::cout << std::setw(25) << "copy: " << copy << "|" << std::endl;
     std::cout << std::setw(25) << "reference: " << reference << "|" << std::endl;
     std::cout << std::setw(25) << "reference copy: " << ref_copy << "|" << std::endl;
+    printString(copy);
     return (0);
 }

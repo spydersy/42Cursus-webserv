@@ -29,8 +29,6 @@ int     main(int argc, char *argv[])
         return (EXIT_FAILURE);
     }
 
-    // crazy s*****t
-
     // rfds store file descriptors of sockets to feed to select
     fd_set	rfds, wfds;
     

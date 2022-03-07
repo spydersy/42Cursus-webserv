@@ -4,14 +4,21 @@ Request::Request (): _error(false) {
 	this->_bodyfilename = "/var/tmp/request_" + randomfilename("") + "_body";
 	this->_request_type = UNKNOWN;
 	this->_contentLength = 0;
+	this->_totalread = 0;
 	this->_fileOpened = false;
 }
 
 Request::Request (const Request &rqst ) {
 	*this = rqst;
+	this->_request_type = UNKNOWN;
+	this->_contentLength = 0;
+	this->_totalread = 0;
+	this->_fileOpened = false;
 }
 
-Request::~Request () {}
+Request::~Request () {
+	this->_bodyfilename = "";
+}
 
 Request	&Request::operator= ( const Request &rqst ) {
 	this->_method = rqst._method;
@@ -91,7 +98,7 @@ void	Request::add_headers( std::string &buffer ) {
 }
 
 
-int											Request::read_content_length( std::string &buffer )
+bool		Request::read_content_length( std::string &buffer )
 {
 	if (this->_contentLength == 0) {
 		size_t found = this->_rqstLexer.getHeaders().find("Content-Length:");
@@ -100,14 +107,77 @@ int											Request::read_content_length( std::string &buffer )
 	}
 	this->_totalread += buffer.length();
 	this->_bodyFile.write(buffer.c_str(), buffer.length());
-	if (this->_totalread >= this->_contentLength)
+	if (this->_totalread >= this->_contentLength) 
+	{
+		this->_bodyFile.close();
 		return true ;
+	}
 	return false;
 }
 
-int											Request::read_chunked( std::string &buffer )
+void	Request::getChunkSize()
 {
-	(void)buffer;
+	std::string number;
+	int	i = 0;
+	for (std::string::iterator it = _chunked.begin(); it != _chunked.end(); it++)
+	{
+		if (isHex((*it)) == false)
+			break;
+		number += *it;
+		i++;
+	}
+	if (!number.empty())
+	{
+		std::istringstream(number) >> std::hex >> this->_totalread;
+		if (this->_totalread != 0) {
+			if (this->_chunked[i] == '\r' && this->_chunked[i + 1] == '\n')
+				this->_chunked.erase(0, i + 2);
+			else
+				this->_chunked.erase(0, i);
+		}
+		else 
+			this->_chunked.erase(0, i + 4);
+	}
+}
+
+bool		Request::read_chunked( std::string &buffer )
+{
+	this->_chunked += buffer;
+	while (!this->_chunked.empty()) {
+		if (this->_totalread == 0) {
+			getChunkSize();
+			if (this->_totalread != 0) {
+				if (this->_totalread > this->_chunked.length()) {
+					this->_bodyFile.write(this->_chunked.c_str(), this->_chunked.length());
+					this->_totalread -= this->_chunked.length();
+					this->_chunked.erase(0, this->_chunked.length());
+					return false;
+				}
+				else {
+					this->_bodyFile.write(this->_chunked.c_str(), this->_totalread);
+					this->_chunked.erase(0, this->_totalread + 2);
+					this->_totalread = 0;
+				}
+			}
+			else if (this->_chunked.empty()) {
+				this->_bodyFile.close();
+				return true;
+			}
+		}
+		else {
+			if (this->_totalread > this->_chunked.length()) {
+				this->_bodyFile.write(this->_chunked.c_str(), this->_chunked.length());
+				this->_totalread -= this->_chunked.length();
+				this->_chunked.erase(0, this->_chunked.length());
+				return false;
+			}
+			else {
+				this->_bodyFile.write(this->_chunked.c_str(), this->_totalread);
+				this->_chunked.erase(0, this->_totalread + 2);
+				this->_totalread = 0;
+			}
+		}
+	}
 	return false;
 }
 
