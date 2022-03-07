@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 15:17:13 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/06 17:31:58 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/06 21:12:04 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,23 @@
 class Response
 {
 private:
-    Request             _request;
-    std::vector<Server> _server;
-    MimeTypes           _MT;
-    std::string         _responseBuffer;
-    size_t              _serverIndex;
-    size_t              _isLocation;
-    std::string         _root;
-    std::string         _path;
-    std::string         _method;
-    std::string         _status;
-    bool                _pathIsDir;
-    size_t              getAccessType(std::string PATH);
-    void                fillErrorPage( void );
-    bool                serviceUnavailable();
+    Request                     _request;
+    std::vector<Server>         _server;
+    MimeTypes                   _MT;
+    std::string                 _responseBuffer;
+    size_t                      _serverIndex;
+    size_t                      _isLocation;
+    std::string                 _root;
+    std::string                 _path;
+    std::string                 _method;
+    std::string                 _status;
+    std::vector<std::string>    _indexs;
+    std::string                 _autoindex;
+    bool                        _pathIsDir;
+    size_t                      getAccessType(std::string PATH);
+    void                        fillErrorPage( void );
+    bool                        serviceUnavailable();
+    std::string                 GETmethod();
 public:
     /*
     ** Constructors && Destructors :

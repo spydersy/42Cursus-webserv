@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/06 17:28:51 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/07 00:18:04 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,11 @@
 #define GET                     "GET"
 #define POST                    "POST"
 #define DELETE                  "DELETE"
-#define ON                      "ON"
-#define OFF                     "OFF"
+#define ON                      "on"
+#define OFF                     "off"
 #define BAD_RQST                "400 Bad Request"
 #define FORBIDDEN_RQST          "403 Forbidden"
+#define NOT_FOUND               "404 Not Found"
 #define METHOD_NOT_ALLOWED      "405 Method Not Allowed"
 #define NOT_IMPLEMENTED         "501 Not Implemented"
 #define SERVICE_UNAVAILABLE     "503 Service Unavailable"
@@ -51,12 +52,12 @@
 ** DEFAULT PAGES: **************************************************************
 */
 
-#define BAD_RQST_400               "<html> \r\n<head><title>Webserv: 400 Bad Request</title></head> \r\n<body> \r\n<center><h1>Webserv: 400 Bad Request</h1></center> \r\n"
-#define FORBIDDEN_RQST_403         "<html> \r\n<head><title>Webserv: 403 Forbidden</title></head> \r\n<body> \r\n<center><h1>Webserv: 403 Forbidden</h1></center> \r\n"
-#define NOT_FOUND_404              "<html> \r\n<head><title>Webserv: 404 Not Found</title></head> \r\n<body> \r\n<center><h1>Webserv: 404 Not Found</h1></center> \r\n"
-#define METHOD_NOT_ALLOWED_405     "<html> \r\n<head><title>Webserv: 405 Method Not Allowed</title></head> \r\n<body> \r\n<center><h1>Webserv: 405 Method Not Allowed</h1></center> \r\n"
-#define NOT_IMPLEMENTED_501        "<html> \r\n<head><title>Webserv: 501 Not Implemented</title></head> \r\n<body> \r\n<center><h1>Webserv: 501 Not Implemented</h1></center> \r\n"
-#define SERVICE_UNAVAILABLE_503    "<html> \r\n<head><title>Webserv: 503 Service Unavailable</title></head> \r\n<body> \r\n<center><h1>Webserv: 503 Service Unavailable</h1></center> \r\n"
+#define BAD_RQST_400               "<html> \r\n<head><title>Webserv 400: Bad Request</title></head> \r\n<body> \r\n<center><h1>Webserv 400: Bad Request</h1></center> \r\n"
+#define FORBIDDEN_RQST_403         "<html> \r\n<head><title>Webserv 403: Forbidden</title></head> \r\n<body> \r\n<center><h1>Webserv 403: Forbidden</h1></center> \r\n"
+#define NOT_FOUND_404              "<html> \r\n<head><title>Webserv 404: Not Found</title></head> \r\n<body> \r\n<center><h1>Webserv 404: Not Found</h1></center> \r\n"
+#define METHOD_NOT_ALLOWED_405     "<html> \r\n<head><title>Webserv 405: Method Not Allowed</title></head> \r\n<body> \r\n<center><h1>Webserv 405: Method Not Allowed</h1></center> \r\n"
+#define NOT_IMPLEMENTED_501        "<html> \r\n<head><title>Webserv 501: Not Implemented</title></head> \r\n<body> \r\n<center><h1>Webserv 501: Not Implemented</h1></center> \r\n"
+#define SERVICE_UNAVAILABLE_503    "<html> \r\n<head><title>Webserv 503: Service Unavailable</title></head> \r\n<body> \r\n<center><h1>Webserv 503: Service Unavailable</h1></center> \r\n"
 
 /*
 ** COLORS DEFINITION: **********************************************************

@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/06 17:35:38 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/07 00:37:52 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,14 @@ Response::Response( Request REQ, std::vector<Server> SERV ) :   _request(REQ),
                                                                 _root(""),
                                                                 _method(""),
                                                                 _status(""),
+                                                                _indexs(std::vector<std::string>()),
+                                                                _autoindex(""),
                                                                 _pathIsDir(false) {
-    std::cout << "Response Constructor Called :)" << std::endl;
+    // std::cout << "Response Constructor Called :)" << std::endl;
 }
 
 Response::~Response(){
-    std::cout << "Response Destructor Called :'( " << std::endl;
+    // std::cout << "Response Destructor Called :'( " << std::endl;
 }
 
 /*
@@ -42,6 +44,55 @@ std::string         &Response::get_responseBuffer( void ) { return this->_respon
 
 void    Response::setHttpVersion( void ) {
     _responseBuffer.append("HTTP/1.1 ");
+}
+
+/*
+** GET-POST-DELETE methods : ***************************************************
+*/
+std::string Response::GETmethod() {
+    std::cout << KRED <<  "DBG GETmethod : [" << _root << "]" << KNRM << std::endl;
+    std::string     ret;
+    if (_pathIsDir == true) {
+        if (_indexs.size()) {
+            for (std::vector<std::string>::iterator it = _indexs.begin(); it != _indexs.end(); it++) {
+                if (getAccessType(_root + *it) == S_IFREG) {
+                    if (access((_root + *it).c_str(), R_OK) == F_OK) {
+                        return "200 OK";
+                    }
+                    else {
+                        ret = FORBIDDEN_RQST;
+                    }
+                }
+                else {
+                    if (ret.compare(FORBIDDEN_RQST))
+                        ret = NOT_FOUND;
+                }
+                // std::cout << "[" <<  fullPath << "]" << std::endl;
+            }
+            return ret;
+        }
+        else {
+            if (!_autoindex.compare(ON))
+                return "AUTOINDEX";
+            else
+                return FORBIDDEN_RQST;
+        }
+        return ret;
+    }
+    else {
+        if (getAccessType(_root) == S_IFREG) {
+            if (access(_root.c_str(), R_OK) == F_OK) {
+                return OK;
+            }
+            else {
+                return FORBIDDEN_RQST;
+            }
+        }
+        else {
+            return NOT_FOUND;
+        }
+    }
+    return "";
 }
 
 /*
@@ -61,7 +112,6 @@ void    Response::setHttpStatus( void ) {
     getServerIndex();
     isLocation();
     _root = ((_isLocation == NPOS) ? _server[_serverIndex].get_root() : _server[_serverIndex].get_location()[_isLocation].get_root());
-    // CHECK ROOT <=> if(location.root == 0) { _root = server.root; }
     if (_isLocation != NPOS)
         _request.getPath().erase(0, _server[_serverIndex].get_location()[_isLocation].get_locations_path().length());
     if (forbiddenRessources() == true) {
@@ -71,7 +121,10 @@ void    Response::setHttpStatus( void ) {
     }
     if ((_status = checkMethods()).length()) {
         fillErrorPage();
-        return; 
+        return;
+    }
+    if (!_request.getMethod().compare(GET)) {
+        std::cout << "NIGHTHAWK : [" << GETmethod() << "]" << std::endl;
     }
 }
 
@@ -88,29 +141,29 @@ bool    Response::badRequest( void ) {
 
 bool    Response::forbiddenRessources( void ) {
     size_t  accessType;
-    std::string autoindex = ((_isLocation == NPOS) ? _server[_serverIndex].get_autoindex() : _server[_serverIndex].get_location()[_isLocation].get_autoindex());
-    std::vector<std::string> indexs = ((_isLocation == NPOS) ? _server[_serverIndex].get_index() : _server[_serverIndex].get_location()[_isLocation].get_index());
+    _autoindex = ((_isLocation == NPOS) ? _server[_serverIndex].get_autoindex() : _server[_serverIndex].get_location()[_isLocation].get_autoindex());
+    _indexs = ((_isLocation == NPOS) ? _server[_serverIndex].get_index() : _server[_serverIndex].get_location()[_isLocation].get_index());
 
-    std::cout << "_rootDBG 403 : [" << _root << "] | RQST : [" << _request.getPath() << "] | method : [" << _request.getMethod() << "]" << std::endl;
-    std::cout << "Path 403 : [" << std::string(_root + _request.getPath()).c_str() << "]" << std::endl;
+    // std::cout << "_rootDBG 403 : [" << _root << "] | RQST : [" << _request.getPath() << "] | method : [" << _request.getMethod() << "]" << std::endl;
+    // std::cout << "Path 403 : [" << std::string(_root + _request.getPath()).c_str() << "]" << std::endl;
     accessType = getAccessType(_root + _request.getPath());
     if( accessType == S_IFDIR )
     {
-        std::cout << "DBG :::::::::::::::: is a directory" << std::endl;
+        // std::cout << "DBG :::::::::::::::: is a directory" << std::endl;
         _pathIsDir = true;
         if (_request.getMethod().compare(GET) == 0) {
             if (access(_root.c_str(), R_OK) != F_OK)
                 return true;
             else {
-                if (indexs.size() == 0)
-                    if (autoindex.compare(OFF) == 0)
+                if (_indexs.size() == 0)
+                    if (_autoindex.compare(OFF) == 0)
                         return true;
             }
         }
         return false;
     } 
     else if( accessType == S_IFREG ){
-        std::cout << "DBG :::::::::::::::: is a file" << std::endl;
+        // std::cout << "DBG :::::::::::::::: is a file" << std::endl;
         if (access(std::string(_root + _request.getPath()).c_str(), R_OK) != F_OK)
             return true;
         return false;
@@ -133,6 +186,10 @@ void    Response::fillErrorPage( void ) {
         buffer = BAD_RQST_400;
     else if (!_status.compare(SERVICE_UNAVAILABLE))
         buffer = SERVICE_UNAVAILABLE_503;
+    else if (!_status.compare(METHOD_NOT_ALLOWED))
+        buffer = METHOD_NOT_ALLOWED_405;
+    else if (!_status.compare(NOT_IMPLEMENTED))
+        buffer = NOT_IMPLEMENTED_501;
     _responseBuffer.append(std::to_string(buffer.length()));
     _responseBuffer.append("\n\n").append(buffer);
 }
@@ -154,8 +211,9 @@ int     Response::getServerIndex() {
 
 std::string    Response::checkMethods( void ) {
     std::string rqstMethod = _request.getMethod();
-    if (rqstMethod.compare(GET) && rqstMethod.compare(POST) && rqstMethod.compare(DELETE)) {
-        std::cout << "NOT IMPLEMENTED DBG" << std::endl;
+    // std::cout << "rqstMethod: [" << rqstMethod << "]" << std::endl;
+    if (rqstMethod.compare(GET) &&  rqstMethod.compare(POST) && rqstMethod.compare(DELETE)) {
+        // std::cout << "NOT IMPLEMENTED DBG" << std::endl;
         return NOT_IMPLEMENTED;
     }
     std::vector<std::string> methods;
@@ -166,7 +224,7 @@ std::string    Response::checkMethods( void ) {
     for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++) {
         if ((*it).compare(_request.getMethod()) == 0) {
             _method = *it;
-            std::cout << "IMPLEMENTED DBG" << std::endl;
+            // std::cout << "IMPLEMENTED DBG" << std::endl;
             return "";
         }
     }
@@ -196,7 +254,6 @@ size_t     Response::isLocation() {
 
 size_t    Response::getAccessType(std::string PATH) {
     struct stat s;
-    std::cout << "getAccessType DBG ::::::::::: [" << PATH << "]" << std::endl;
     if( stat(PATH.c_str() ,&s) == 0 )
     {
         if( s.st_mode & S_IFDIR )
@@ -206,6 +263,7 @@ size_t    Response::getAccessType(std::string PATH) {
     }
     return NPOS;
 }
+
 /*
     std::cout << " | LEN : " << _server[_serverIndex].get_location()[_isLocation].get_locations_path().length() << std::endl;
     std::string filePath = _server.begin()->get_root();
