@@ -25,7 +25,7 @@ class Request {
 		std::string										_host;
 		int												_port;
         std::vector<string_pair>						_headers;
-		std::string										_bodyfilename;
+		std::string										_bodyfilename;		// make sure to remove it after use
 		std::ofstream									_bodyFile;
 		bool											_fileOpened;		// Reading Only
 		size_t											_totalread;			// Reading Only

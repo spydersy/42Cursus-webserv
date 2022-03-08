@@ -17,7 +17,12 @@ Request::Request (const Request &rqst ) {
 }
 
 Request::~Request () {
+	remove(this->_bodyfilename.c_str());
 	this->_bodyfilename = "";
+	this->_request_type = UNKNOWN;
+	this->_contentLength = 0;
+	this->_totalread = 0;
+	this->_fileOpened = false;
 }
 
 Request	&Request::operator= ( const Request &rqst ) {
@@ -149,12 +154,14 @@ bool		Request::read_chunked( std::string &buffer )
 			if (this->_totalread != 0) {
 				if (this->_totalread > this->_chunked.length()) {
 					this->_bodyFile.write(this->_chunked.c_str(), this->_chunked.length());
+					this->_contentLength += this->_chunked.length();
 					this->_totalread -= this->_chunked.length();
 					this->_chunked.erase(0, this->_chunked.length());
 					return false;
 				}
 				else {
 					this->_bodyFile.write(this->_chunked.c_str(), this->_totalread);
+					this->_contentLength += this->_totalread;
 					this->_chunked.erase(0, this->_totalread + 2);
 					this->_totalread = 0;
 				}
@@ -167,12 +174,14 @@ bool		Request::read_chunked( std::string &buffer )
 		else {
 			if (this->_totalread > this->_chunked.length()) {
 				this->_bodyFile.write(this->_chunked.c_str(), this->_chunked.length());
+				this->_contentLength += this->_chunked.length();
 				this->_totalread -= this->_chunked.length();
 				this->_chunked.erase(0, this->_chunked.length());
 				return false;
 			}
 			else {
 				this->_bodyFile.write(this->_chunked.c_str(), this->_totalread);
+				this->_contentLength += this->_totalread;
 				this->_chunked.erase(0, this->_totalread + 2);
 				this->_totalread = 0;
 			}
