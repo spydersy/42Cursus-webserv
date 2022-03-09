@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/07 00:37:52 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/09 00:03:35 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,13 @@ void    Response::setHttpVersion( void ) {
 ** GET-POST-DELETE methods : ***************************************************
 */
 std::string Response::GETmethod() {
-    std::cout << KRED <<  "DBG GETmethod : [" << _root << "]" << KNRM << std::endl;
     std::string     ret;
     if (_pathIsDir == true) {
         if (_indexs.size()) {
             for (std::vector<std::string>::iterator it = _indexs.begin(); it != _indexs.end(); it++) {
-                if (getAccessType(_root + *it) == S_IFREG) {
-                    if (access((_root + *it).c_str(), R_OK) == F_OK) {
-                        return "200 OK";
+                if (getAccessType(_root + "/" + *it) == S_IFREG) {
+                    if (access((_root + "/" + *it).c_str(), R_OK) == F_OK) {
+                        return OK;
                     }
                     else {
                         ret = FORBIDDEN_RQST;
@@ -80,8 +79,8 @@ std::string Response::GETmethod() {
         return ret;
     }
     else {
-        if (getAccessType(_root) == S_IFREG) {
-            if (access(_root.c_str(), R_OK) == F_OK) {
+        if (getAccessType(_root + _request.getPath()) == S_IFREG) {
+            if (access((_root + _request.getPath()).c_str(), R_OK) == F_OK) {
                 return OK;
             }
             else {
@@ -99,11 +98,6 @@ std::string Response::GETmethod() {
 ** STATUS HANDLERS : ***********************************************************
 */
 void    Response::setHttpStatus( void ) {
-    // if (serviceUnavailable() == true) {
-    //     _status = SERVICE_UNAVAILABLE;
-    //     fillDefaultPage();
-    //     return;        
-    // }
     if (badRequest() == true) {
         _status = FORBIDDEN_RQST;
         fillErrorPage();
@@ -124,7 +118,32 @@ void    Response::setHttpStatus( void ) {
         return;
     }
     if (!_request.getMethod().compare(GET)) {
-        std::cout << "NIGHTHAWK : [" << GETmethod() << "]" << std::endl;
+        std::string ret_GETmethod;
+
+        ret_GETmethod = GETmethod();
+        if (!ret_GETmethod.compare(OK)) {
+            _status = OK;
+            std::cout << KRED << "FINAL STATUS : OK" << KNRM << std::endl;
+        }
+        else if (!ret_GETmethod.compare(FORBIDDEN_RQST)) {
+            _status = FORBIDDEN_RQST;
+            fillErrorPage();
+            std::cout << KRED << "FINAL STATUS : FORBIDDEN_RQST" << KNRM << std::endl;
+        }
+        else if (!ret_GETmethod.compare(NOT_FOUND)) {
+            _status = NOT_FOUND;
+            fillErrorPage();
+            std::cout << KRED << "FINAL STATUS : NOT_FOUND" << KNRM << std::endl;
+        }
+        else if (!ret_GETmethod.compare("AUTOINDEX")) {
+            _status = OK;
+            std::cout << KRED << "FINAL STATUS : AUTOINDEX" << KNRM << std::endl;
+        }
+        // TODO : CHECK WHICH CASE
+        // else if (!ret_GETmethod.compare("")) {
+        //     _status = OK;
+        //     std::cout << KRED << "FINAL STATUS : EMPTY SHIIIIIIIIIIIIIIIIIIIIIIT" << KNRM << std::endl;
+        // }
     }
 }
 
@@ -135,7 +154,7 @@ bool    Response::serviceUnavailable() {
 }
 
 bool    Response::badRequest( void ) {
-    _status = BAD_RQST;
+    // _status = BAD_RQST;
     return false;
 }
 
@@ -161,7 +180,7 @@ bool    Response::forbiddenRessources( void ) {
             }
         }
         return false;
-    } 
+    }
     else if( accessType == S_IFREG ){
         // std::cout << "DBG :::::::::::::::: is a file" << std::endl;
         if (access(std::string(_root + _request.getPath()).c_str(), R_OK) != F_OK)
@@ -177,7 +196,7 @@ bool    Response::forbiddenRessources( void ) {
 
 void    Response::fillErrorPage( void ) {
     std::string     buffer;
-    
+
     _responseBuffer.append(_status);
     _responseBuffer.append("\nContent-Type: text/html\nContent-Length: ");
     if (!_status.compare(FORBIDDEN_RQST))
@@ -190,6 +209,8 @@ void    Response::fillErrorPage( void ) {
         buffer = METHOD_NOT_ALLOWED_405;
     else if (!_status.compare(NOT_IMPLEMENTED))
         buffer = NOT_IMPLEMENTED_501;
+    else if (!_status.compare(NOT_FOUND))
+        buffer = NOT_FOUND_404;
     _responseBuffer.append(std::to_string(buffer.length()));
     _responseBuffer.append("\n\n").append(buffer);
 }
@@ -228,11 +249,11 @@ std::string    Response::checkMethods( void ) {
             return "";
         }
     }
-    return METHOD_NOT_ALLOWED ; 
+    return METHOD_NOT_ALLOWED ;
 }
 
 size_t     Response::isLocation() {
-    for (std::vector<Location>::iterator it = _server[_serverIndex].get_location().begin(); 
+    for (std::vector<Location>::iterator it = _server[_serverIndex].get_location().begin();
     it != _server[_serverIndex].get_location().end(); it++) {
         if (it->get_locations_path().compare(0, it->get_locations_path().length(), _request.getPath().substr(0, it->get_locations_path().length())) == 0) {
             if (_request.getPath().length() > it->get_locations_path().length()) {
@@ -269,7 +290,7 @@ size_t    Response::getAccessType(std::string PATH) {
     std::string filePath = _server.begin()->get_root();
     filePath.append(_request.getPath());
     std::ifstream   FILE;
-    
+
     std::cout << "FILE TO OPEN : " << filePath << std::endl;
     FILE.open(filePath);
     if (FILE.is_open()) {
