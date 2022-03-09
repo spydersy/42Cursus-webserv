@@ -6,20 +6,16 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 23:19:04 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/01 01:42:17 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/10 00:01:51 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/webserv.hpp"
 
 /*
-** CONSTRUCTORS & DESTRUCTORS :
+** CONSTRUCTORS & DESTRUCTORS : ************************************************
 */
-MimeTypes::~MimeTypes() {
-            std::cout << "MimeTypes Destructor Called :'( " << std::endl;
-        }
-MimeTypes::MimeTypes(Request REQUEST, std::vector<Server> CONF) :   _REQUEST(REQUEST),
-                                            _CONF(CONF),
+MimeTypes::MimeTypes(std::string PATH) :    _path(PATH),
                                             _extension(""),
                                             _contentType("") {
     std::cout << "MimeTypes Constructor Called :) " << std::endl;
@@ -370,38 +366,50 @@ MimeTypes::MimeTypes(Request REQUEST, std::vector<Server> CONF) :   _REQUEST(REQ
     _types.push_back(std::make_pair("xvml", "application/xv+xml"));
     _types.push_back(std::make_pair("yang", "application/yang"));
     _types.push_back(std::make_pair("yml", "text/yaml"));
+    _mimetype.first = "def";
+    _mimetype.second = "text/plain";
+}
+MimeTypes::~MimeTypes() {
+            std::cout << "MimeTypes Destructor Called :'( " << std::endl;
 }
 
 /*
-** GETTERS : 
+** GETTERS : *******************************************************************
 */
 std::string                         MimeTypes::getExtension() { return this->_extension; }
-std::pair<std::string, std::string> MimeTypes::get_mimetype() { return this->_mimetype; }
+std::pair<std::string, std::string> MimeTypes::get_mimetype() {
+    badExtension();
+    return this->_mimetype;
+}
 
 /*
-** METHODS : 
+** SETTERS : *******************************************************************
+*/
+void                                MimeTypes::set_path(std::string path) { this->_path = path; }
+
+/*
+** METHODS : *******************************************************************
 */
 size_t    MimeTypes::haveExtension() {
-    std::string path = _REQUEST.getPath();
     size_t      index;
-
-    if ((index = path.find_last_of(".")) != NPOS) {
+    std::cout << "DBG_MimeTypes::haveExtension :: [" << _path << "]" << std::endl;
+    if ((index = _path.find_last_of(".")) != NPOS) {
         std::cout << "EX INDEX : " << index << std::endl;
-        return (index);
+        return index;
     }
     std::cout << "EX INDEX : NPOS" << std::endl;
-    return (NPOS);
+    return NPOS;
 }
 
 bool    MimeTypes::badExtension() {
-    std::string path = _REQUEST.getPath();
+    // std::string path = _REQUEST.getPath();
     size_t      index = this->haveExtension();
-    
+
     if (index == NPOS) {
         std::cout << "BAAAAAAD1" << std::endl;
         return true;
     }
-    _extension = path.substr(index + 1);
+    _extension = _path.substr(index + 1);
     for (std::vector<std::pair<std::string, std::string> >::iterator it = _types.begin(); it < _types.end(); it++) {
         if (_extension.compare(it->first) == 0) {
             _mimetype = *it;

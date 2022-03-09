@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 15:17:13 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/06 21:12:04 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/09 16:39:00 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,13 @@ private:
     std::vector<std::string>    _indexs;
     std::string                 _autoindex;
     bool                        _pathIsDir;
+
     size_t                      getAccessType(std::string PATH);
     void                        fillErrorPage( void );
     bool                        serviceUnavailable();
     std::string                 GETmethod();
+    void                        fillResponseBuffer( void );
+
 public:
     /*
     ** Constructors && Destructors :
@@ -42,14 +45,14 @@ public:
     Response( Request REQ, std::vector<Server> SERV );
     ~Response();
     /*
-    ** Getters && Setters :  
+    ** Getters && Setters :
     */
     Request             &get_request( void );
     std::vector<Server> &get_server( void );
     MimeTypes           &get_MT( void );
     std::string         &get_responseBuffer( void );
     /*
-    ** SETTERS : 
+    ** SETTERS :
     */
     void                                    setHttpVersion( void );
     int                                     getServerIndex( void );

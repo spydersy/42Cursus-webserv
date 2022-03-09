@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/09 00:03:35 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/10 00:04:41 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 */
 Response::Response( Request REQ, std::vector<Server> SERV ) :   _request(REQ),
                                                                 _server(SERV),
-                                                                _MT(_request, _server),
+                                                                _MT(""),
                                                                 _responseBuffer(""),
                                                                 _serverIndex(NPOS),
                                                                 _isLocation(NPOS),
@@ -56,6 +56,7 @@ std::string Response::GETmethod() {
             for (std::vector<std::string>::iterator it = _indexs.begin(); it != _indexs.end(); it++) {
                 if (getAccessType(_root + "/" + *it) == S_IFREG) {
                     if (access((_root + "/" + *it).c_str(), R_OK) == F_OK) {
+                        _root.append("/" + *it);
                         return OK;
                     }
                     else {
@@ -81,6 +82,7 @@ std::string Response::GETmethod() {
     else {
         if (getAccessType(_root + _request.getPath()) == S_IFREG) {
             if (access((_root + _request.getPath()).c_str(), R_OK) == F_OK) {
+                _root.append(_request.getPath());
                 return OK;
             }
             else {
@@ -91,7 +93,7 @@ std::string Response::GETmethod() {
             return NOT_FOUND;
         }
     }
-    return "";
+    // return "";
 }
 
 /*
@@ -123,6 +125,7 @@ void    Response::setHttpStatus( void ) {
         ret_GETmethod = GETmethod();
         if (!ret_GETmethod.compare(OK)) {
             _status = OK;
+            fillResponseBuffer();
             std::cout << KRED << "FINAL STATUS : OK" << KNRM << std::endl;
         }
         else if (!ret_GETmethod.compare(FORBIDDEN_RQST)) {
@@ -193,6 +196,16 @@ bool    Response::forbiddenRessources( void ) {
 /*
 ** UTILS : *********************************************************************
 */
+
+void    Response::fillResponseBuffer( void ) {
+    std::pair<std::string, std::string> ContentType;
+
+    _responseBuffer.append(_status);
+    std::cout << KCYN << "DBG READ_PAGE _root :: [" << _root << "]" << KNRM << std::endl;
+    _MT.set_path(_root);
+    ContentType = _MT.get_mimetype();
+    std::cout << KCYN << "ContentType_DBG :: [" << ContentType.first << " | " << ContentType.second << "]" << KNRM << std::endl;
+}
 
 void    Response::fillErrorPage( void ) {
     std::string     buffer;

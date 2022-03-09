@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:04:42 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/28 23:24:48 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/09 23:48:57 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,24 +19,25 @@
 class MimeTypes
 {
 private:
-    Request                                             _REQUEST;
-    std::vector<Server>                                              _CONF;
+    std::string                                         _path;
     std::vector<std::pair<std::string, std::string> >   _types;
     std::pair<std::string, std::string>                 _mimetype;
     std::string                                         _extension;
     std::string                                         _contentType;
 public:
-    // CONSTRUCTORS & DSTRUCTORS : 
+    // CONSTRUCTORS & DESTRUCTORS :
     ~MimeTypes();
-    MimeTypes(Request REQUEST, std::vector<Server> CONF);
+    MimeTypes(std::string PATH);
 
-    // GETTERS : 
+    // GETTERS :
     std::string getExtension();
     std::pair<std::string, std::string> get_mimetype();
 
-    // METHODS : 
-    size_t    haveExtension();
-    bool    badExtension();
+    // SETTERS:
+    void        set_path(std::string path);
+    // METHODS :
+    size_t      haveExtension();
+    bool        badExtension();
 };
 
 #endif
