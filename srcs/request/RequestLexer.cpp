@@ -7,7 +7,19 @@ RequestLexer::RequestLexer() {
 	this->_headersSet = false;
 }
 
+RequestLexer::RequestLexer( const RequestLexer &rqstL ) {
+	*this = rqstL;
+}
+
 RequestLexer::~RequestLexer() {
+}
+
+RequestLexer	&RequestLexer::operator= ( const RequestLexer &rqstL ) {
+	this->_requestLine = rqstL._requestLine;
+	this->_lineSet = rqstL._lineSet;
+	this->_headers = rqstL._headers;
+	this->_headersSet = rqstL._headersSet;
+	return *this;
 }
 
 std::string		&RequestLexer::getRequestLine() {

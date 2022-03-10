@@ -10,10 +10,10 @@ Request::Request (): _error(false) {
 
 Request::Request (const Request &rqst ) {
 	*this = rqst;
-	this->_request_type = UNKNOWN;
-	this->_contentLength = 0;
-	this->_totalread = 0;
-	this->_fileOpened = false;
+	// this->_request_type = UNKNOWN;
+	// this->_contentLength = 0;
+	// this->_totalread = 0;
+	// this->_fileOpened = false;
 }
 
 Request::~Request () {
@@ -34,8 +34,13 @@ Request	&Request::operator= ( const Request &rqst ) {
 	this->_port = rqst._port;
 	this->_headers = rqst._headers;
 	this->_bodyfilename = rqst._bodyfilename;
+	this->_fileOpened = rqst._fileOpened;	
+	this->_totalread = rqst._totalread;
+	this->_contentLength = rqst._contentLength;
+	this->_request_type = rqst._request_type;
+	this->_chunked = rqst._chunked;
 	this->_error = rqst._error;
-
+	
 	return *this;
 }
 

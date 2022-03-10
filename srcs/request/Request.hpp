@@ -35,6 +35,8 @@ class Request {
 		bool											_error;
 
 		// private methods
+		void											add_request_line ( std::string &buffer );
+		void											add_headers ( std::string &buffer );
 		bool											read_content_length( std::string &buffer );
 		bool											read_chunked( std::string &buffer );
 		bool											add_chunk();
@@ -46,8 +48,6 @@ class Request {
 		Request											&operator= ( const Request &rqst );
 		// add Buffer to right place
 		int												add_buffer ( int &recvLength, char *add_buffer );
-		void											add_request_line ( std::string &buffer );
-		void											add_headers ( std::string &buffer );
 		// Setters
 		void											setMethod ( std::string &part );
 		void											setPath ( std::string &part );

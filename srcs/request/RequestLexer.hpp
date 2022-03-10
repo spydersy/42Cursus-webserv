@@ -11,7 +11,9 @@ class RequestLexer {
 
 	public:
 		RequestLexer();
+		RequestLexer( const RequestLexer &rqstL );
 		~RequestLexer();
+		RequestLexer 	&operator=( const RequestLexer &rqstL );
 
 		// Getters
 		std::string		&getRequestLine();
