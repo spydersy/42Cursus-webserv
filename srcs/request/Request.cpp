@@ -17,7 +17,7 @@ Request::Request (const Request &rqst ) {
 }
 
 Request::~Request () {
-	remove(this->_bodyfilename.c_str());
+	// remove(this->_bodyfilename.c_str());
 	this->_bodyfilename = "";
 	this->_request_type = UNKNOWN;
 	this->_contentLength = 0;
