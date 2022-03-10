@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 09:35:59 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/09 16:16:17 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/10 01:49:48 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void    responseHandler(std::vector<Server> CONF, Request rqst, int socketFD)
 
     response.setHttpVersion();
     response.setHttpStatus();
-    std::cout << KRED << "response BUFFER : [[[" << response.get_responseBuffer() << "]]]" << KNRM << std::endl;
+    // std::cout << KRED << "response BUFFER : [[[" << response.get_responseBuffer() << "]]]" << KNRM << std::endl;
     write(socketFD, response.get_responseBuffer().c_str(), response.get_responseBuffer().length());
     std::cout << KGRN << "----------------------- RES_HANDLER : END -----------------------" << KNRM << std::endl;
 }

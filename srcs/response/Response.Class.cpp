@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/10 00:04:41 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/10 02:31:17 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ void    Response::setHttpStatus( void ) {
     }
     getServerIndex();
     isLocation();
+    _path = _request.getPath();
     _root = ((_isLocation == NPOS) ? _server[_serverIndex].get_root() : _server[_serverIndex].get_location()[_isLocation].get_root());
     if (_isLocation != NPOS)
         _request.getPath().erase(0, _server[_serverIndex].get_location()[_isLocation].get_locations_path().length());
@@ -140,6 +141,7 @@ void    Response::setHttpStatus( void ) {
         }
         else if (!ret_GETmethod.compare("AUTOINDEX")) {
             _status = OK;
+            fillAutoindexPage();
             std::cout << KRED << "FINAL STATUS : AUTOINDEX" << KNRM << std::endl;
         }
         // TODO : CHECK WHICH CASE
@@ -196,15 +198,49 @@ bool    Response::forbiddenRessources( void ) {
 /*
 ** UTILS : *********************************************************************
 */
-
-void    Response::fillResponseBuffer( void ) {
-    std::pair<std::string, std::string> ContentType;
+void    Response::fillAutoindexPage( void ) {
+    // std::cout << "AUTOINDEX_DBG path :[" << _request.getPath() << "][" << _path << "]" << std::endl;
+    autoindex       page(_root, _path);
+    std::string     autoindexPage;
 
     _responseBuffer.append(_status);
-    std::cout << KCYN << "DBG READ_PAGE _root :: [" << _root << "]" << KNRM << std::endl;
+    _responseBuffer.append("\nContent-Type: text/html\nContent-Length: ");
+    autoindexPage = page.get_page();
+    _responseBuffer.append(std::to_string(autoindexPage.length()));
+    _responseBuffer.append("\n\n");
+    _responseBuffer.append(autoindexPage);
+}
+
+void    Response::fillContentType( void ) {
+    std::pair<std::string, std::string> ContentType;
+    _responseBuffer.append(_status);
     _MT.set_path(_root);
     ContentType = _MT.get_mimetype();
-    std::cout << KCYN << "ContentType_DBG :: [" << ContentType.first << " | " << ContentType.second << "]" << KNRM << std::endl;
+    _responseBuffer.append("\nContent-Type: ").append(ContentType.second);
+}
+
+void    Response::fillContentLength( void ) {
+    std::ifstream   FILE;
+    std::string     line;
+    std::string     buffer;
+    size_t          len = 0;
+
+    _responseBuffer.append("\nContent-Length: ");
+    FILE.open(_root);
+    if (FILE.is_open()) {
+        while (getline(FILE, line)) {
+            len += line.length() + 1;
+            buffer.append(line).append("\n");
+        }
+    }
+    _responseBuffer.append(std::to_string(len));
+    _responseBuffer.append("\n\n");
+    _responseBuffer.append(buffer);
+}
+
+void    Response::fillResponseBuffer( void ) {
+    fillContentType();
+    fillContentLength();
 }
 
 void    Response::fillErrorPage( void ) {
@@ -309,10 +345,10 @@ size_t    Response::getAccessType(std::string PATH) {
     if (FILE.is_open()) {
         _responseBuffer.append("200 OK\nContent-Type: ");
         if (filePath.find(".html") != std::string::npos) {
-            _responseBuffer.append("text/html\nContent-Length: ");
+            _responseBuffer.append("text/html\nContent-Leeength: ");
         }
         else {
-            _responseBuffer.append("text/css\nContent-Length: ");
+            _responseBuffer.append("text/css\nContent-Leeength: ");
         }
         std::string FILEinLine;
         std::string buffer;

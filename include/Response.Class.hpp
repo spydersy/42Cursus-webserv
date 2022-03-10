@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 15:17:13 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/09 16:39:00 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/10 02:09:45 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,9 @@ private:
     bool                        serviceUnavailable();
     std::string                 GETmethod();
     void                        fillResponseBuffer( void );
+    void                        fillContentType();
+    void                        fillContentLength();
+    void                        fillAutoindexPage();
 
 public:
     /*

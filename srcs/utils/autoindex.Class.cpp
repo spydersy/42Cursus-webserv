@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/05 16:03:40 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/05 16:22:53 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/10 02:38:29 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 
 
 /*
-** Getters & Setters :  
+** Getters & Setters :
 */
-autoindex::autoindex( std::string path) :   _path(path),
+autoindex::autoindex( std::string path, std::string userPath) :   _path(path),
+                                            _userPath(userPath),
                                             _page("") {
     this->_page.append("<html>\r\n");
     this->_page.append(" <style>\r\n");
@@ -24,15 +25,17 @@ autoindex::autoindex( std::string path) :   _path(path),
     this->_page.append("     text-align: left;\r\n");
     this->_page.append(" }\r\n");
     this->_page.append(" </style>\r\n");
-    this->_page.append("<head><title>Index of " + this->_path + "</title></head>\r\n");
+    this->_page.append("<head><title>Index of " + this->_userPath + "</title></head>\r\n");
     this->_page.append("<body>\r\n");
-    this->_page.append("<h1>Index of " + this->_path + "</h1><hr><pre>\r\n");
+    this->_page.append("<h1>Index of " + this->_userPath + "</h1><hr><pre>\r\n");
     this->_page.append("<table style=\"width:100%\">\r\n");
     this->_page.append("<tr>\r\n");
     this->_page.append("<th>Name</th>\r\n");
     this->_page.append("<th>Size</th>\r\n");
     this->_page.append("<th>Date</th>\r\n");
     this->_page.append("</tr>\r\n");
+    if (*_userPath.rbegin() != '/')
+        _userPath.append("/");
     generatePage();
 }
 autoindex::~autoindex(){}
@@ -80,11 +83,11 @@ std::string     autoindex::getFilePermissions(std::string file) {
         modeval.push_back((perm & S_IROTH) ? 'r' : '-');
         modeval.push_back((perm & S_IWOTH) ? 'w' : '-');
         modeval.push_back((perm & S_IXOTH) ? 'x' : '-');
-        return modeval;     
+        return modeval;
     }
     else{
         return strerror(errno);
-    }   
+    }
 }
 
 void    autoindex::generatePage(){
@@ -98,7 +101,7 @@ void    autoindex::generatePage(){
         while ((dir = readdir(d)) != NULL)
         {
             this->_page.append("<tr>\r\n");
-            this->_page.append("<td><a href=\"" + path + dir->d_name + "\">" + dir->d_name + "</a></td>\r\n");
+            this->_page.append("<td><a href=\"" + _userPath + dir->d_name + "\">" + dir->d_name + "</a></td>\r\n");
             this->_page.append("<td>" + std::to_string(getFileSize(path + "/" + dir->d_name)) + "</td>\r\n");
             this->_page.append("<td>" + getFileDate(path + "/" + dir->d_name) +"</td>");
             this->_page.append("</tr>");
