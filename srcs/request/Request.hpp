@@ -37,6 +37,7 @@ class Request {
 		// private methods
 		bool											read_content_length( std::string &buffer );
 		bool											read_chunked( std::string &buffer );
+		bool											add_chunk();
 		void											getChunkSize();
 	public:
 		Request ();

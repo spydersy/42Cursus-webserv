@@ -145,6 +145,23 @@ void	Request::getChunkSize()
 	}
 }
 
+bool	Request::add_chunk(){
+	if (this->_totalread > this->_chunked.length()) {
+		this->_bodyFile.write(this->_chunked.c_str(), this->_chunked.length());
+		this->_contentLength += this->_chunked.length();
+		this->_totalread -= this->_chunked.length();
+		this->_chunked.erase(0, this->_chunked.length());
+		return false;
+	}
+	else {
+		this->_bodyFile.write(this->_chunked.c_str(), this->_totalread);
+		this->_contentLength += this->_totalread;
+		this->_chunked.erase(0, this->_totalread + 2);
+		this->_totalread = 0;
+		return true;
+	}
+}
+
 bool		Request::read_chunked( std::string &buffer )
 {
 	this->_chunked += buffer;
@@ -152,19 +169,8 @@ bool		Request::read_chunked( std::string &buffer )
 		if (this->_totalread == 0) {
 			getChunkSize();
 			if (this->_totalread != 0) {
-				if (this->_totalread > this->_chunked.length()) {
-					this->_bodyFile.write(this->_chunked.c_str(), this->_chunked.length());
-					this->_contentLength += this->_chunked.length();
-					this->_totalread -= this->_chunked.length();
-					this->_chunked.erase(0, this->_chunked.length());
+				if (add_chunk() == false)
 					return false;
-				}
-				else {
-					this->_bodyFile.write(this->_chunked.c_str(), this->_totalread);
-					this->_contentLength += this->_totalread;
-					this->_chunked.erase(0, this->_totalread + 2);
-					this->_totalread = 0;
-				}
 			}
 			else if (this->_chunked.empty()) {
 				this->_bodyFile.close();
@@ -172,19 +178,8 @@ bool		Request::read_chunked( std::string &buffer )
 			}
 		}
 		else {
-			if (this->_totalread > this->_chunked.length()) {
-				this->_bodyFile.write(this->_chunked.c_str(), this->_chunked.length());
-				this->_contentLength += this->_chunked.length();
-				this->_totalread -= this->_chunked.length();
-				this->_chunked.erase(0, this->_chunked.length());
+			if (add_chunk() == false)
 				return false;
-			}
-			else {
-				this->_bodyFile.write(this->_chunked.c_str(), this->_totalread);
-				this->_contentLength += this->_totalread;
-				this->_chunked.erase(0, this->_totalread + 2);
-				this->_totalread = 0;
-			}
 		}
 	}
 	return false;
