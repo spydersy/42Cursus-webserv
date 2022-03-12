@@ -1,0 +1,20 @@
+rm -rf main.o ./srcs/confParsing/fileHandlerUtils.o ./srcs/confParsing/confParsing.o ./srcs/confParsing/positionHandler.o ./srcs/confParsing/fillData.o ./srcs/confParsing/Server.Class.o ./srcs/confParsing/Location.Class.o ./srcs/utils/errorStream.o ./srcs/utils/MimeTypes.Class.o ./srcs/utils/autoindex.Class.o ./servers/servers.o ./servers/SocketInfos.o ./servers/Client.o ./srcs/request/Request.o ./srcs/request/Utils.o ./srcs/request/RequestLexer.o ./srcs/response/Response.Class.o
+rm -rf webserv
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o main.o main.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/confParsing/fileHandlerUtils.o srcs/confParsing/fileHandlerUtils.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/confParsing/confParsing.o srcs/confParsing/confParsing.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/confParsing/positionHandler.o srcs/confParsing/positionHandler.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/confParsing/fillData.o srcs/confParsing/fillData.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/confParsing/Server.Class.o srcs/confParsing/Server.Class.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/confParsing/Location.Class.o srcs/confParsing/Location.Class.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/utils/errorStream.o srcs/utils/errorStream.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/utils/MimeTypes.Class.o srcs/utils/MimeTypes.Class.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/utils/autoindex.Class.o srcs/utils/autoindex.Class.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o servers/servers.o servers/servers.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o servers/SocketInfos.o servers/SocketInfos.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o servers/Client.o servers/Client.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/request/Request.o srcs/request/Request.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/request/Utils.o srcs/request/Utils.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/request/RequestLexer.o srcs/request/RequestLexer.cpp
+c++  -Wall -Werror -Wextra -std=c++98 -g3  -c -o srcs/response/Response.Class.o srcs/response/Response.Class.cpp
+clang++ -Wall -Werror -Wextra -std=c++98 -g3 main.o ./srcs/confParsing/fileHandlerUtils.o ./srcs/confParsing/confParsing.o ./srcs/confParsing/positionHandler.o ./srcs/confParsing/fillData.o ./srcs/confParsing/Server.Class.o ./srcs/confParsing/Location.Class.o ./srcs/utils/errorStream.o ./srcs/utils/MimeTypes.Class.o ./srcs/utils/autoindex.Class.o ./servers/servers.o ./servers/SocketInfos.o ./servers/Client.o ./srcs/request/Request.o ./srcs/request/Utils.o ./srcs/request/RequestLexer.o ./srcs/response/Response.Class.o -o webserv

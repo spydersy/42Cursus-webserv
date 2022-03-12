@@ -27,6 +27,20 @@ Server::Server( void ) :    _server_names(std::vector<std::string>()),
                             _whoAmI("Server") {}
 Server::~Server(){}
 
+Server      &Server::operator= ( const Server & srv ) {
+    this->_server_names = srv._server_names;
+    this->_host = srv._host;
+    this->_port = srv._port;
+    this->_root = srv._root;
+    this->_index = srv._index;
+    this->_methods = srv._methods;
+    this->_location = srv._location;
+    this->_CGI = srv._CGI;
+    this->_client_max_body_size = srv._client_max_body_size;
+    this->_autoindex = srv._autoindex;
+    return *this;
+}
+
 /*
 ** GETTERS : 
 */
@@ -40,6 +54,7 @@ std::vector<std::string>     &Server::get_index() { return this->_index; }
 std::vector<std::string>     &Server::get_methods() { return this->_methods; }
 std::vector<Location>        &Server::get_location() { return this->_location; }
 std::vector<CGI>             &Server::get_CGI() { return this->_CGI; }
+SocketInfos					 &Server::get_socketInfos() { return this->_socketInfos; }
 
 /*
 ** METHODS : 

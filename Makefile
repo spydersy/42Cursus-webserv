@@ -6,20 +6,23 @@
 #    By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/02 21:33:12 by abelarif          #+#    #+#              #
-#    Updated: 2022/03/08 18:01:35 by abelarif         ###   ########.fr        #
+#    Updated: 2022/03/12 01:08:09 by abelarif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME=   webserv
 
-SERVER_SRCS=	./srcs/server/server.cpp\
+SERVER_SRCS=	./servers/servers.cpp\
+				./servers/SocketInfos.cpp\
+				./servers/Client.cpp\
 
 REQUEST_SRCS=	./srcs/request/Request.cpp\
-				./srcs/request/requestHandler.cpp\
 				./srcs/request/Utils.cpp\
+				./srcs/request/RequestLexer.cpp\
+				# ./srcs/request/requestHandler.cpp\
 
 RESPONSE_SRCS=	./srcs/response/Response.Class.cpp\
-				./srcs/response/responseHandler.cpp\
+				# ./srcs/response/responseHandler.cpp\
 
 PARSING_SRCS=	./srcs/confParsing/fileHandlerUtils.cpp\
 				./srcs/confParsing/confParsing.cpp\

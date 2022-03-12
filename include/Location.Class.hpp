@@ -35,6 +35,7 @@ public:
     // CONTRUCTORS & DESTRUCTORS : 
     Location();
     ~Location();
+    Location    &operator=( const Location &src);
 
     // GETTERS : 
     std::string                 &get_locations_path();

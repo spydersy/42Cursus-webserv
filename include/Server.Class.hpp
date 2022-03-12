@@ -25,6 +25,8 @@
 */
 # define DFLTCONF   "./conf/default.conf"
 
+#include "../servers/SocketInfos.hpp"
+
 /*
 ** CONFIGFILE  KEYWORDS: *******************************************************
 */
@@ -74,9 +76,11 @@ private:
     std::string                  _client_max_body_size;
     std::string                  _autoindex;
     const std::string            _whoAmI;
+    SocketInfos					 _socketInfos;
 
 public:
     Server( void );
+    Server      &operator= ( const Server & srv );
     ~Server();
 
     //  GETTERS :
@@ -91,6 +95,7 @@ public:
     std::vector<CGI>             &get_CGI();
     std::string                  &get_autoindex();
     std::string                  getId() const ;
+    SocketInfos					 &get_socketInfos();
 
     //  METHODS:
     bool    setHostPort();

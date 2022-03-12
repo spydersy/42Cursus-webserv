@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 02:02:24 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/07 00:18:04 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/11 21:22:32 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,10 @@
 #include "./MimeTypes.Class.hpp"
 #include "./Response.Class.hpp"
 #include "./autoindex.Class.hpp"
+
+#include "../srcs/request/RequestLexer.hpp"
+#include "../servers/servers.hpp"
+
 
 /*
 ** ALIAS: **********************************************************************
@@ -140,7 +144,7 @@ void    requestHandler(std::vector<Server> CONF, std::string buffer, int socketF
 ** RESPONSE FUNCTIONS:
 */
 void    responseHandler(std::vector<Server> CONF, Request rqst, int socketFD);
-
+// void    responseHandler(std::vector< std::pair< Client, Request > > &clieent,);
 /*
 ** GLOBAL VARIABLES: ***********************************************************
 */

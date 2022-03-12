@@ -26,6 +26,16 @@ Location::Location() :  _whoAmI("Location"),
                         _autoindex("") {}
 Location::~Location() {}
 
+Location    &Location::operator=( const Location &src) {
+    this->_locations_path = src._locations_path;
+    this->_methods = src._methods;
+    this->_root = src._root;
+    this->_client_max_body_size = src._client_max_body_size;
+    this->_index = src._index;
+    this->_autoindex = src._autoindex;
+    return *this;
+}
+
 /*
 ** GETTERS : 
 */

@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/10 02:31:17 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/12 02:42:40 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ Response::Response( Request REQ, std::vector<Server> SERV ) :   _request(REQ),
                                                                 _responseBuffer(""),
                                                                 _serverIndex(NPOS),
                                                                 _isLocation(NPOS),
+                                                                _length(0),
                                                                 _root(""),
                                                                 _method(""),
                                                                 _status(""),
@@ -34,10 +35,27 @@ Response::~Response(){
     // std::cout << "Response Destructor Called :'( " << std::endl;
 }
 
+Response        &Response::operator=( const Response &src ) {
+    this->_request = src._request;
+    this->_server = src._server;
+    this->_MT = src._MT;
+    this->_responseBuffer = src._responseBuffer;
+    this->_serverIndex = src._serverIndex;
+    this->_isLocation = src._isLocation;
+    this->_root = src._root;
+    this->_path = src._path;
+    this->_method = src._method;
+    this->_status = src._status;
+    this->_indexs = src._indexs;
+    this->_autoindex = src._autoindex;
+    this->_pathIsDir = src._pathIsDir;
+    return *this;
+}
 /*
 ** GETTERS && SETTERS : ********************************************************
 */
 Request             &Response::get_request( void ) { return this->_request; }
+size_t              &Response::get_length( void ) { return this->_length; }
 std::vector<Server> &Response::get_server( void ) { return this->_server; }
 MimeTypes           &Response::get_MT( void ) { return this->_MT; }
 std::string         &Response::get_responseBuffer( void ) { return this->_responseBuffer; }
@@ -206,7 +224,8 @@ void    Response::fillAutoindexPage( void ) {
     _responseBuffer.append(_status);
     _responseBuffer.append("\nContent-Type: text/html\nContent-Length: ");
     autoindexPage = page.get_page();
-    _responseBuffer.append(std::to_string(autoindexPage.length()));
+    _length = autoindexPage.length();
+    _responseBuffer.append(std::to_string(_length));
     _responseBuffer.append("\n\n");
     _responseBuffer.append(autoindexPage);
 }
@@ -223,17 +242,16 @@ void    Response::fillContentLength( void ) {
     std::ifstream   FILE;
     std::string     line;
     std::string     buffer;
-    size_t          len = 0;
 
     _responseBuffer.append("\nContent-Length: ");
     FILE.open(_root);
     if (FILE.is_open()) {
         while (getline(FILE, line)) {
-            len += line.length() + 1;
+            _length += line.length() + 1;
             buffer.append(line).append("\n");
         }
     }
-    _responseBuffer.append(std::to_string(len));
+    _responseBuffer.append(std::to_string(_length));
     _responseBuffer.append("\n\n");
     _responseBuffer.append(buffer);
 }
@@ -260,7 +278,8 @@ void    Response::fillErrorPage( void ) {
         buffer = NOT_IMPLEMENTED_501;
     else if (!_status.compare(NOT_FOUND))
         buffer = NOT_FOUND_404;
-    _responseBuffer.append(std::to_string(buffer.length()));
+        _length = buffer.length();
+    _responseBuffer.append(std::to_string(_length));
     _responseBuffer.append("\n\n").append(buffer);
 }
 
