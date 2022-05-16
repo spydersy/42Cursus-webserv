@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/05 16:03:40 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/10 02:38:29 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/04/12 21:25:45 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 /*
 ** Getters & Setters :
 */
-autoindex::autoindex( std::string path, std::string userPath) :   _path(path),
-                                            _userPath(userPath),
-                                            _page("") {
+autoindex::autoindex( std::string path, std::string userPath) : _path(path),
+                                                                _userPath(userPath),
+                                                                _page("") {
     this->_page.append("<html>\r\n");
     this->_page.append(" <style>\r\n");
     this->_page.append(" th {\r\n");

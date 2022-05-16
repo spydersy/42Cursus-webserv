@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 23:19:04 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/10 00:01:51 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/18 13:29:04 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,31 @@
 MimeTypes::MimeTypes(std::string PATH) :    _path(PATH),
                                             _extension(""),
                                             _contentType("") {
-    std::cout << "MimeTypes Constructor Called :) " << std::endl;
+    initMimeTypes();
+}
+
+MimeTypes::MimeTypes() :    _path(""),
+                            _extension(""),
+                            _contentType(""){ 
+    initMimeTypes();
+}
+
+MimeTypes::~MimeTypes() {}
+
+/*
+** GETTERS : *******************************************************************
+*/
+std::string                         MimeTypes::getExtension() { return this->_extension; }
+std::pair<std::string, std::string> MimeTypes::get_mimetype() {
+    badExtension();
+    return this->_mimetype;
+}
+
+/*
+** SETTERS : *******************************************************************
+*/
+void                                MimeTypes::set_path(std::string path) { this->_path = path; }
+void                                MimeTypes::initMimeTypes( void ) {
     _types.push_back(std::make_pair("3gpp", "audio/3gpp"));
     _types.push_back(std::make_pair("jpm", "video/jpm"));
     _types.push_back(std::make_pair("mp3", "audio/mp3"));
@@ -369,54 +393,31 @@ MimeTypes::MimeTypes(std::string PATH) :    _path(PATH),
     _mimetype.first = "def";
     _mimetype.second = "text/plain";
 }
-MimeTypes::~MimeTypes() {
-            std::cout << "MimeTypes Destructor Called :'( " << std::endl;
-}
-
-/*
-** GETTERS : *******************************************************************
-*/
-std::string                         MimeTypes::getExtension() { return this->_extension; }
-std::pair<std::string, std::string> MimeTypes::get_mimetype() {
-    badExtension();
-    return this->_mimetype;
-}
-
-/*
-** SETTERS : *******************************************************************
-*/
-void                                MimeTypes::set_path(std::string path) { this->_path = path; }
-
 /*
 ** METHODS : *******************************************************************
 */
 size_t    MimeTypes::haveExtension() {
     size_t      index;
-    std::cout << "DBG_MimeTypes::haveExtension :: [" << _path << "]" << std::endl;
     if ((index = _path.find_last_of(".")) != NPOS) {
-        std::cout << "EX INDEX : " << index << std::endl;
         return index;
     }
-    std::cout << "EX INDEX : NPOS" << std::endl;
     return NPOS;
 }
 
 bool    MimeTypes::badExtension() {
-    // std::string path = _REQUEST.getPath();
     size_t      index = this->haveExtension();
 
     if (index == NPOS) {
-        std::cout << "BAAAAAAD1" << std::endl;
         return true;
     }
     _extension = _path.substr(index + 1);
-    for (std::vector<std::pair<std::string, std::string> >::iterator it = _types.begin(); it < _types.end(); it++) {
+    for (std::vector<std::pair<std::string, std::string> >::iterator it = _types.begin();
+        it < _types.end(); it++)
+    {
         if (_extension.compare(it->first) == 0) {
             _mimetype = *it;
-            std::cout << "NOT BAAAAAAD : " << it->first << " | " << it->second << std::endl;
             return false;
         }
     }
-    std::cout << "BAAAAAAD2" << std::endl;
     return true;
 }

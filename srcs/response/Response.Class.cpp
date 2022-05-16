@@ -6,250 +6,380 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:17:47 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/10 02:31:17 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/04/26 17:55:42 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "../../include/webserv.hpp"
 
 /*
 ** CONSTRUCTORS && DESTRUCTORS : ***********************************************
 */
-Response::Response( Request REQ, std::vector<Server> SERV ) :   _request(REQ),
-                                                                _server(SERV),
-                                                                _MT(""),
-                                                                _responseBuffer(""),
-                                                                _serverIndex(NPOS),
-                                                                _isLocation(NPOS),
-                                                                _root(""),
-                                                                _method(""),
-                                                                _status(""),
-                                                                _indexs(std::vector<std::string>()),
-                                                                _autoindex(""),
-                                                                _pathIsDir(false) {
-    // std::cout << "Response Constructor Called :)" << std::endl;
+Response::Response( Request REQ, std::vector<Server> SERV )
+{
+    this->_server = SERV;
+    this->_request = REQ;
+    this->_serverIndex = 0;
+    this->_cgiIndex = 0;
+    this->_isLocation = NPOS;
+    this->_isCGI = false;
+    this->_responseBuffer = "";
+    this->_length = 0;
+    this->_accessType = 0;
+    this->_full_path = "";
+    this->_root = "";
+    this->_path = "";
+    this->_method = "";
+    this->_status = "";
+    this->_indexs = std::vector<std::string>();
+    this->_autoindex = "";
+    this->_pathIsDir = false;
+    this->_fileFD = -1;
+    this->_SENT = 0;
+    this->_HeaderSent = false;
+    this->_FULL_SIZE = 0;
+    this->_bodyPath = _request.getBodyfilename();
+
+    setHttpVersion();
+	setHttpStatus();
+    if (this->_request.getContentLength() > 0)
+        remove(this->_request.getBodyfilename().c_str());
 }
 
-Response::~Response(){
-    // std::cout << "Response Destructor Called :'( " << std::endl;
-}
-
-/*
-** GETTERS && SETTERS : ********************************************************
-*/
-Request             &Response::get_request( void ) { return this->_request; }
-std::vector<Server> &Response::get_server( void ) { return this->_server; }
-MimeTypes           &Response::get_MT( void ) { return this->_MT; }
-std::string         &Response::get_responseBuffer( void ) { return this->_responseBuffer; }
-
-void    Response::setHttpVersion( void ) {
-    _responseBuffer.append("HTTP/1.1 ");
-}
-
-/*
-** GET-POST-DELETE methods : ***************************************************
-*/
-std::string Response::GETmethod() {
-    std::string     ret;
-    if (_pathIsDir == true) {
-        if (_indexs.size()) {
-            for (std::vector<std::string>::iterator it = _indexs.begin(); it != _indexs.end(); it++) {
-                if (getAccessType(_root + "/" + *it) == S_IFREG) {
-                    if (access((_root + "/" + *it).c_str(), R_OK) == F_OK) {
-                        _root.append("/" + *it);
-                        return OK;
-                    }
-                    else {
-                        ret = FORBIDDEN_RQST;
-                    }
-                }
-                else {
-                    if (ret.compare(FORBIDDEN_RQST))
-                        ret = NOT_FOUND;
-                }
-                // std::cout << "[" <<  fullPath << "]" << std::endl;
-            }
-            return ret;
-        }
-        else {
-            if (!_autoindex.compare(ON))
-                return "AUTOINDEX";
-            else
-                return FORBIDDEN_RQST;
-        }
-        return ret;
-    }
-    else {
-        if (getAccessType(_root + _request.getPath()) == S_IFREG) {
-            if (access((_root + _request.getPath()).c_str(), R_OK) == F_OK) {
-                _root.append(_request.getPath());
-                return OK;
-            }
-            else {
-                return FORBIDDEN_RQST;
-            }
-        }
-        else {
-            return NOT_FOUND;
-        }
-    }
-    // return "";
-}
-
-/*
-** STATUS HANDLERS : ***********************************************************
-*/
-void    Response::setHttpStatus( void ) {
-    if (badRequest() == true) {
-        _status = FORBIDDEN_RQST;
-        fillErrorPage();
-        return;
-    }
-    getServerIndex();
-    isLocation();
-    _path = _request.getPath();
-    _root = ((_isLocation == NPOS) ? _server[_serverIndex].get_root() : _server[_serverIndex].get_location()[_isLocation].get_root());
-    if (_isLocation != NPOS)
-        _request.getPath().erase(0, _server[_serverIndex].get_location()[_isLocation].get_locations_path().length());
-    if (forbiddenRessources() == true) {
-        _status = FORBIDDEN_RQST;
-        fillErrorPage();
-        return;
-    }
-    if ((_status = checkMethods()).length()) {
-        fillErrorPage();
-        return;
-    }
-    if (!_request.getMethod().compare(GET)) {
-        std::string ret_GETmethod;
-
-        ret_GETmethod = GETmethod();
-        if (!ret_GETmethod.compare(OK)) {
-            _status = OK;
-            fillResponseBuffer();
-            std::cout << KRED << "FINAL STATUS : OK" << KNRM << std::endl;
-        }
-        else if (!ret_GETmethod.compare(FORBIDDEN_RQST)) {
-            _status = FORBIDDEN_RQST;
-            fillErrorPage();
-            std::cout << KRED << "FINAL STATUS : FORBIDDEN_RQST" << KNRM << std::endl;
-        }
-        else if (!ret_GETmethod.compare(NOT_FOUND)) {
-            _status = NOT_FOUND;
-            fillErrorPage();
-            std::cout << KRED << "FINAL STATUS : NOT_FOUND" << KNRM << std::endl;
-        }
-        else if (!ret_GETmethod.compare("AUTOINDEX")) {
-            _status = OK;
-            fillAutoindexPage();
-            std::cout << KRED << "FINAL STATUS : AUTOINDEX" << KNRM << std::endl;
-        }
-        // TODO : CHECK WHICH CASE
-        // else if (!ret_GETmethod.compare("")) {
-        //     _status = OK;
-        //     std::cout << KRED << "FINAL STATUS : EMPTY SHIIIIIIIIIIIIIIIIIIIIIIT" << KNRM << std::endl;
-        // }
-    }
-}
-
-bool    Response::serviceUnavailable() {
-    if (_request.getVersion().compare("HTTP/1.1"))
-        return true;
-    return false;
-}
-
-bool    Response::badRequest( void ) {
-    // _status = BAD_RQST;
-    return false;
-}
-
-bool    Response::forbiddenRessources( void ) {
-    size_t  accessType;
-    _autoindex = ((_isLocation == NPOS) ? _server[_serverIndex].get_autoindex() : _server[_serverIndex].get_location()[_isLocation].get_autoindex());
-    _indexs = ((_isLocation == NPOS) ? _server[_serverIndex].get_index() : _server[_serverIndex].get_location()[_isLocation].get_index());
-
-    // std::cout << "_rootDBG 403 : [" << _root << "] | RQST : [" << _request.getPath() << "] | method : [" << _request.getMethod() << "]" << std::endl;
-    // std::cout << "Path 403 : [" << std::string(_root + _request.getPath()).c_str() << "]" << std::endl;
-    accessType = getAccessType(_root + _request.getPath());
-    if( accessType == S_IFDIR )
+Response::Response( std::string FLAG)
+{
+    this->_responseBuffer = "";
+    this->_serverIndex = 0;
+    this->_cgiIndex = 0;
+    this->_isLocation = NPOS;
+    this->_isCGI = false;
+    this->_length = 0;
+    this->_accessType = 0;
+    this->_full_path = "";
+    this->_root = "";
+    this->_path = "";
+    this->_method = "";
+    this->_status = "";
+    this->_indexs = std::vector<std::string>();
+    this->_autoindex = "";
+    this->_pathIsDir = false;
+    this->_fileFD = -1;
+    this->_SENT = 0;
+    this->_FULL_SIZE = 0;
+    this->_HeaderSent = false;
+    if (FLAG.compare(REQUEST_TIMEOUT) == 0)
     {
-        // std::cout << "DBG :::::::::::::::: is a directory" << std::endl;
-        _pathIsDir = true;
-        if (_request.getMethod().compare(GET) == 0) {
-            if (access(_root.c_str(), R_OK) != F_OK)
+        setHttpVersion();
+        _status = REQUEST_TIMEOUT;
+        fillErrorPage();
+    }
+    else if (FLAG.compare(BAD_RQST) == 0)
+    {
+        setHttpVersion();
+        _status = BAD_RQST_400;
+        fillErrorPage();
+    }
+    else
+        this->~Response();
+}
+
+Response::Response( Response const &src)
+{
+    if (this != &src)
+    {
+        this->_request = src._request;
+        this->_server = src._server;
+        this->_MT = src._MT;
+        this->_isCGI = src._isCGI;
+        this->_responseBuffer = src._responseBuffer;
+        this->_serverIndex = src._serverIndex;
+        this->_cgiIndex = src._cgiIndex;
+        this->_isLocation = src._isLocation;
+        this->_length = src._length;
+        this->_accessType = src._accessType;
+        this->_full_path = src._full_path;
+        this->_root = src._root;
+        this->_path = src._path;
+        this->_method = src._method;
+        this->_status = src._status;
+        this->_indexs = src._indexs;
+        this->_autoindex = src._autoindex;
+        this->_pathIsDir = src._pathIsDir;
+        this->_fileFD = src._fileFD;
+        this->_SENT = src._SENT;
+        this->_FULL_SIZE = src._FULL_SIZE;
+        this->_HeaderSent = src._HeaderSent;
+    }
+}
+
+Response::~Response() {}
+
+Response        &Response::operator=( const Response &src ) {
+    if (this != &src)
+    {
+        this->_request = src._request;
+        this->_server = src._server;
+        this->_MT = src._MT;
+        this->_responseBuffer = src._responseBuffer;
+        this->_cgiIndex = src._cgiIndex;
+        this->_serverIndex = src._serverIndex;
+        this->_isLocation = src._isLocation;
+        this->_length = src._length;
+        this->_isCGI = src._isCGI;
+        this->_accessType = src._accessType;
+        this->_full_path = src._full_path;
+        this->_root = src._root;
+        this->_path = src._path;
+        this->_method = src._method;
+        this->_status = src._status;
+        this->_indexs = src._indexs;
+        this->_autoindex = src._autoindex;
+        this->_pathIsDir = src._pathIsDir;
+        this->_fileFD = src._fileFD;
+        this->_SENT = src._SENT;
+        this->_FULL_SIZE = src._FULL_SIZE;
+        this->_HeaderSent = src._HeaderSent;
+    }
+    return *this;
+}
+
+int                 &Response::get_fileFD( void ) { return this->_fileFD; }
+void                Response::set_HeaderSent( bool val ) { this->_HeaderSent = val; }
+void                Response::setHttpVersion( void ) { _responseBuffer.append("HTTP/1.1 "); }
+bool                &Response::get_HeaderSent( void ) { return this->_HeaderSent; }
+size_t              &Response::get_SENT( void ){ return this->_SENT; }
+size_t              &Response::get_FULL_SIZE( void ){ return this->_FULL_SIZE; }
+std::string         &Response::get_full_path( void ) { return  this->_full_path; }
+std::string         &Response::get_root( void ) { return this->_root; }
+std::vector<Server> &Response::get_server( void ) { return this->_server; }
+
+std::string         &Response::get_responseBuffer( void )
+{
+    int         retRead = 0;
+
+    if (this->_SENT == this->_FULL_SIZE) {
+        return this->_responseBuffer;
+    }
+    if (_HeaderSent == true) {
+        _responseBuffer.clear();
+        _responseBuffer.clear();
+        retRead = read_select(this->_fileFD, _responseBuffer, SEND_SIZE);
+    }
+    else
+    {
+        set_HeaderSent(true);
+    }
+    this->_SENT += this->_responseBuffer.length();
+    return this->_responseBuffer;
+}
+
+bool    Response::mustRedirect(std::string path)
+{
+    std::vector<std::pair<std::string, std::string> >::iterator it;
+    std::vector<std::pair<std::string, std::string> >::iterator end;
+
+    if (_isLocation == NPOS)
+    {
+        it = this->_server[_serverIndex].get_redirections().begin();
+        end = this->_server[_serverIndex].get_redirections().end();
+        for (; it != end; it++)
+        {
+            if (it->first.compare(path) == 0)
+            {
+                _status = MOVED_PERM;
+                pathRedirection(it->second);
                 return true;
-            else {
-                if (_indexs.size() == 0)
-                    if (_autoindex.compare(OFF) == 0)
-                        return true;
             }
         }
-        return false;
-    }
-    else if( accessType == S_IFREG ){
-        // std::cout << "DBG :::::::::::::::: is a file" << std::endl;
-        if (access(std::string(_root + _request.getPath()).c_str(), R_OK) != F_OK)
-            return true;
-        return false;
     }
     return false;
 }
 
-/*
-** UTILS : *********************************************************************
-*/
-void    Response::fillAutoindexPage( void ) {
-    // std::cout << "AUTOINDEX_DBG path :[" << _request.getPath() << "][" << _path << "]" << std::endl;
-    autoindex       page(_root, _path);
-    std::string     autoindexPage;
+bool    Response::initData( void )
+{
+    _serverIndex = getServerIndex();
+    isLocation();
 
-    _responseBuffer.append(_status);
-    _responseBuffer.append("\nContent-Type: text/html\nContent-Length: ");
-    autoindexPage = page.get_page();
-    _responseBuffer.append(std::to_string(autoindexPage.length()));
-    _responseBuffer.append("\n\n");
-    _responseBuffer.append(autoindexPage);
+    if (_isLocation != NPOS)
+        this->_root = this->_server[_serverIndex].get_location()[_isLocation].get_root();
+    else
+        this->_root = this->_server[_serverIndex].get_root();
+    if (*(_root.rbegin()) != '/')
+        _root.append("/");
+    if (mustRedirect(_request.getPath()) == true)
+        return true;
+    if (_isLocation != NPOS)
+    {
+        this->_path = this->_request.getPath();
+        size_t  position = this->_path.find(this->_server[_serverIndex].get_location()[_isLocation].get_locations_path());
+        size_t  len = this->_server[_serverIndex].get_location()[_isLocation].get_locations_path().length();
+        if (position != NPOS)
+            this->_path.erase(position, len);
+    }
+    else
+        this->_path = this->_request.getPath();
+    _pathIsDir =  (getAccessType(_root + _path) == S_IFDIR) ? (true) : (false);
+    _autoindex = ((_isLocation == NPOS) ? _server[_serverIndex].get_autoindex()
+                                        : _server[_serverIndex].get_location()[_isLocation].get_autoindex());
+    _indexs = ((_isLocation == NPOS) ? _server[_serverIndex].get_index()
+                                    : _server[_serverIndex].get_location()[_isLocation].get_index());
+    _full_path = _root + _path;
+    return false;
 }
 
-void    Response::fillContentType( void ) {
-    std::pair<std::string, std::string> ContentType;
-    _responseBuffer.append(_status);
-    _MT.set_path(_root);
-    ContentType = _MT.get_mimetype();
-    _responseBuffer.append("\nContent-Type: ").append(ContentType.second);
+void    Response::pathRedirection(std::string to)
+{
+    _responseBuffer.append(_status).append("\n");
+    _responseBuffer.append("Location: " + to).append("\n");
 }
 
-void    Response::fillContentLength( void ) {
-    std::ifstream   FILE;
-    std::string     line;
-    std::string     buffer;
-    size_t          len = 0;
+bool    Response::mustRedirect()
+{
+    if (_pathIsDir == true && *(_path.rbegin()) != '/')
+    {
+        _status = MOVED_PERM;
+        return true;
+    }
+    return false;
+}
 
-    _responseBuffer.append("\nContent-Length: ");
-    FILE.open(_root);
-    if (FILE.is_open()) {
-        while (getline(FILE, line)) {
-            len += line.length() + 1;
-            buffer.append(line).append("\n");
+bool    Response::noIndexMatch()
+{
+    for (std::vector<std::string>::iterator it = _indexs.begin(); it != _indexs.end(); it++)
+    {
+        if (getAccessType(_full_path + *it) == S_IFREG && access(std::string(_full_path + *it).c_str(), R_OK) == F_OK)
+        {
+            _status = OK;
+            _full_path.append(*it);
+            return false;
         }
     }
-    _responseBuffer.append(std::to_string(len));
-    _responseBuffer.append("\n\n");
-    _responseBuffer.append(buffer);
+    return true;
 }
 
-void    Response::fillResponseBuffer( void ) {
-    fillContentType();
-    fillContentLength();
+bool    Response::forbiddenRessources( void )
+{
+    if ( _accessType == S_IFDIR )
+    {
+        if (_request.getMethod().compare(GET) == 0)
+        {
+            if (_indexs.size() == 0 && _autoindex.compare(OFF) == 0)
+            {
+                return true;
+            }
+            else if (_indexs.size() == 0 && _autoindex.compare(ON) == 0
+                && access(_full_path.c_str(), R_OK) != F_OK)
+            {
+                return true;
+            }
+            else if (_indexs.size() == 0 && _autoindex.compare(ON) == 0
+                && access(_full_path.c_str(), R_OK) == F_OK)
+            {
+                _status = AUTOINDEX;
+                return false;
+            }
+            else if (_indexs.size() && _autoindex.compare(OFF) == 0)
+            {
+                if (noIndexMatch() == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    _pathIsDir = false;
+                    return false;
+                }
+            }
+            else if (_indexs.size() && _autoindex.compare(ON) == 0)
+            {
+                if (noIndexMatch() == true)
+                {
+                    _status = AUTOINDEX;
+                    return (access(_full_path.c_str(), R_OK) == F_OK)
+                        ? (false) : (true);
+                }
+                else
+                {
+                    _pathIsDir = false;
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+    else if ( _accessType == S_IFREG )
+    {
+        if (access(_full_path.c_str(), R_OK) != F_OK)
+            return true;
+        _status = OK;
+        return false;
+    }
+    else
+    {
+        _status = NOT_FOUND;
+        return true;
+    }
+    return false;
 }
 
-void    Response::fillErrorPage( void ) {
+bool    Response::check_error_page( void )
+{
+    std::vector<std::pair<std::string, std::string> >::iterator it;
+    std::vector<std::pair<std::string, std::string> >::iterator it_end;
+    size_t                                                      size = 0;
+
+    if (_isLocation != NPOS)
+    {
+        if ((size = _server[_serverIndex].get_location().operator[](_isLocation).get_error_pages().size()) != 0)
+        {
+            it = _server[_serverIndex].get_location().operator[](_isLocation).get_error_pages().begin();
+            it_end = _server[_serverIndex].get_location().operator[](_isLocation).get_error_pages().end();
+        }
+    }
+    else
+    {
+        if ((size = _server[_serverIndex].get_error_pages().size()) != 0)
+        {
+            it = _server[_serverIndex].get_error_pages().begin();
+            it_end = _server[_serverIndex].get_error_pages().end();
+        }
+    }
+    if (size != 0)
+    {
+        for (; it != it_end; it++)
+        {
+            if ( this->_status.compare(0, 3, it->first) == 0)
+            {
+                if (getAccessType(it->second) == S_IFREG
+                    && access(it->second.c_str(), R_OK) == F_OK)
+                {
+                    this->_full_path = it->second;
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+    }
+    return false;
+}
+
+
+void    Response::fillErrorPage( void )
+{
     std::string     buffer;
-
+    if (check_error_page() == true)
+    {
+        fillResponseBuffer();
+        return ;
+    }
     _responseBuffer.append(_status);
     _responseBuffer.append("\nContent-Type: text/html\nContent-Length: ");
     if (!_status.compare(FORBIDDEN_RQST))
         buffer = FORBIDDEN_RQST_403;
+    else if (!_status.compare(NO_CONTENT))
+        buffer = NO_CONTENT_204;
     else if (!_status.compare(BAD_RQST))
         buffer = BAD_RQST_400;
     else if (!_status.compare(SERVICE_UNAVAILABLE))
@@ -260,58 +390,302 @@ void    Response::fillErrorPage( void ) {
         buffer = NOT_IMPLEMENTED_501;
     else if (!_status.compare(NOT_FOUND))
         buffer = NOT_FOUND_404;
-    _responseBuffer.append(std::to_string(buffer.length()));
+    else if (!_status.compare(REQUEST_TIMEOUT))
+        buffer = REQUEST_TIMEOUT_408;
+    else if (!_status.compare(PAYLOAD_TOO_LARGE))
+        buffer = PAYLOAD_TOO_LARGE_413;
+    else if (!_status.compare(BAD_GATEWAT))
+        buffer = BAD_GATEWAT_502;
+    else if (!_status.compare(OK_UPLOAD))
+        buffer = UPLOAD_FILE_SUCCESS;
+    else if (!_status.compare(NO_CONTENT))
+        buffer = NO_CONTENT_204;
+    else if (!_status.compare(INTERNAL_SERVER_ERROR))
+        buffer = INTERNAL_SERVER_ERROR_500;
+    _length = buffer.length();
+    _responseBuffer.append(std::to_string(_length));
     _responseBuffer.append("\n\n").append(buffer);
 }
 
-int     Response::getServerIndex() {
+bool    Response::notImplemented( void )
+{
+    if (_request.getMethod().compare(GET) && _request.getMethod().compare(POST) && _request.getMethod().compare(DELETE))
+    {
+        _status = NOT_IMPLEMENTED;
+        return true;
+    }
+    return false;
+}
+
+bool    Response::methodNotAllowed( void )
+{
+    std::string                         requestMethod = this->_request.getMethod();
+    std::vector<std::string>::iterator  it;
+    std::vector<std::string>::iterator  end;
+
+    if (_isLocation != NPOS)
+    {
+        it = this->_server[_serverIndex].get_location()[_isLocation].get_methods().begin();
+        end = this->_server[_serverIndex].get_location()[_isLocation].get_methods().end();
+    }
+    else
+    {
+        it = this->_server[_serverIndex].get_methods().begin();
+        end = this->_server[_serverIndex].get_methods().end();
+    }
+    for (; it != end; it++)
+    {
+        if (requestMethod.compare(*it) == 0)
+        {
+            return false;
+        }
+    }
+    _status = METHOD_NOT_ALLOWED;
+    return true;
+}
+
+bool    Response::payloadTooLarge( void )
+{
+    size_t  size = _request.getContentLength();
+    size_t  max_body_size = 0;
+    if (_isLocation != NPOS)
+    {
+        if (this->_server[_serverIndex].get_location()[_isLocation].get_client_max_body_size().length() != 0)
+            max_body_size = std::stoi(this->_server[_serverIndex].get_location()[_isLocation].get_client_max_body_size());
+        else
+            return false;
+    }
+    else
+    {
+        if (this->_server[_serverIndex].get_client_max_body_size().length() != 0)
+            max_body_size = std::stoi(this->_server[_serverIndex].get_client_max_body_size());
+        else
+            return false;
+    }
+    if (size != 0 && size > max_body_size)
+    {
+        if (size > max_body_size)
+        {
+            _status = PAYLOAD_TOO_LARGE;
+            return true;
+        }
+    }
+    return false;
+}
+
+void    Response::fillContentLength( void )
+{
+	int	    FD = -1;
+	int	    len = 0;
+	int	    ret = 0;
+    std::string bufferString;
+
+    _responseBuffer.append("\nContent-Length: ");
+	FD = open(_full_path.c_str(), O_RDONLY);
+
+    if (FD > 0)
+    {
+        while ((ret = read_select(FD, bufferString, RECV_SIZE)) > 0) {
+            len += ret;
+        }
+        _responseBuffer.append(std::to_string(len));
+        _responseBuffer.append("\n\n");
+        close(FD);
+        this->_FULL_SIZE += len + _responseBuffer.length();
+    }
+    this->_fileFD = open(_full_path.c_str(), O_RDONLY);
+    if (_fileFD == -1) {
+        this->_SENT = this->_FULL_SIZE;
+    }
+}
+
+bool    Response::isCGI()
+{
+    size_t index;
+    size_t len;
+
+    for (std::vector<CGI>::iterator it = this->_server[_serverIndex].get_CGI().begin();
+        it != this->_server[_serverIndex].get_CGI().end(); it++)
+    {
+        index = _full_path.length() - it->get_extention().length();
+        len = it->get_extention().length();
+        if (_full_path.compare(index, len, it->get_extention()) == 0)
+        {
+            _cgiIndex = it - this->_server[_serverIndex].get_CGI().begin();
+            return true;
+        }
+    }
+    return false;
+}
+
+void    Response::fillContentType( void )
+{
+    std::pair<std::string, std::string> ContentType;
+    _responseBuffer.append(_status);
+    _MT.set_path(_full_path);
+    ContentType = _MT.get_mimetype();
+    _responseBuffer.append("\nContent-Type: ").append(ContentType.second);
+}
+
+void    Response::fillResponseBuffer( void )
+{
+    if (isCGI() == true)
+    {
+        _status = this->_server[_serverIndex].get_CGI()[_cgiIndex].execute_cgi(_request, *this);
+        if (_status.compare(OK) == 0)
+        {
+            this->_server[_serverIndex].get_CGI()[_cgiIndex].fillResponseBuffer(*this);
+        }
+        else
+            fillErrorPage();
+        return ;
+    }
+    fillContentType();
+    fillContentLength();
+}
+
+void    Response::fillAutoindexPage( void )
+{
+    autoindex       page(_full_path, this->_request.getPath());
+    std::string     autoindexPage;
+
+    _responseBuffer.append(_status);
+    _responseBuffer.append("\nContent-Type: text/html\nContent-Length: ");
+    autoindexPage = page.get_page();
+    _length = autoindexPage.length();
+    _responseBuffer.append(std::to_string(_length));
+    _responseBuffer.append("\n\n");
+    _responseBuffer.append(autoindexPage);
+}
+
+void    Response::setHttpStatus( void )
+{
+    if (notImplemented() == true)
+    {
+        fillErrorPage();
+        return ;
+    }
+    if (initData() == true)
+    {
+        return ;
+    }
+    if (mustRedirect() == true)
+    {
+        pathRedirection(_request.getPath() + "/");
+        return ;
+    }
+    if (methodNotAllowed() == true)
+    {
+        fillErrorPage();
+        return ;
+    }
+    if (payloadTooLarge() == true)
+    {
+        fillErrorPage();
+        return ;
+    }
+    if (forbiddenRessources() == true)
+    {
+        if (_status.compare(NOT_FOUND) != 0)
+            _status = FORBIDDEN_RQST;
+        fillErrorPage();
+        return ;
+    }
+    if (_status.compare(AUTOINDEX) == 0)
+    {
+        _status = OK;
+        fillAutoindexPage();
+        return ;
+    }
+
+    if (this->_request.getMethod().compare(POST) == 0 && _request.getContentLength() > 0 && !isCGI())
+    {
+        size_t      stat;
+        std::string to;
+        to = _server[_serverIndex].get_upload_path();
+        if (to.length() == 0)
+        {
+            _status = INTERNAL_SERVER_ERROR;
+            fillErrorPage();
+            return ;
+        }
+        stat = getAccessType(to);
+        if (stat == NPOS || stat == S_IFREG)
+        {
+            _status = INTERNAL_SERVER_ERROR;
+            fillErrorPage();
+            return ;
+        }
+        moveBody(_request.getBodyfilename(), to, _request);
+        fillErrorPage();
+        return ;
+    }
+    if (this->_request.getMethod().compare(DELETE) == 0 && !isCGI())
+    {
+        int status = 0;
+        status = remove(this->_full_path.c_str());
+        _status = NO_CONTENT;
+        fillErrorPage();
+    }
+    fillResponseBuffer();
+}
+
+size_t  match_server_name_port(std::vector<std::string> server_names, std::string host, int port, std::string reqHost, int reqPort)
+{
+    if (port == reqPort)
+    {
+        if (host.compare("localhost") == 0 || host.compare("127.0.0.1") == 0)
+            if (reqHost.compare("localhost") == 0 || reqHost.compare("127.0.0.1") == 0)
+                return true;
+        for (std::vector<std::string>::iterator it = server_names.begin(); it != server_names.end(); it++)
+        {
+            if (it->compare(reqHost) == 0)
+            {
+                return true;
+            }
+        }
+        if (reqHost.compare(host) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+int         Response::getServerIndex() {
     this->_serverIndex = 0;
-    return 0;
-    /*
-    for (std::vector<Server>::iterator it = this->_server.begin(); it != this->_server.end(); it++) {
-        std::cout << "DBG MY_HOST : [" << it->get_host() << "] | RQST_HOST : [" << _request.getHost() << "]" << std::endl;
-        if (it->get_host().compare(_request.getHost()) == 0) {
-            this->_serverIndex = it - this->_server.begin();
+
+    for (std::vector<Server>::iterator it = this->_server.begin(); it != this->_server.end(); it++)
+    {
+        if (match_server_name_port(it->get_server_names(), it->get_host(), it->get_port(), _request.getHost(), _request.getPort()) == true)
+        {
             return it - this->_server.begin();
         }
     }
-    return -1;
-    */
+    return 0;
 }
 
-std::string    Response::checkMethods( void ) {
-    std::string rqstMethod = _request.getMethod();
-    // std::cout << "rqstMethod: [" << rqstMethod << "]" << std::endl;
-    if (rqstMethod.compare(GET) &&  rqstMethod.compare(POST) && rqstMethod.compare(DELETE)) {
-        // std::cout << "NOT IMPLEMENTED DBG" << std::endl;
-        return NOT_IMPLEMENTED;
-    }
-    std::vector<std::string> methods;
-    if (_isLocation != NPOS)
-        methods = _server[_serverIndex].get_location()[_isLocation].get_methods();
-    else
-        methods = _server[_serverIndex].get_methods();
-    for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++) {
-        if ((*it).compare(_request.getMethod()) == 0) {
-            _method = *it;
-            // std::cout << "IMPLEMENTED DBG" << std::endl;
-            return "";
-        }
-    }
-    return METHOD_NOT_ALLOWED ;
-}
-
-size_t     Response::isLocation() {
+size_t      Response::isLocation()
+{
     for (std::vector<Location>::iterator it = _server[_serverIndex].get_location().begin();
-    it != _server[_serverIndex].get_location().end(); it++) {
-        if (it->get_locations_path().compare(0, it->get_locations_path().length(), _request.getPath().substr(0, it->get_locations_path().length())) == 0) {
-            if (_request.getPath().length() > it->get_locations_path().length()) {
-                if (_request.getPath()[it->get_locations_path().length()] == '/') {
+    it != _server[_serverIndex].get_location().end(); it++)
+    {
+        if (*(it->get_locations_path().rbegin()) == '/' && it->get_locations_path().length() > 1)
+            it->get_locations_path().erase(it->get_locations_path().end() - 1);
+
+        if (it->get_locations_path().compare(0, it->get_locations_path().length(),
+            _request.getPath().substr(0, it->get_locations_path().length())) == 0) {
+            if (_request.getPath().length() > it->get_locations_path().length())
+            {
+                if (_request.getPath()[it->get_locations_path().length()] == '/')
+                {
                     _isLocation = it - _server[_serverIndex].get_location().begin();
                     break ;
                 }
                 else
+                {
                     _isLocation = NPOS;
+                }
             }
             else {
                 _isLocation = it - _server[_serverIndex].get_location().begin();
@@ -322,45 +696,80 @@ size_t     Response::isLocation() {
     return _isLocation;
 }
 
-size_t    Response::getAccessType(std::string PATH) {
+size_t      Response::getAccessType(std::string PATH) {
     struct stat s;
     if( stat(PATH.c_str() ,&s) == 0 )
     {
         if( s.st_mode & S_IFDIR )
-            return S_IFDIR;
+            _accessType = S_IFDIR;
         else if( s.st_mode & S_IFREG )
-            return S_IFREG;
+            _accessType = S_IFREG;
     }
-    return NPOS;
+    else
+        _accessType = NPOS;
+    return _accessType;
 }
 
-/*
-    std::cout << " | LEN : " << _server[_serverIndex].get_location()[_isLocation].get_locations_path().length() << std::endl;
-    std::string filePath = _server.begin()->get_root();
-    filePath.append(_request.getPath());
-    std::ifstream   FILE;
+void    Response::moveBody(std::string from, std::string to, Request request)
+{
+    int             src_fd = 0;
+	int	            dst_fd = 0;
+	size_t          buffer_size = 0;
+	int             rw_return = 0;
+	size_t          index = 0;
+    std::string     content_type;
+    std::string     bufferString;
 
-    std::cout << "FILE TO OPEN : " << filePath << std::endl;
-    FILE.open(filePath);
-    if (FILE.is_open()) {
-        _responseBuffer.append("200 OK\nContent-Type: ");
-        if (filePath.find(".html") != std::string::npos) {
-            _responseBuffer.append("text/html\nContent-Leeength: ");
-        }
-        else {
-            _responseBuffer.append("text/css\nContent-Leeength: ");
-        }
-        std::string FILEinLine;
-        std::string buffer;
-        int         len = 0;
-        while (getline(FILE, buffer)) {
-            FILEinLine.append(buffer).append("\n");
-            len += buffer.length() + 1;
-        }
-        _responseBuffer.append(std::to_string(len)).append("\n\n").append(FILEinLine);
+    if (*(to.rbegin()) != '/')
+        to.push_back('/');
+    to.append(randomfilename("_upload."));
+    content_type = request.getHeaders("Content-Type");
+    index = content_type.find("/");
+    if (index != NPOS)
+        to.append(content_type.substr(index + 1, content_type.find(";")));
+    src_fd = open(from.c_str(), O_RDONLY);
+    dst_fd = open(to.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IRGRP | S_IROTH);
+
+    if (dst_fd < 0 || src_fd < 0)
+    {
+        _status = INTERNAL_SERVER_ERROR;
+        return ;
     }
-    else {
-        std::cerr << "Cant open FILE" << std::endl;
-        _responseBuffer.append("404 OK\n");
+    while (1)
+    {
+
+        rw_return = read_select(src_fd, bufferString, 4096);
+        if (rw_return == -1)
+        {
+            _status = INTERNAL_SERVER_ERROR;
+            return ;
+        }
+        buffer_size = rw_return;
+        if (buffer_size == 0)
+            break ;
+        rw_return = write_select(dst_fd, bufferString , buffer_size);
+        if (rw_return == -1)
+        {
+            _status = INTERNAL_SERVER_ERROR;
+            return ;
+        }
     }
-*/
+    close(src_fd);
+    close(dst_fd);
+    _status = OK_UPLOAD;
+    return ;
+}
+
+void    Response::setConnection( void ) {
+    std::vector<Request::string_pair> headers = _request.getHeaders();
+    for (std::vector<Request::string_pair>::iterator it = headers.begin(); it != headers.end(); it++) {
+        if (it->first == "Connection") {
+            this->_connection = it->second;
+            break ;
+        }
+    }
+}
+
+std::string         Response::getConnection( void ) {
+    return this->_connection;
+}

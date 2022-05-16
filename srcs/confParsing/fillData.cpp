@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:02:09 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/24 14:47:31 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/04/26 06:07:27 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ std::string     getPath(std::string &FILE, std::string::iterator &it)
 
 void    fill_server_name(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    // std::cout << KYEL << "[FILLED : SERVER_NAME]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER)
         errorStream(SYNTAX_ERR, true, 1);
     if (!(*it == ' ' || *it == '\t'))
@@ -65,13 +64,96 @@ void    fill_server_name(std::string &FILE, std::string::iterator &it, std::vect
     skipSpaces(FILE, it);
 }
 
+void    fill_upload_path(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
+{
+    if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
+        errorStream(SYNTAX_ERR, true, 4);
+    if (!(*it == ' ' || *it == '\t'))
+        errorStream(KW_UPLOAD_PATH, true, 1);
+    skipSpaces(FILE, it);
+    if (*it == '\n')
+        errorStream(KW_UPLOAD_PATH, true, 1);
+    if (data.whereAmI == POSITION_SERVER)
+    {
+        if (vect.rbegin()->get_upload_path().compare("") != 0)
+            errorStream(" upload_path: multiple definition", true, 1);
+        vect.rbegin()->get_upload_path() = getToken(FILE, it);
+    }
+    if (data.whereAmI == POSITION_LOCATION)
+    {
+        if (vect.rbegin()->get_location().rbegin()->get_upload_path().compare("") != 0)
+            errorStream(" upload_path: multiple definition", true, 1);
+        vect.rbegin()->get_location().rbegin()->get_upload_path() = getToken(FILE, it);
+    }
+    skipSpaces(FILE, it);
+    if (*it != '\n')
+        errorStream(SYNTAX_ERR, true, 42);
+    it++;
+    skipSpaces(FILE, it);
+}
+
+
+void    fill_cgi_path(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
+{
+    if (data.whereAmI != POSITION_CGI)
+        errorStream(SYNTAX_ERR, true, 4);
+    if (!(*it == ' ' || *it == '\t'))
+        errorStream(KW_CGI_PATH, true, 1);
+    skipSpaces(FILE, it);
+    if (*it == '\n')
+        errorStream(KW_CGI_PATH, true, 1);
+
+    if (vect.rbegin()->get_CGI().rbegin()->get_cgi_path().compare("") != 0)
+        errorStream(" cgi_path: multiple definition", true, 1);
+    vect.rbegin()->get_CGI().rbegin()->get_cgi_path() = getToken(FILE, it);
+    skipSpaces(FILE, it);
+    if (*it != '\n')
+        errorStream(SYNTAX_ERR, true, 43);
+    it++;
+    skipSpaces(FILE, it);
+}
+
+void    fill_redirection(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
+{
+    if (data.whereAmI != POSITION_SERVER)
+        errorStream(SYNTAX_ERR, true, 3);
+    if (!(*it == ' ' || *it == '\t'))
+        errorStream(KW_REDIRECTION, true, 11);
+    skipSpaces(FILE, it);
+    if (*it == '\n')
+        errorStream(KW_REDIRECTION, true, 12);
+
+    std::string::iterator   redirection_begin = it;
+    while (it < FILE.end() && *it != '\n')
+        it++;
+    std::string tmp_redirection_line = FILE.substr(redirection_begin - FILE.begin(), it - redirection_begin);
+    char       *redirection_line = (char*)tmp_redirection_line.c_str();
+    std::pair<std::string, std::string>   redirection_pair;
+
+    char*   ret = NULL;
+    ret = strtok(redirection_line, " \t");
+    if (ret != NULL)
+        redirection_pair.first = ret;
+    else
+        errorStream(KW_REDIRECTION, true, 15);
+    for (int i = 1; ret != NULL; i++)
+    {
+        if (i > 2)
+            errorStream(KW_REDIRECTION, true, 16);
+        ret = strtok(NULL, " \t");
+        if (i == 1 && ret != NULL)
+            redirection_pair.second = ret;
+        else if (i == 1 && ret == NULL)
+            errorStream(KW_ERR_PAGE, true, 14);
+    }
+    vect.rbegin()->get_redirections().push_back(redirection_pair);
+    if (*it == '\n')
+        it++;
+    skipSpaces(FILE, it);
+}
+
 void    fill_methods(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    // std::cout << KYEL << "[FILLED : ALLOWED_METHODS]" << KNRM << std::endl;
-
-    // std::cout << KGRN << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << KNRM << std::endl;
-    // std::cout << "Size: " << (vect.rbegin()->get_location().rbegin()->get_methods()).size() << std::endl;
-    // std::cout << KGRN << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 2);
     if (!(*it == ' ' || *it == '\t'))
@@ -88,9 +170,8 @@ void    fill_methods(std::string &FILE, std::string::iterator &it, std::vector<S
     while (it < FILE.end() && *it != '\n') {
         if (data.whereAmI == POSITION_SERVER)
             vect.rbegin()->get_methods().push_back(getToken(FILE, it));
-        else 
+        else
             vect.rbegin()->get_location().rbegin()->get_methods().push_back(getToken(FILE, it));
-            // get_methods().push_back(getToken(FILE, it));
         if (*it != '\n')
             skipSpaces(FILE, it);
     }
@@ -101,7 +182,6 @@ void    fill_methods(std::string &FILE, std::string::iterator &it, std::vector<S
 
 void    fill_index(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    // std::cout << KYEL << "[FILLED : INDEX]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 3);
     if (!(*it == ' ' || *it == '\t'))
@@ -128,7 +208,6 @@ void    fill_index(std::string &FILE, std::string::iterator &it, std::vector<Ser
 
 void    fill_location_root(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    // std::cout << KYEL << "[FILLED : ROOT]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 4);
     if (!(*it == ' ' || *it == '\t'))
@@ -136,27 +215,28 @@ void    fill_location_root(std::string &FILE, std::string::iterator &it, std::ve
     skipSpaces(FILE, it);
     if (*it == '\n')
         errorStream(KW_LOCATION_ROOT, true, 1);
-    if (data.whereAmI == POSITION_SERVER) {
+    if (data.whereAmI == POSITION_SERVER)
+    {
         if (vect.rbegin()->get_root().compare("") != 0)
             errorStream(" root: multiple definition", true, 1);
         vect.rbegin()->get_root() = getToken(FILE, it);
     }
-    if (data.whereAmI == POSITION_LOCATION) {
+    if (data.whereAmI == POSITION_LOCATION)
+    {
         if (vect.rbegin()->get_location().rbegin()->get_root().compare("") != 0)
             errorStream(" root: multiple definition", true, 1);
         vect.rbegin()->get_location().rbegin()->get_root() = getToken(FILE, it);
     }
     skipSpaces(FILE, it);
     if (*it != '\n')
-        errorStream(SYNTAX_ERR, true, 5);
+        errorStream(SYNTAX_ERR, true, 44);
     it++;
     skipSpaces(FILE, it);
 }
 
 void    fill_autoindex(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    // std::cout << KYEL << "[FILLED : AUTOINDEX]" << KNRM << std::endl;
-    if (data.whereAmI != POSITION_LOCATION)
+    if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 6);
     if (!(*it == ' ' || *it == '\t')) {
         errorStream(KW_AUTOINDEX, true, 1);
@@ -164,9 +244,20 @@ void    fill_autoindex(std::string &FILE, std::string::iterator &it, std::vector
     skipSpaces(FILE, it);
     if (*it == '\n')
         errorStream(KW_AUTOINDEX, true, 1);
-    if (vect.rbegin()->get_location().rbegin()->get_autoindex().length() != 0)
-        errorStream("autoindex : multiple definition", true, 1);
-    vect.rbegin()->get_location().rbegin()->get_autoindex() = getToken(FILE, it);
+
+    if (data.whereAmI == POSITION_SERVER)
+    {
+        if (vect.rbegin()->get_autoindex().length() != 0)
+            errorStream(" root: multiple definition", true, 1);
+        vect.rbegin()->get_autoindex() = getToken(FILE, it);
+    }
+    if (data.whereAmI == POSITION_LOCATION)
+    {
+        if (vect.rbegin()->get_location().rbegin()->get_autoindex().length() != 0)
+            errorStream("autoindex : multiple definition", true, 1);
+        vect.rbegin()->get_location().rbegin()->get_autoindex() = getToken(FILE, it);
+    }
+
     skipSpaces(FILE, it);
     if (*it != '\n')
         errorStream(SYNTAX_ERR, true, 8);
@@ -176,7 +267,6 @@ void    fill_autoindex(std::string &FILE, std::string::iterator &it, std::vector
 
 void    fill_client_body_size(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    // std::cout << KYEL << "[FILLED : CLIENT_BODY_SIZE]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION)
         errorStream(SYNTAX_ERR, true, 4);
     if (!(*it == ' ' || *it == '\t'))
@@ -196,14 +286,13 @@ void    fill_client_body_size(std::string &FILE, std::string::iterator &it, std:
     }
     skipSpaces(FILE, it);
     if (*it != '\n')
-        errorStream(SYNTAX_ERR, true, 5);
+        errorStream(SYNTAX_ERR, true, 45);
     it++;
     skipSpaces(FILE, it);
 }
 
 void    fill_host_port(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    // std::cout << KYEL << "[FILLED : HOST_PORT]" << KNRM << std::endl;
     if (data.whereAmI != POSITION_SERVER)
         errorStream(SYNTAX_ERR, true, 6);
     if (!(*it == ' ' || *it == '\t')) {
@@ -221,23 +310,12 @@ void    fill_host_port(std::string &FILE, std::string::iterator &it, std::vector
     it++;
     skipSpaces(FILE, it);
     if (vect.rbegin()->setHostPort() == false) {
-        errorStream("Warning : Host Port ", false, 0);
+        errorStream("Host Port ", true, 1);
     }
-}
-
-void    fill_location(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
-{
-    (void)FILE;
-    (void)it;
-    (void)vect;
-    (void)data;
-    // std::cout << KYEL << "[FILLED : LOCATION]" << KNRM << std::endl;
 }
 
 void    setData(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
 {
-    // std::cout << KYEL << "[FILLED : CLOSED_BRACKET]" << KNRM << std::endl;
-    
     std::vector<bool>::reverse_iterator rit = data.Bracket.second.rbegin();
     (void)vect;
     while (rit != data.Bracket.second.rend()) {
@@ -260,95 +338,44 @@ void    setData(std::string &FILE, std::string::iterator &it, std::vector<Server
     }
 }
 
+void    fill_error_page(std::string &FILE, std::string::iterator &it, std::vector<Server> &vect, ServerData &data)
+{
+    if (data.whereAmI != POSITION_SERVER && data.whereAmI != POSITION_LOCATION && data.whereAmI != POSITION_CGI)
+        errorStream(SYNTAX_ERR, true, 3);
+    if (!(*it == ' ' || *it == '\t'))
+        errorStream(KW_ERR_PAGE, true, 11);
+    skipSpaces(FILE, it);
+    if (*it == '\n')
+        errorStream(KW_ERR_PAGE, true, 12);
+    std::string::iterator   error_begin = it;
+    while (it < FILE.end() && *it != '\n')
+        it++;
+    std::string tmp_error_line = FILE.substr(error_begin - FILE.begin(), it - error_begin);
+    char       *error_line = (char*)tmp_error_line.c_str();
+    std::pair<std::string, std::string>   error_pair;
 
-
-
-
-
-
-
-
-
-
-	// locatopn /bla {
-	// 	allow_methods POST
-	// 	cgi_pass test_mac/macos_cgi_tester
-	// }
-    
-/*
-
-
-
-server {
-	server_name youpi
-	listen 0.0.0.0:8001
-
-	root ./YoupiBanane
-	index index.html
-
-	allow_methods GET
-
-	location /put_test {
-		allow_methods PUT
-		root ./YoupiBanane/put_here
-	}
-
-	location /post_body {
-		allow_methods POST
-		client_body_buffer_size 100
-	}
-
-	location /directory {
-		
-		allow_methods GET
-		root YoupiBanane/
-		index youpi.bad_extension
-	}
-
-	location /bla {
-		allow_methods POST
-		cgi_pass test_mac/macos_cgi_tester
-	}
+    char*   ret = NULL;
+    ret = strtok(error_line, " \t");
+    if (ret != NULL) {
+        error_pair.first = ret;}
+    else
+        errorStream(KW_ERR_PAGE, true, 15);
+    for (int i = 1; ret != NULL; i++) {
+        if (i > 2) {
+            errorStream(KW_ERR_PAGE, true, 16);
+        }
+        ret = strtok(NULL, " \t");
+        if (i == 1 && ret != NULL) {
+            error_pair.second = ret;
+        }
+        else if (i == 1 && ret == NULL)
+        errorStream(KW_ERR_PAGE, true, 14);
+    }
+    if (data.whereAmI == POSITION_SERVER)
+        vect.rbegin()->get_error_pages().push_back(error_pair);
+    else if (data.whereAmI == POSITION_LOCATION)
+        vect.rbegin()->get_location().rbegin()->get_error_pages().push_back(error_pair);
+    if (*it == '\n')
+        it++;
+    skipSpaces(FILE, it);
 }
-
-server {
-	server_name youpi
-	listen 0.0.0.0:8002
-
-	root ./YoupiBanane
-	index index.html
-
-	allow_methods GET
-
-	location /put_test {
-		allow_methods PUT
-		root ./YoupiBanane/put_here
-		alias
-	}
-
-	location /post_body {
-		allow_methods POST
-		client_body_buffer_size 100
-	}
-
-	location /directory {
-		alias
-		allow_methods GET
-		root YoupiBanane/
-		index youpi.bad_extension
-
-		location *.bla {
-			allow_methods GET POST
-			cgi_pass test_mac/macos_cgi_tester
-		}
-	}
-
-	location *.bla {
-		allow_methods POST
-		cgi_pass test_mac/macos_cgi_tester
-	}
-}
-
-
-
-*/

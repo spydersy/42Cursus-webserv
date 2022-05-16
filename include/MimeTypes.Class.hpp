@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:04:42 by abelarif          #+#    #+#             */
-/*   Updated: 2022/03/09 23:48:57 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/03/18 13:26:13 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 class MimeTypes
 {
 private:
+    void                                                initMimeTypes();
     std::string                                         _path;
     std::vector<std::pair<std::string, std::string> >   _types;
     std::pair<std::string, std::string>                 _mimetype;
@@ -27,6 +28,7 @@ private:
 public:
     // CONSTRUCTORS & DESTRUCTORS :
     ~MimeTypes();
+    MimeTypes( void );
     MimeTypes(std::string PATH);
 
     // GETTERS :

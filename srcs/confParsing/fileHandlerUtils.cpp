@@ -6,7 +6,7 @@
 /*   By: abelarif <abelarif@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/06 22:22:37 by abelarif          #+#    #+#             */
-/*   Updated: 2022/02/18 17:02:09 by abelarif         ###   ########.fr       */
+/*   Updated: 2022/04/17 07:37:19 by abelarif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void skipSpaces(std::string FILE, std::string::iterator &it)
 bool    isEmptyLine(std::string LINE)
 {
     int i = -1;
-    
+
     if (LINE.length() == 0)
         return true;
     while (LINE[++i])
@@ -38,7 +38,7 @@ bool    isEmptyLine(std::string LINE)
     return true;
 }
 
-void    nextChar(std::string FILE, std::string::iterator &it) 
+void    nextChar(std::string FILE, std::string::iterator &it)
 {
     while (it != FILE.end()) {
         if (*it != ' ' && *it != '\n' && *it != '\t')
@@ -49,7 +49,6 @@ void    nextChar(std::string FILE, std::string::iterator &it)
 
 int    validatedKeyword(std::string &FILE, std::string::iterator &it)
 {
-    // std::cout << "Keyword Checker : [" << *(it + 0) << *(it + 1) << *(it + 2) << *(it + 3)  << "]" << std::endl;
 
     // is 'server_name' Keyword:
     if (FILE.compare(it - FILE.begin(), strlen(KW_SERVER_NAME), KW_SERVER_NAME) == 0) {
@@ -91,6 +90,21 @@ int    validatedKeyword(std::string &FILE, std::string::iterator &it)
         it += strlen(KW_LOCATION);
         return KW_LOCATION_VALUE;
     }
+    // is "cgi_path" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_CGI_PATH), KW_CGI_PATH) == 0) {
+        it += strlen(KW_CGI_PATH);
+        return KW_CGI_PATH_VALUE;
+    }
+    // is "cgi" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_CGI), KW_CGI) == 0) {
+        it += strlen(KW_CGI);
+        return KW_CGI_VALUE;
+    }
+    // is "redirection" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_REDIRECTION), KW_REDIRECTION) == 0) {
+        it += strlen(KW_REDIRECTION);
+        return KW_REDIRECTION_VALUE;
+    }
     // is "autoindex" Keyword:
     else if (FILE.compare(it - FILE.begin(), strlen(KW_AUTOINDEX), KW_AUTOINDEX) == 0) {
         it += strlen(KW_AUTOINDEX);
@@ -101,14 +115,15 @@ int    validatedKeyword(std::string &FILE, std::string::iterator &it)
         it += strlen(KW_CLIENT_BODY_SIZE);
         return KW_CLIENT_BODY_SIZE_VALUE;
     }
-    return 0;
-}
-
-void    printServer(std::vector<Server> &server)
-{
-    for (std::vector<Server>::iterator   it = server.begin(); it != server.end(); it ++)
-    {
-        std::cout << "************************************" << std::endl;
-        it->dbgServer();
+    // is "error_page" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_ERR_PAGE), KW_ERR_PAGE) == 0) {
+        it += strlen(KW_ERR_PAGE);
+        return KW_ERR_PAGE_VALUE;
     }
+    // is "upload_path" Keyword:
+    else if (FILE.compare(it - FILE.begin(), strlen(KW_UPLOAD_PATH), KW_UPLOAD_PATH) == 0) {
+        it += strlen(KW_UPLOAD_PATH);
+        return KW_UPLOAD_PATH_VALUE;
+    }
+    return 0;
 }

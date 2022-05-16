@@ -4,12 +4,24 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <cstring>
+#include <unistd.h>
+#include <cstdio>
+#include <fcntl.h>
+#include "../../servers/SocketInfos.hpp"
 
-// #define HEADERS "Accept,Accept-Charset,Accept-Encoding,Accept-Language,
-// Authorization,Expect,From,Host,If-Match,If-Modified-Since,
-// If-None-Match,If-Range,If-Unmodified-Since,Max-Forwards,
-// Proxy-Authorization,Range,Referer,TE,User-Agent,Connection"
+std::vector< std::string >		StringSplit( std::string str, std::string delimiter );
+std::vector< SocketInfos >		create_multiple_servers();
+std::string						randomfilename( std::string str );
+std::string						trimString( std::string str, char c );
+bool                            isHex( char c );
+int 							write_select (int fd, std::string &buffer, size_t size);
+int						        read_select (int fd, std::string &buffer, size_t size);
 
-std::vector<std::string>    StringSplit( std::string str, std::string delimiter );
-// bool                        checkHeaders( std::string header );
 #endif
